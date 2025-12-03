@@ -1,5 +1,7 @@
-# Parliament of Chaos
 
+<img width="1024" height="1024" alt="logo" src="https://github.com/user-attachments/assets/1db1114d-505f-4cf9-807d-6b6054286e41" />
+
+# THE PARLIAMENT OF CHAOS
 A Claude Code plugin that summons a council of opinionated AI specialists to review, design, and refine your code through structured debate and iteration.
 
 ## What is Parliament of Chaos?
