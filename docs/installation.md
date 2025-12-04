@@ -28,8 +28,8 @@ Install the plugin into your Claude Code environment:
 ```
 
 This installs:
-- 2 slash commands (`/summon-council`, `/summon-grumpy-reviewer`)
-- 17 specialist and reviewer agents
+- 7 slash commands for orchestration, reviews, and project planning
+- 21 specialist, reviewer, and planning agents
 
 ### 3. Verify Installation
 
@@ -49,29 +49,60 @@ The plugin adds the following to your Claude Code configuration:
 .claude/
   agents/
     parliament-of-chaos/
-      backend-goblin.md
-      grumpy-code-reviewer.md
-      grumpy-standards-enforcer.md
-      grumpy-architecture-skeptic.md
-      grumpy-maintainability-curmudgeon.md
-      grumpy-security-nag.md
-      grumpy-performance-troll.md
-      system-architect.md
-      security-knight.md
-      data-warlock.md
-      test-prophet.md
-      pipeline-engineer.md
-      api-keeper.md
-      doc-bard.md
-      package-wizard.md
-      resilience-tamer.md
-      ui-ux-guru.md
-      senior-council.md
+      # Planning Agents (3)
+      project-oracle.md          # Project planning and roadmap generation
+      scope-weaver.md            # Scopes roadmap items into tasks
+      task-executor.md           # Executes implementation tasks
+
+      # Specialist Agents (11)
+      backend-goblin.md          # Backend development expertise
+      system-architect.md        # System design and architecture
+      security-knight.md         # Security analysis and hardening
+      data-warlock.md            # Database and data layer concerns
+      api-keeper.md              # API design and integration
+      test-prophet.md            # Testing strategies and coverage
+      ui-ux-guru.md              # User interface and experience
+      pipeline-engineer.md       # CI/CD and deployment pipelines
+      doc-bard.md                # Documentation and technical writing
+      package-wizard.md          # Dependency and package management
+      resilience-tamer.md        # Error handling and system resilience
+
+      # Grumpy Reviewers (6)
+      grumpy-code-reviewer.md             # General code quality nitpicking
+      grumpy-standards-enforcer.md        # Coding standards compliance
+      grumpy-architecture-skeptic.md      # Architectural decision questioning
+      grumpy-maintainability-curmudgeon.md # Long-term maintainability concerns
+      grumpy-security-nag.md              # Security vulnerability hunting
+      grumpy-performance-troll.md         # Performance issue detection
+
+      # Orchestrator (1)
+      senior-council.md          # Coordinates multi-agent sessions
+
   commands/
     parliament-of-chaos/
-      summon-council.md
-      summon-grumpy-reviewer.md
+      # Core Commands
+      summon-council.md          # Full multi-agent orchestration
+      summon-grumpy-reviewer.md  # Quick code review session
+
+      # Planning Commands
+      plan-project.md            # Interactive project planning
+      project-status.md          # Project dashboard and progress
+      roadmap-add-item.md        # Add items to project roadmap
+      roadmap-item-scope.md      # Scope roadmap items into tasks
+      implement-task-list.md     # Execute implementation tasks
 ```
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `/summon-council` | Convene the full parliament for multi-agent code review and discussion |
+| `/summon-grumpy-reviewer` | Quick code review with the grumpy reviewer panel |
+| `/plan-project` | Interactive project planning with the Project Oracle |
+| `/project-status` | View project dashboard showing roadmap and task progress |
+| `/roadmap-add-item` | Add new items to the project roadmap |
+| `/roadmap-item-scope` | Break down roadmap items into actionable tasks |
+| `/implement-task-list` | Execute tasks from your task list |
 
 ## Updating the Plugin
 
@@ -108,7 +139,15 @@ If the Senior Council cannot find specialist agents:
 1. Ensure the full plugin was installed (check for the `agents/parliament-of-chaos/` directory)
 2. Verify file permissions allow Claude Code to read the agent definitions
 
+### Planning commands not working
+
+If `/plan-project` or other planning commands fail:
+
+1. Ensure the planning agents (`project-oracle.md`, `scope-weaver.md`, `task-executor.md`) are installed
+2. Check that the `.project-files/` directory is writable for storing project data
+
 ## Next Steps
 
 - Read the [Usage Guide](usage.md) to learn how to use the commands effectively
 - Try `/summon-grumpy-reviewer` on some existing code to see the review process in action
+- Use `/plan-project` to begin planning a new project with the Project Oracle

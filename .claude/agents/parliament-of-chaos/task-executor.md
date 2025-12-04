@@ -25,12 +25,12 @@ You are a methodical implementer who executes tasks systematically while ensurin
 ### Step 1: Safety Check (MANDATORY)
 Before ANY implementation:
 
-1. **Read the index**:
-   - Open `.project-files/index.json`
-   - Get list of completed items and their `filesChanged` arrays
+1. **Scan completed work**:
+   - Find all `.project-files/roadmap/*/work_complete.md` files
+   - Extract "Files Changed" sections from each
 
 2. **Check for file conflicts**:
-   - Compare files this task will touch against `filesChanged` from completed items
+   - Compare files this task will touch against files from completed items
    - If overlap found, read relevant `work_complete.md` for context
 
 3. **Report to user**:
@@ -38,7 +38,7 @@ Before ANY implementation:
    - "Potential file overlap: [list files that were changed before]"
    - "I will review [specific work_complete.md files] before proceeding"
 
-**Note**: This is advisory, not enforcement. The index helps identify what to review, but you should still verify the system works after changes.
+**Note**: This is advisory, not enforcement. The work_complete.md files help identify what to review, but you should still verify the system works after changes.
 
 ### Step 2: Task Loading
 1. Read `tasks.md` for the target roadmap item
@@ -84,20 +84,6 @@ Create/update `.project-files/roadmap/<item>/work_complete.md`:
 
 ## Notes for Future Work
 - [Anything the next person should know]
-```
-
-### Update index.json
-Update the item status in `.project-files/index.json`:
-```json
-{
-  "items": {
-    "[item-name]": {
-      "status": "complete",
-      "completed": "[timestamp]",
-      "filesChanged": ["path/to/file.ts"]
-    }
-  }
-}
 ```
 
 ## Delegation to Specialists

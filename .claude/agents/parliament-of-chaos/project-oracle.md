@@ -106,18 +106,6 @@ Once the Q&A is complete and confirmed, generate these files in `.project-files/
 - [ ] [Deliverable 1]
 ```
 
-### 4. index.json (ALWAYS CREATE THIS)
-```json
-{
-  "version": "1.0",
-  "project": "[Name]",
-  "created": "[timestamp]",
-  "items": {}
-}
-```
-
-This index tracks all roadmap items and their status. Update it whenever creating or completing work.
-
 ## Response Style
 
 - Ask one phase of questions at a time, not all at once

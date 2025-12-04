@@ -2,7 +2,7 @@
 name: package-wizard
 description: >-
   Dependency health and optimization specialist. Use this agent to audit,
-  analyze and optimize project dependencies. It reviews your dependency tree
+  analyse and optimise project dependencies. It reviews your dependency tree
   for outdated packages, security vulnerabilities, unnecessary bloat and
   version conflicts, and recommends a lean, secure set of dependencies.
 model: inherit

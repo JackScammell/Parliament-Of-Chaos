@@ -6,7 +6,7 @@
 
 **Current Phase**: v1.1 Development
 
-**Overall Progress**: 1 of 17 items complete
+**Overall Progress**: 1 of 18 items complete
 
 ---
 
@@ -23,6 +23,18 @@ v1.0 (MVP)                    v1.1 (Current)                 v1.2 (Future)
 ---
 
 ## v1.1 Roadmap Items
+
+### Phase 0: Agent Optimization
+
+_Goal: Reduce token/context usage across all existing agents while maintaining quality_
+
+| Item | Status | Dependencies |
+|------|--------|--------------|
+| [agent-token-optimization](./roadmap/agent-token-optimization/) | Not Started | None |
+
+**Milestone**: All existing agents optimized for minimal context footprint
+
+---
 
 ### Phase 1: New Specialist Agents
 
@@ -124,6 +136,7 @@ agent-memory-context ◄─── (standalone)
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2024-12-04 | Added Phase 0 with agent-token-optimization | Optimize existing agents before adding new ones |
 | 2024-12-04 | Initial v1.1 roadmap created | Project planning session |
 
 ---
