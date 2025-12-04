@@ -16,8 +16,8 @@ This guide covers installing Parliament of Chaos as a Claude Code plugin.
 ```
 
 This single command installs:
-- 7 slash commands for orchestration, reviews, and project planning
-- 21 specialist, reviewer, and planning agents
+- 12 slash commands for orchestration, reviews, and project planning
+- 29 specialist, reviewer, and planning agents
 
 ### Verify Installation
 
@@ -42,35 +42,45 @@ The plugin adds the following to your Claude Code configuration:
       scope-weaver.md            # Scopes roadmap items into tasks
       task-executor.md           # Task tracking and documentation
 
-      # Specialist Agents (11)
-      backend-goblin.md          # Backend performance
-      system-architect.md        # System design and architecture
-      security-knight.md         # Security analysis
-      data-warlock.md            # Database and data layer
+      # Specialist Agents (16)
       api-keeper.md              # API design
+      backend-goblin.md          # Backend performance
+      config-curator.md          # Configuration management
+      data-warlock.md            # Database and data layer
+      dependency-detective.md    # Dependency analysis
+      doc-bard.md                # Documentation
+      migration-monk.md          # Database migrations
+      observability-oracle.md    # Logging, metrics, tracing
+      package-wizard.md          # Dependency management
+      pipeline-engineer.md       # CI/CD and deployment
+      refactor-ranger.md         # Code refactoring
+      resilience-tamer.md        # Error handling and resilience
+      security-knight.md         # Security analysis
+      system-architect.md        # System design and architecture
       test-prophet.md            # Testing strategies
       ui-ux-guru.md              # User interface and experience
-      pipeline-engineer.md       # CI/CD and deployment
-      doc-bard.md                # Documentation
-      package-wizard.md          # Dependency management
-      resilience-tamer.md        # Error handling and resilience
 
-      # Grumpy Reviewers (6)
-      grumpy-code-reviewer.md             # General code quality
-      grumpy-standards-enforcer.md        # Standards compliance
+      # Grumpy Reviewers (9)
+      grumpy-accessibility-auditor.md     # WCAG compliance
       grumpy-architecture-skeptic.md      # Architectural decisions
+      grumpy-code-reviewer.md             # General code quality
+      grumpy-documentation-pedant.md      # Documentation completeness
       grumpy-maintainability-curmudgeon.md # Maintainability
-      grumpy-security-nag.md              # Security vulnerabilities
       grumpy-performance-troll.md         # Performance issues
+      grumpy-security-nag.md              # Security vulnerabilities
+      grumpy-standards-enforcer.md        # Standards compliance
+      grumpy-testing-tyrant.md            # Test coverage and quality
 
       # Orchestrator (1)
       senior-council.md          # Coordinates multi-agent sessions
 
   commands/
     parliament-of-chaos/
-      # Core Commands
+      # Council Commands
       summon-council.md          # Full multi-agent orchestration
       summon-grumpy-reviewer.md  # Quick code review session
+      summon-specialist.md       # Direct specialist invocation
+      parliament-review.md       # Full 9-reviewer scrutiny
 
       # Planning Commands
       plan-project.md            # Interactive project planning
@@ -78,19 +88,41 @@ The plugin adds the following to your Claude Code configuration:
       roadmap-add-item.md        # Add items to roadmap
       roadmap-item-scope.md      # Scope items into tasks
       implement-task-list.md     # Execute tasks with council review
+
+      # Discovery Commands
+      list-agents.md             # Display all agents by category
+      list-commands.md           # Display all commands by category
+      explain-agent.md           # Detailed agent explanation
 ```
 
 ## Available Commands
+
+### Council Commands
 
 | Command | Description |
 |---------|-------------|
 | `/summon-council` | Full parliament orchestration with specialists and grumpy review |
 | `/summon-grumpy-reviewer` | Quick code review from grumpy perspective |
+| `/summon-specialist` | Directly invoke a specialist agent on your current task |
+| `/parliament-review` | Full review using all 9 grumpy reviewers for maximum scrutiny |
+
+### Planning Commands
+
+| Command | Description |
+|---------|-------------|
 | `/plan-project` | Interactive project planning with Project Oracle |
 | `/project-status` | View project progress dashboard |
 | `/roadmap-add-item` | Add new items to the roadmap |
 | `/roadmap-item-scope` | Break down items into specs and tasks |
 | `/implement-task-list` | Execute tasks with full council oversight |
+
+### Discovery Commands
+
+| Command | Description |
+|---------|-------------|
+| `/list-agents` | Display all agents grouped by category |
+| `/list-commands` | Display all commands grouped by category |
+| `/explain-agent` | Detailed explanation of what an agent does and when to use it |
 
 ## Updating
 
