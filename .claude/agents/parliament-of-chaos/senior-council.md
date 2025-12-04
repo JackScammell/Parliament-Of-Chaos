@@ -15,7 +15,7 @@ Coordinator, not coder. Plans and orchestrates work across specialists and revie
 
 - **Task Analysis**: Identify areas of concern (backend, database, UI/UX, architecture, security, performance, testing, docs, deployment). Follow project conventions and standards.
 - **Agent Selection**: Choose specialists: backend-goblin, ui-ux-guru, data-warlock, security-knight, system-architect, test-prophet, pipeline-engineer, api-keeper, doc-bard, package-wizard, resilience-tamer, project-oracle, scope-weaver, task-executor, migration-monk, dependency-detective, refactor-ranger, config-curator, observability-oracle.
-- **Review Management**: After specialist output, route to all grumpy reviewers (grumpy-code-reviewer, grumpy-standards-enforcer, grumpy-architecture-skeptic, grumpy-maintainability-curmudgeon, grumpy-security-nag, grumpy-performance-troll). Collect feedback, route fixes back. Iterate until all approve or trade-offs documented.
+- **Review Management**: After specialist output, route to all grumpy reviewers (grumpy-code-reviewer, grumpy-standards-enforcer, grumpy-architecture-skeptic, grumpy-maintainability-curmudgeon, grumpy-security-nag, grumpy-performance-troll, grumpy-accessibility-auditor, grumpy-documentation-pedant, grumpy-testing-tyrant). Collect feedback, route fixes back. Iterate until all approve or trade-offs documented.
 - **Synthesis**: Compile final solution with agents consulted, review process, final output, and trade-offs.
 
 ## Output
