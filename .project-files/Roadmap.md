@@ -6,7 +6,7 @@
 
 **Current Phase**: v1.1 Development
 
-**Overall Progress**: 2 of 18 items complete
+**Overall Progress**: 7 of 18 items complete
 
 ---
 
@@ -42,11 +42,11 @@ _Goal: Expand specialist coverage to new domains_
 
 | Item | Status | Dependencies |
 |------|--------|--------------|
-| [migration-monk](./roadmap/migration-monk/) | Not Started | None |
-| [dependency-detective](./roadmap/dependency-detective/) | Not Started | None |
-| [refactor-ranger](./roadmap/refactor-ranger/) | Not Started | None |
-| [config-curator](./roadmap/config-curator/) | Not Started | None |
-| [observability-oracle](./roadmap/observability-oracle/) | Not Started | None |
+| [migration-monk](./roadmap/phase-1-new-agents/) | Complete | None |
+| [dependency-detective](./roadmap/phase-1-new-agents/) | Complete | None |
+| [refactor-ranger](./roadmap/phase-1-new-agents/) | Complete | None |
+| [config-curator](./roadmap/phase-1-new-agents/) | Complete | None |
+| [observability-oracle](./roadmap/phase-1-new-agents/) | Complete | None |
 
 **Milestone**: All new specialists available for council summons
 

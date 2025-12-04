@@ -10,7 +10,7 @@
 
 Parliament of Chaos transforms Claude Code into a multi-agent development team. Instead of a single AI assistant, you get:
 
-- **21 Agents** including specialists, planners, reviewers, and an orchestrator
+- **26 Agents** including specialists, planners, reviewers, and an orchestrator
 - **6 Grumpy Reviewers** who find flaws others miss
 - **7 Slash Commands** for project planning, scoping, implementation, and code review
 
@@ -73,7 +73,7 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | scope-weaver | Breaks roadmap items into detailed specs and actionable tasks |
 | task-executor | Handles task tracking, safety checks, and documentation (utility for senior-council) |
 
-### Specialist Agents (11)
+### Specialist Agents (16)
 
 | Agent | Domain |
 |-------|--------|
@@ -88,6 +88,11 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | doc-bard | Documentation, comments, READMEs |
 | package-wizard | Dependencies, versions, compatibility |
 | resilience-tamer | Error handling, retries, failure modes |
+| migration-monk | Schema migrations, rollback strategies |
+| dependency-detective | Vulnerability chains, license compliance |
+| refactor-ranger | Code smells, refactoring patterns |
+| config-curator | Environment config, secrets, feature flags |
+| observability-oracle | Logging, metrics, tracing, alerting |
 
 ### Grumpy Reviewers (6)
 
