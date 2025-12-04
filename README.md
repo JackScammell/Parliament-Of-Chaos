@@ -1,107 +1,194 @@
+<img width="1024" height="1024" alt="Parliament of Chaos logo" src="https://github.com/user-attachments/assets/1db1114d-505f-4cf9-807d-6b6054286e41" />
 
-<img width="1024" height="1024" alt="logo" src="https://github.com/user-attachments/assets/1db1114d-505f-4cf9-807d-6b6054286e41" />
+# Parliament of Chaos
 
-# THE PARLIAMENT OF CHAOS
-A Claude Code plugin that summons a council of opinionated AI specialists to review, design, and refine your code through structured debate and iteration.
+**A Claude Code plugin that summons a council of opinionated AI specialists to plan, build, review, and refine your projects through structured debate and iteration.**
 
-## What is Parliament of Chaos?
+---
 
-Parliament of Chaos transforms Claude Code into a multi-agent development team. Instead of a single AI assistant, you get access to:
+## What Is This?
 
-- **Specialist Agents** - Domain experts in backend, security, architecture, testing, and more
-- **Grumpy Reviewers** - Deliberately critical reviewers who find flaws others miss
-- **A Senior Council** - An orchestrator that coordinates specialists and iterates until quality standards are met
+Parliament of Chaos transforms Claude Code into a multi-agent development team. Instead of a single AI assistant, you get:
 
-The result: thoroughly reviewed, battle-tested solutions that have survived scrutiny from multiple perspectives.
+- **29 Agents** including specialists, planners, reviewers, and an orchestrator
+- **9 Grumpy Reviewers** who find flaws others miss
+- **12 Slash Commands** for project planning, scoping, implementation, and code review
 
-## Installation
+The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
-### Step 1: Add the Plugin Source
-
-```
-/plugin marketplace add owner/parliament-of-chaos
-```
-
-### Step 2: Install the Plugin
-
-```
-/plugin install parliament-of-chaos@parliament-of-chaos
-```
-
-Once installed, the commands and agents become available in all your Claude Code sessions.
+---
 
 ## Quick Start
 
-### Summon the Full Council
-
-For complex tasks requiring multiple perspectives:
+### Install the Plugin
 
 ```
-/summon-council
+/install-github-plugin JackScammell/Parliament-Of-Chaos
 ```
 
-Then describe your task. The council will:
-1. Analyse your request and identify relevant domains
-2. Dispatch appropriate specialist agents
-3. Run outputs through grumpy reviewers
-4. Iterate until all reviewers approve
+### Your First Command
 
-### Summon a Grumpy Reviewer
-
-For quick, ruthless code review:
+**For code review and development tasks:**
 
 ```
-/summon-grumpy-reviewer
+/summon-council Design an authentication system with JWT and RBAC
 ```
 
-Paste your code or describe what needs review. You will receive structured feedback on correctness, readability, structure, and maintainability.
+**For planning a new project:**
 
-## Available Agents
+```
+/plan-project A CLI tool for managing Docker containers
+```
 
-### Specialist Agents
+---
+
+## Commands
+
+### Council Commands
+
+| Command | Description |
+|---------|-------------|
+| `/summon-council [task]` | Orchestrate specialists + grumpy review cycle for complex tasks |
+| `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
+| `/parliament-review` | Full review using all 9 grumpy reviewers for maximum scrutiny |
+| `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
+
+### Discovery Commands
+
+| Command | Description |
+|---------|-------------|
+| `/list-agents` | Display all agents grouped by category |
+| `/list-commands` | Display all commands grouped by category |
+| `/explain-agent <agent>` | Detailed explanation of what an agent does and when to use it |
+
+### Project Planning Commands
+
+| Command | Description |
+|---------|-------------|
+| `/plan-project [description]` | Interactive Q&A to create project-outline.md, feature-implementation.md, and Roadmap.md |
+| `/project-status` | Dashboard showing roadmap progress across all phases |
+| `/roadmap-add-item <name> --phase <n>` | Add a new item to an existing roadmap |
+| `/roadmap-item-scope <item>` | Create detailed Spec.md and tasks.md for a roadmap item |
+| `/implement-task-list [item]` | Execute tasks with full council review (specialists + grumpy approval) |
+
+---
+
+## Agents
+
+### Planning Agents (3)
+
+| Agent | Role |
+|-------|------|
+| project-oracle | Conducts project scoping via Q&A, creates project outline and roadmap |
+| scope-weaver | Breaks roadmap items into detailed specs and actionable tasks |
+| task-executor | Handles task tracking, safety checks, and documentation (utility for senior-council) |
+
+### Specialist Agents (16)
 
 | Agent | Domain |
 |-------|--------|
-| backend-goblin | Backend performance and optimisation |
-| system-architect | System design and architecture |
-| security-knight | Security assessment and hardening |
-| data-warlock | Database design and query optimisation |
-| api-keeper | API design and contracts |
-| test-prophet | Testing strategy and coverage |
-| ui-ux-guru | UI/UX and accessibility |
-| pipeline-engineer | CI/CD and DevOps |
-| doc-bard | Documentation |
-| package-wizard | Dependencies and versioning |
-| resilience-tamer | Error handling and failure modes |
+| system-architect | High-level design, patterns, trade-offs |
+| backend-goblin | Backend performance, caching, async patterns |
+| security-knight | Authentication, vulnerabilities, hardening |
+| data-warlock | Database design, queries, migrations |
+| api-keeper | API design, versioning, contracts |
+| test-prophet | Testing strategy, coverage, TDD |
+| ui-ux-guru | Accessibility, UX patterns, frontend |
+| pipeline-engineer | CI/CD, deployment, infrastructure |
+| doc-bard | Documentation, comments, READMEs |
+| package-wizard | Dependencies, versions, compatibility |
+| resilience-tamer | Error handling, retries, failure modes |
+| migration-monk | Schema migrations, rollback strategies |
+| dependency-detective | Vulnerability chains, license compliance |
+| refactor-ranger | Code smells, refactoring patterns |
+| config-curator | Environment config, secrets, feature flags |
+| observability-oracle | Logging, metrics, tracing, alerting |
 
-### Grumpy Reviewers
+### Grumpy Reviewers (9)
 
 | Agent | Focus |
 |-------|-------|
-| grumpy-code-reviewer | General code quality |
-| grumpy-standards-enforcer | Standards compliance |
-| grumpy-architecture-skeptic | Architecture decisions |
-| grumpy-maintainability-curmudgeon | Long-term maintainability |
-| grumpy-security-nag | Security nitpicks |
-| grumpy-performance-troll | Performance nitpicks |
+| grumpy-code-reviewer | Overall code quality |
+| grumpy-standards-enforcer | Coding standards compliance |
+| grumpy-architecture-skeptic | Architectural decisions |
+| grumpy-maintainability-curmudgeon | Long-term maintenance burden |
+| grumpy-security-nag | Security oversights |
+| grumpy-performance-troll | Performance issues |
+| grumpy-accessibility-auditor | WCAG compliance, inclusive design |
+| grumpy-documentation-pedant | Documentation completeness |
+| grumpy-testing-tyrant | Test coverage and quality |
 
-## Documentation
+### Orchestrator (1)
 
-- [Installation Guide](docs/installation.md)
-- [Usage Guide](docs/usage.md)
+| Agent | Role |
+|-------|------|
+| senior-council | Coordinates all agents, runs iterative review cycles until approval |
+
+---
 
 ## How It Works
 
-Parliament of Chaos uses Claude Code's plugin system to inject specialised agent personas and slash commands into your sessions. When you invoke `/summon-council`, the Senior Council orchestrator:
+### The Council Workflow
 
-1. **Analyses** your request to identify which domains are relevant
-2. **Selects** appropriate specialist agents for the task
-3. **Delegates** work to each specialist in parallel
-4. **Reviews** all outputs through the panel of grumpy reviewers
-5. **Iterates** on feedback, routing fixes back to specialists
-6. **Synthesises** the final solution once all reviewers approve
+When you invoke `/summon-council`:
 
-This creates a rigorous, multi-pass review process that catches issues a single reviewer would miss.
+1. **Analyse** - The Senior Council identifies which domains your task requires
+2. **Dispatch** - Appropriate specialists are selected and consulted
+3. **Review** - All outputs pass through the grumpy reviewer panel
+4. **Iterate** - Feedback routes back to specialists until all reviewers approve. Conflicts resolved via priority (security > correctness > maintainability > performance)
+5. **Synthesise** - Final solution is delivered with documented trade-offs
+
+### The Planning Workflow
+
+When you invoke `/plan-project`:
+
+1. **Discovery** - The Project Oracle asks clarifying questions about your project
+2. **Outline** - Creates `project-outline.md` with goals, constraints, and scope
+3. **Features** - Generates `feature-implementation.md` breaking down capabilities
+4. **Roadmap** - Produces `Roadmap.md` with phased implementation plan
+
+Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/implement-task-list` to execute them with full council oversight (specialists implement, grumpy reviewers approve).
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Installation Guide](docs/installation.md) | Detailed setup instructions and troubleshooting |
+| [Usage Guide](docs/usage.md) | In-depth command usage with examples |
+| [Safe Progress Assurance](docs/safe-progress-assurance.md) | How the system ensures reliable task completion |
+| [Example Project Files](docs/example-project-files/) | Sample outputs from the planning workflow |
+
+---
+
+## Project Files
+
+Parliament of Chaos creates and manages files in `.project-files/`:
+
+```
+.project-files/
+  project-outline.md      # Project goals, constraints, scope
+  feature-implementation.md   # Feature breakdown
+  Roadmap.md              # Phased implementation plan
+  roadmap/
+    <item-name>/
+      Spec.md             # Detailed specification
+      tasks.md            # Actionable task list
+      work_complete.md    # Completion record
+```
+
+---
+
+## Installation
+
+```
+/install-github-plugin JackScammell/Parliament-Of-Chaos
+```
+
+For detailed installation steps, verification, and troubleshooting, see the [Installation Guide](docs/installation.md).
+
+---
 
 ## License
 

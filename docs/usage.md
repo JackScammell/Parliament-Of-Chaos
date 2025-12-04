@@ -6,16 +6,440 @@ This guide explains how to use Parliament of Chaos commands effectively.
 
 | Command | Purpose | Best For |
 |---------|---------|----------|
-| `/summon-council` | Full multi-agent review and development | Complex tasks, new features, architectural decisions |
-| `/summon-grumpy-reviewer` | Quick critical code review | Code review, PR feedback, refactoring validation |
+| `/plan-project` | Interactive project planning | Starting new projects, defining scope and roadmap |
+| `/project-status` | Dashboard showing progress | Tracking overall project state |
+| `/roadmap-add-item` | Add items to existing roadmap | Extending scope without re-planning |
+| `/roadmap-item-scope` | Create specs and tasks for an item | Breaking down work before implementation |
+| `/implement-task-list` | Execute tasks systematically | Safe, tracked implementation |
+| `/summon-council` | Full multi-agent orchestration | Complex tasks, architectural decisions |
+| `/summon-grumpy-reviewer` | Quick critical code review | Code review, PR feedback, refactoring |
 
 ---
 
-## /summon-council
+## Workflow Overview
+
+The Parliament of Chaos supports a complete project lifecycle. Here is the typical workflow:
+
+```
+/plan-project
+      |
+      v
+/roadmap-add-item (optional - extend scope)
+      |
+      v
+/roadmap-item-scope <item>
+      |
+      v
+/implement-task-list <item>
+      |
+      v
+/project-status (check progress)
+```
+
+### Workflow Stages
+
+1. **Plan** - Define your project vision, features, and roadmap
+2. **Extend** - Add new items to the roadmap as scope evolves
+3. **Scope** - Break down each item into detailed specs and tasks
+4. **Implement** - Execute tasks with safety checks and progress tracking
+5. **Monitor** - Check overall project status and next actions
+
+---
+
+## Planning Commands
+
+### /plan-project
+
+Initiate an interactive project planning session with the **project-oracle** agent.
+
+#### When to Use
+
+- Starting a new project from scratch
+- Defining project scope and requirements
+- Creating a development roadmap
+- When you have an idea but need structure
+
+#### How It Works
+
+1. **Check Existing Project** - Looks for `.project-files/` directory; offers to continue or start fresh
+2. **Context Establishment** - Asks about the problem, users, and motivation
+3. **Scope Definition** - Explores MVP features, nice-to-haves, and non-goals
+4. **Technical Constraints** - Discusses tech stack, integrations, and requirements
+5. **Timeline and Priorities** - Establishes deadlines and priority order
+6. **Confirmation** - Summarizes understanding and asks for approval
+7. **Generate Artifacts** - Creates project documentation files
+
+#### Example Usage
+
+```
+/plan-project
+```
+
+Start an interactive Q&A session from scratch.
+
+```
+/plan-project Build a task management app for small teams
+```
+
+Start with context already provided - the oracle will use this as a starting point.
+
+#### Output Structure
+
+Creates the following files in `.project-files/`:
+
+```
+.project-files/
+  project-outline.md     # Project overview, goals, and success criteria
+  feature-implementation.md  # MVP and future feature lists
+  Roadmap.md             # Phased delivery plan with items
+```
+
+#### Next Steps
+
+After planning completes:
+- Run `/roadmap-item-scope <item>` to detail any roadmap item
+- Run `/project-status` to see your progress dashboard
+
+---
+
+### /project-status
+
+Display a dashboard showing the current state of your project.
+
+#### When to Use
+
+- Checking overall project progress
+- Seeing which items are complete, in progress, or pending
+- Finding what to work on next
+- Getting a quick summary for standup or reporting
+
+#### How It Works
+
+1. **Read Project Files** - Parses `.project-files/` for project info
+2. **Scan Roadmap Items** - Checks each item folder for status indicators
+3. **Generate Report** - Displays formatted status dashboard
+
+#### Example Usage
+
+```
+/project-status
+```
+
+No arguments required.
+
+#### Status Definitions
+
+| Status | Indicator | Meaning |
+|--------|-----------|---------|
+| **Not Started** | No folder in `roadmap/` | Listed in Roadmap.md but not yet scoped |
+| **Scoped** | Has `Spec.md` and `tasks.md` | Ready for implementation |
+| **In Progress** | Some tasks marked complete | Work has begun |
+| **Complete** | Has `work_complete.md` | All tasks finished and documented |
+
+#### Sample Output
+
+```markdown
+# Project Status: Task Manager Pro
+
+## Overview
+A task management application for small teams with real-time collaboration.
+
+## Roadmap Progress
+
+| Item | Status | Tasks | Last Updated |
+|------|--------|-------|--------------|
+| user-authentication | Complete | 5/5 | 2025-01-15 |
+| team-management | In Progress | 3/8 | 2025-01-14 |
+| task-boards | Scoped | 0/6 | - |
+| notifications | Not Started | - | - |
+
+## Summary
+- **Total Items**: 4
+- **Completed**: 1 (25%)
+- **In Progress**: 1 (25%)
+- **Scoped**: 1 (25%)
+- **Not Started**: 1 (25%)
+
+## Next Actions
+- Continue work on: team-management (5 tasks remaining)
+- Ready to implement: task-boards
+- Ready to scope: notifications
+```
+
+#### Error States
+
+- **No project**: "No project found. Run `/plan-project` to get started."
+- **No roadmap**: "Project exists but no roadmap. Run `/plan-project` to create one."
+
+---
+
+### /roadmap-add-item
+
+Add a new item to an existing roadmap phase without re-running full project planning.
+
+#### When to Use
+
+- Extending project scope after initial planning
+- Adding features discovered during development
+- Including new agents or commands to build
+- Quick roadmap updates
+
+#### Syntax
+
+```
+/roadmap-add-item <item-name> --phase <n> [--depends <items>]
+```
+
+#### Arguments
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `<item-name>` | Yes | Kebab-case identifier (e.g., `cache-keeper`) |
+| `--phase <n>` | Yes | Phase number to add the item to |
+| `--depends <items>` | No | Comma-separated dependency item names |
+
+#### Example Usage
+
+```
+/roadmap-add-item cache-keeper --phase 1
+```
+
+Add a simple item to Phase 1.
+
+```
+/roadmap-add-item grumpy-ux-critic --phase 2
+```
+
+Add a new reviewer agent to Phase 2.
+
+```
+/roadmap-add-item cmd-export-report --phase 3 --depends review-report
+```
+
+Add an item that depends on another item.
+
+#### Validation Rules
+
+- Item name must be kebab-case: lowercase letters, numbers, and hyphens
+- Phase must already exist in Roadmap.md
+- Item name must be unique across all phases
+- Dependencies (if specified) must exist in the roadmap
+
+#### Sample Output
+
+```
+Added to Roadmap.md, Phase 1 (New Specialist Agents):
+
+| [cache-keeper](./roadmap/cache-keeper/) | Not Started | None |
+
+Updated overall progress: 0 of 17 items
+
+Next step: Run `/roadmap-item-scope cache-keeper` to create the specification and task list.
+```
+
+#### What This Command Does NOT Do
+
+- Create folders (deferred to `/roadmap-item-scope`)
+- Create Spec.md or tasks.md
+- Update feature-implementation.md (update manually if needed)
+
+---
+
+### /roadmap-item-scope
+
+Create a detailed specification and task breakdown for a roadmap item.
+
+#### When to Use
+
+- Before starting implementation of any roadmap item
+- Breaking down high-level features into concrete tasks
+- Understanding dependencies and integration points
+- Getting a clear picture of what "done" looks like
+
+#### Syntax
+
+```
+/roadmap-item-scope <item-name>
+```
+
+#### Example Usage
+
+```
+/roadmap-item-scope user-authentication
+```
+
+Scope the user-authentication feature.
+
+```
+/roadmap-item-scope api-integration
+```
+
+Scope the api-integration feature.
+
+#### How It Works
+
+1. **Validate Item** - Confirms item exists in Roadmap.md
+2. **Check Existing Scope** - If already scoped, offers to view or re-scope
+3. **Cross-Reference** - Reviews completed work to find overlaps and dependencies
+4. **Invoke scope-weaver** - Creates detailed specification and task list
+5. **Report Summary** - Shows task count, complexity, and next steps
+
+#### Output Structure
+
+Creates files in `.project-files/roadmap/<item-name>/`:
+
+```
+.project-files/
+  roadmap/
+    <item-name>/
+      Spec.md      # Detailed requirements and technical approach
+      tasks.md     # Actionable implementation checklist
+```
+
+#### Spec.md Contents
+
+- **What**: What this delivers (2-3 sentences)
+- **Why**: Why it is needed
+- **Requirements**: Checklist of functional requirements
+- **Technical Approach**: High-level implementation strategy
+- **Dependencies**: What must be done first, what files are affected
+
+#### tasks.md Contents
+
+- **Status**: Current state (Not Started, In Progress, Complete)
+- **Tasks**: Ordered list of atomic, actionable items
+- **Notes**: Context needed for implementation
+
+#### Next Steps
+
+After scoping completes:
+- Run `/implement-task-list <item>` to begin implementation
+
+---
+
+### /implement-task-list
+
+Implement roadmap tasks with full Parliament oversight - specialists handle implementation while grumpy reviewers ensure quality.
+
+#### When to Use
+
+- Implementing a scoped roadmap item
+- When you want thorough, reviewed implementation
+- Ensuring previous work is not broken
+- When quality matters more than speed
+
+#### Syntax
+
+```
+/implement-task-list [item-name]
+```
+
+If `item-name` is omitted, shows available items and asks you to choose.
+
+#### Example Usage
+
+```
+/implement-task-list user-authentication
+```
+
+Implement the user-authentication feature with full council review.
+
+```
+/implement-task-list
+```
+
+Interactive selection from available items.
+
+#### How It Works
+
+This command uses **senior-council** orchestration, meaning every task goes through the full Parliament review cycle.
+
+##### Phase 1: Safety & Planning
+
+Before any implementation:
+- Scans all `.project-files/roadmap/*/work_complete.md` files
+- Builds a "Do Not Break" list of critical files and interfaces
+- Reports potential overlaps with current tasks
+- Loads `tasks.md` and `Spec.md` for context
+
+##### Phase 2: Council Orchestration
+
+For each task:
+
+1. **Analyse Task** - Senior Council identifies relevant domains
+2. **Summon Specialists** - Appropriate agents implement the work:
+
+| Domain | Agent |
+|--------|-------|
+| Architecture | system-architect |
+| Database | data-warlock |
+| API | api-keeper |
+| Security | security-knight |
+| Performance | backend-goblin |
+| Tests | test-prophet |
+| UI/UX | ui-ux-guru |
+| Docs | doc-bard |
+| Dependencies | package-wizard |
+| Resilience | resilience-tamer |
+| CI/CD | pipeline-engineer |
+
+3. **Grumpy Review** - ALL reviewers scrutinise the output:
+   - grumpy-code-reviewer
+   - grumpy-standards-enforcer
+   - grumpy-architecture-skeptic
+   - grumpy-maintainability-curmudgeon
+   - grumpy-security-nag
+   - grumpy-performance-troll
+
+4. **Iterate** - Address objections, re-route to specialists until approved
+5. **Mark Complete** - Update tasks.md after grumpy approval
+
+##### Phase 3: Documentation
+
+Creates `work_complete.md` containing:
+- Summary of accomplishments
+- All files modified or created
+- Agents consulted and review rounds
+- Decisions made with trade-offs
+- Follow-up items identified
+
+#### Safety Rules
+
+1. Always perform safety check first
+2. Never skip grumpy review for implementation tasks
+3. Document all trade-offs when grumps disagree
+4. Keep tasks atomic and reversible
+5. Update tasks.md only after grumpy approval
+
+#### Output Structure
+
+Creates completion record:
+
+```
+.project-files/
+  roadmap/
+    <item-name>/
+      work_complete.md   # Full documentation of completed work
+```
+
+#### Output for Each Task
+
+1. **Task Summary** - What was implemented
+2. **Agents Consulted** - Which specialists contributed
+3. **Review Summary** - Grumpy objections raised and resolved
+4. **Final Implementation** - Approved code/changes
+5. **Trade-offs** - Any compromises made
+
+
+---
+
+## Review Commands
+
+### /summon-council
 
 The Senior Council orchestrates multiple specialist agents and grumpy reviewers to tackle complex tasks.
 
-### When to Use
+#### When to Use
 
 - Designing new features or systems
 - Refactoring complex code
@@ -23,7 +447,7 @@ The Senior Council orchestrates multiple specialist agents and grumpy reviewers 
 - Tasks spanning multiple domains (backend, security, testing, etc.)
 - When you want thorough, multi-perspective review
 
-### How It Works
+#### How It Works
 
 1. **Task Analysis** - The council restates your goal and identifies relevant domains
 2. **Agent Selection** - Appropriate specialists are chosen based on the task
@@ -32,7 +456,7 @@ The Senior Council orchestrates multiple specialist agents and grumpy reviewers 
 5. **Iteration** - Feedback is routed back to specialists until reviewers approve
 6. **Synthesis** - Final solution is presented with trade-offs documented
 
-### Example Usage
+#### Example Usage
 
 ```
 /summon-council
@@ -51,7 +475,7 @@ The council will engage:
 - **system-architect** for overall design
 - **grumpy-security-nag** and others for critical review
 
-### Response Structure
+#### Response Structure
 
 The council returns:
 
@@ -60,7 +484,20 @@ The council returns:
 3. **Final Solution** - The approved code, design, or recommendation
 4. **Notes and Trade-offs** - Important context and decisions made
 
-### Optional: Enable Logging
+#### Conflict Resolution
+
+When reviewers disagree, the council applies this priority order:
+
+**security > correctness > maintainability > performance > convenience**
+
+Example conflict:
+- **grumpy-security-nag**: "Add input validation on all endpoints"
+- **grumpy-performance-troll**: "Validation adds 5ms latency per request"
+- **Resolution**: Security wins. Validation stays. Trade-off documented.
+
+Out-of-scope recommendations (e.g., documentation requests on a hotfix) are logged to a "Deferred" section for future work rather than blocking approval.
+
+#### Optional: Enable Logging
 
 Add `scribe: on` to your request to save the deliberation process:
 
@@ -75,11 +512,11 @@ Logs are saved to `.parliament-of-chaos/{task-name}-{timestamp}.md`.
 
 ---
 
-## /summon-grumpy-reviewer
+### /summon-grumpy-reviewer
 
 A focused, critical code review from a senior developer perspective.
 
-### When to Use
+#### When to Use
 
 - Quick code review before committing
 - Validating a refactor
@@ -87,14 +524,14 @@ A focused, critical code review from a senior developer perspective.
 - Finding issues in existing code
 - When you want honest, blunt feedback
 
-### How It Works
+#### How It Works
 
 1. **Goal Clarification** - The reviewer restates what success looks like
 2. **Review Angles** - Defines the perspectives for review (correctness, readability, etc.)
 3. **Detailed Analysis** - Goes through code from each angle
 4. **Structured Feedback** - Returns issues, recommendations, and a verdict
 
-### Example Usage
+#### Example Usage
 
 ```
 /summon-grumpy-reviewer
@@ -124,7 +561,7 @@ class OrderService
 }
 ```
 
-### Response Structure
+#### Response Structure
 
 1. **Quality Summary** - Overall assessment (usually grumpy)
 2. **Issues by Category** - Problems organised by type with severity ratings
@@ -138,7 +575,7 @@ class OrderService
 3. **Refactor Suggestions** - Concrete improvements with code examples
 4. **Definition of Done** - Checklist of required fixes before approval
 
-### Severity Levels
+#### Severity Levels
 
 - **HIGH** - Must fix before merging
 - **MEDIUM** - Should fix, technical debt if ignored
@@ -150,16 +587,15 @@ class OrderService
 
 ### Be Specific About Context
 
-The more context you provide, the better the review:
+The more context you provide, the better the output:
 
 ```
-/summon-council
+/plan-project
 
-We're building a multi-tenant SaaS. Each tenant has isolated data.
-Current stack: Laravel 11, PostgreSQL, Redis.
-Constraint: Must work with existing User model.
-
-Design the tenant isolation layer.
+We're building a multi-tenant SaaS for project management.
+Target users: Small teams of 5-20 people.
+Current stack: Next.js, PostgreSQL, deployed on Vercel.
+Constraint: Must launch MVP in 6 weeks.
 ```
 
 ### State Your Constraints
@@ -177,12 +613,19 @@ Review for security issues only.
 
 ### Use the Right Tool
 
-- Use `/summon-council` for open-ended design tasks
-- Use `/summon-grumpy-reviewer` for reviewing existing code
+| Need | Use |
+|------|-----|
+| Starting a new project | `/plan-project` |
+| Adding to existing roadmap | `/roadmap-add-item` |
+| Breaking down a feature | `/roadmap-item-scope` |
+| Implementing with safety | `/implement-task-list` |
+| Checking progress | `/project-status` |
+| Complex design decisions | `/summon-council` |
+| Code review | `/summon-grumpy-reviewer` |
 
 ### Iterate on Feedback
 
-Both commands support follow-up. After receiving feedback:
+All commands support follow-up. After receiving feedback:
 
 ```
 I've addressed the N+1 query issue. Here's the updated code:
@@ -194,25 +637,42 @@ The reviewer will re-evaluate.
 
 ---
 
-## Available Specialist Agents
+## Available Agents
+
+### Planning Agents
+
+These agents drive the project planning and execution workflow:
+
+| Agent | Expertise |
+|-------|-----------|
+| project-oracle | Project planning via structured Q&A, artifact generation |
+| scope-weaver | Roadmap item scoping, spec writing, task decomposition |
+| task-executor | Systematic task execution, progress tracking, safety checks |
+
+### Specialist Agents
 
 You can reference these directly when asking the council to focus on specific areas:
 
 | Agent | Expertise |
 |-------|-----------|
-| backend-goblin | Performance, caching, async patterns |
-| system-architect | High-level design, patterns, trade-offs |
-| security-knight | Auth, vulnerabilities, hardening |
-| data-warlock | Database design, queries, migrations |
 | api-keeper | API design, versioning, contracts |
+| backend-goblin | Performance, caching, async patterns |
+| config-curator | Environment config, secrets, feature flags |
+| data-warlock | Database design, queries, migrations |
+| dependency-detective | Vulnerability chains, license compliance |
+| doc-bard | Documentation, comments, READMEs |
+| migration-monk | Schema migrations, rollback strategies |
+| observability-oracle | Logging, metrics, tracing, alerting |
+| package-wizard | Dependencies, versions, compatibility |
+| pipeline-engineer | CI/CD, deployment, infrastructure |
+| refactor-ranger | Code smells, refactoring patterns |
+| resilience-tamer | Error handling, retries, failure modes |
+| security-knight | Auth, vulnerabilities, hardening |
+| system-architect | High-level design, patterns, trade-offs |
 | test-prophet | Testing strategy, coverage, TDD |
 | ui-ux-guru | Accessibility, UX patterns, frontend |
-| pipeline-engineer | CI/CD, deployment, infrastructure |
-| doc-bard | Documentation, comments, READMEs |
-| package-wizard | Dependencies, versions, compatibility |
-| resilience-tamer | Error handling, retries, failure modes |
 
-## Available Grumpy Reviewers
+### Grumpy Reviewers
 
 | Reviewer | Focus |
 |----------|-------|
@@ -222,3 +682,67 @@ You can reference these directly when asking the council to focus on specific ar
 | grumpy-maintainability-curmudgeon | Long-term maintenance burden |
 | grumpy-security-nag | Security oversights |
 | grumpy-performance-troll | Performance issues |
+| grumpy-accessibility-auditor | WCAG compliance, inclusive design |
+| grumpy-documentation-pedant | Documentation completeness |
+| grumpy-testing-tyrant | Test coverage and quality |
+
+---
+
+## Project File Structure
+
+When using planning commands, Parliament of Chaos creates and maintains this structure:
+
+```
+.project-files/
+  project-outline.md         # Project overview and goals
+  feature-implementation.md  # Feature lists (MVP and future)
+  Roadmap.md                 # Phased delivery plan
+  roadmap/
+    <item-name>/
+      Spec.md                # Detailed specification
+      tasks.md               # Implementation checklist
+      work_complete.md       # Completion documentation (when done)
+```
+
+### File Purposes
+
+| File | Created By | Purpose |
+|------|------------|---------|
+| `project-outline.md` | `/plan-project` | High-level project definition |
+| `feature-implementation.md` | `/plan-project` | Feature breakdown with priorities |
+| `Roadmap.md` | `/plan-project` | Phased delivery plan with all items |
+| `Spec.md` | `/roadmap-item-scope` | Detailed requirements for one item |
+| `tasks.md` | `/roadmap-item-scope` | Actionable task list for one item |
+| `work_complete.md` | `/implement-task-list` | Documentation of completed work |
+
+---
+
+## Safe Progress Assurance
+
+The `/implement-task-list` command includes built-in safety mechanisms to prevent regressions:
+
+### How It Works
+
+1. **Pre-Flight Check** - Before implementation, scans all `work_complete.md` files
+2. **Conflict Detection** - Identifies files, interfaces, and schemas owned by other features
+3. **Do Not Break List** - Creates explicit list of things that must remain working
+4. **Runtime Checks** - Verifies each task does not affect protected items
+5. **Completion Records** - Documents everything for future safety checks
+
+### What Gets Protected
+
+- Files owned by completed features
+- Public interfaces and their signatures
+- Database schemas and constraints
+- API endpoints and contracts
+- Events and their payloads
+- Configuration keys
+
+### When Conflicts Arise
+
+- **CRITICAL**: Implementation blocked until resolved
+- **HIGH**: Warning displayed, requires acknowledgment
+- **MEDIUM**: Noted in logs, proceed with caution
+- **LOW**: Recorded for audit purposes
+
+For more details, see [Safe Progress Assurance](./safe-progress-assurance.md).
