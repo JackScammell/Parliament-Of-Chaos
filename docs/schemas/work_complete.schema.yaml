@@ -1,0 +1,237 @@
+# JSON Schema for work_complete.md frontmatter validation
+# Use this to validate the structured YAML blocks within work_complete.md files
+
+$schema: "http://json-schema.org/draft-07/schema#"
+title: "Work Complete Schema"
+description: "Schema for validating work_complete.md structured sections"
+type: object
+
+required:
+  - metadata
+  - contracts
+  - invariants
+  - regression_tests
+  - breaking_change_triggers
+
+properties:
+  metadata:
+    type: object
+    required:
+      - id
+      - title
+      - completed
+      - status
+    properties:
+      id:
+        type: string
+        pattern: "^[a-z0-9-]+$"
+        description: "Unique identifier matching roadmap directory name"
+      title:
+        type: string
+        minLength: 1
+      completed:
+        type: string
+        format: date
+      status:
+        type: string
+        enum: [COMPLETE, PARTIAL, SUPERSEDED]
+      depends_on:
+        type: array
+        items:
+          type: string
+          pattern: "^[a-z0-9-]+$"
+      depended_on_by:
+        type: array
+        items:
+          type: string
+          pattern: "^[a-z0-9-]+$"
+
+  contracts:
+    type: object
+    properties:
+      files_owned:
+        type: array
+        items:
+          type: string
+        description: "Files this feature created or owns"
+
+      public_interfaces:
+        type: array
+        items:
+          type: object
+          required:
+            - interface
+            - file
+            - methods
+          properties:
+            interface:
+              type: string
+            file:
+              type: string
+            methods:
+              type: array
+              items:
+                type: object
+                required:
+                  - name
+                  - signature
+                  - stability
+                properties:
+                  name:
+                    type: string
+                  signature:
+                    type: string
+                  stability:
+                    type: string
+                    enum: [STABLE, EXPERIMENTAL, DEPRECATED]
+
+      database_schema:
+        type: array
+        items:
+          type: object
+          required:
+            - table
+            - columns
+          properties:
+            table:
+              type: string
+            columns:
+              type: array
+              items:
+                type: string
+            constraints:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum: [primary_key, foreign_key, unique, check, index]
+                  definition:
+                    type: string
+
+      configuration_keys:
+        type: array
+        items:
+          type: object
+          required:
+            - key
+            - type
+          properties:
+            key:
+              type: string
+            type:
+              type: string
+              enum: [string, integer, boolean, float, array, object]
+            default:
+              description: "Default value, type should match 'type' field"
+            required:
+              type: boolean
+              default: false
+            description:
+              type: string
+
+      api_endpoints:
+        type: array
+        items:
+          type: object
+          required:
+            - method
+            - path
+            - stability
+          properties:
+            method:
+              type: string
+              enum: [GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS]
+            path:
+              type: string
+            request_schema:
+              type: string
+            response_schema:
+              type: string
+            stability:
+              type: string
+              enum: [STABLE, EXPERIMENTAL, DEPRECATED]
+
+      events_published:
+        type: array
+        items:
+          type: object
+          required:
+            - event
+            - payload
+          properties:
+            event:
+              type: string
+            payload:
+              type: object
+              additionalProperties: true
+            description:
+              type: string
+
+      events_consumed:
+        type: array
+        items:
+          type: object
+          required:
+            - event
+            - handler
+          properties:
+            event:
+              type: string
+            handler:
+              type: string
+            action:
+              type: string
+
+  invariants:
+    type: array
+    items:
+      type: object
+      required:
+        - id
+        - description
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        verification:
+          type: string
+          description: "How to verify this invariant holds"
+
+  regression_tests:
+    type: array
+    items:
+      type: object
+      required:
+        - test
+        - criticality
+      properties:
+        test:
+          type: string
+          description: "Fully qualified test name"
+        criticality:
+          type: string
+          enum: [HIGH, MEDIUM, LOW]
+        description:
+          type: string
+
+  breaking_change_triggers:
+    type: array
+    items:
+      type: object
+      required:
+        - trigger
+        - impact
+      properties:
+        trigger:
+          type: string
+          description: "Description of what change would break this feature"
+        impact:
+          type: string
+          description: "What happens if this trigger occurs"
+        affected_components:
+          type: array
+          items:
+            type: string
