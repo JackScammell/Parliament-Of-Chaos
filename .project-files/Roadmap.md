@@ -2,11 +2,11 @@
 
 ## Current Status
 
-**Last Updated**: 2024-12-04
+**Last Updated**: 2025-12-04
 
 **Current Phase**: v1.1 Development
 
-**Overall Progress**: 10 of 18 items complete
+**Overall Progress**: 16 of 20 items complete
 
 ---
 
@@ -72,11 +72,13 @@ _Goal: Improve discoverability and direct agent access_
 
 | Item | Status | Dependencies |
 |------|--------|--------------|
-| [cmd-list-agents](./roadmap/cmd-list-agents/) | Not Started | None |
-| [cmd-explain-agent](./roadmap/cmd-explain-agent/) | Not Started | None |
-| [cmd-summon-specialist](./roadmap/cmd-summon-specialist/) | Not Started | None |
-| [cmd-parliament-review](./roadmap/cmd-parliament-review/) | Not Started | grumpy reviewers |
+| [cmd-list-agents](./roadmap/phase-3-new-commands/) | Complete | None |
+| [cmd-explain-agent](./roadmap/phase-3-new-commands/) | Complete | None |
+| [cmd-summon-specialist](./roadmap/phase-3-new-commands/) | Complete | None |
+| [cmd-parliament-review](./roadmap/phase-3-new-commands/) | Complete | grumpy reviewers |
 | [cmd-roadmap-add-item](./roadmap/cmd-roadmap-add-item/) | Complete | None |
+| command-optimization | Complete | None |
+| [cmd-list-commands](./roadmap/cmd-list-commands/) | Complete | None |
 
 **Milestone**: Users can discover, understand, and directly invoke agents
 
@@ -112,6 +114,7 @@ grumpy-testing-tyrant ──────────────┘
 
 cmd-list-agents ◄─── (standalone)
 cmd-explain-agent ◄─── (standalone)
+cmd-list-commands ◄─── (standalone)
 
 review-report-export ◄─── (standalone)
 configurable-grumpiness ◄─── (standalone)
@@ -136,9 +139,11 @@ agent-memory-context ◄─── (standalone)
 
 | Date | Change | Reason |
 |------|--------|--------|
-| 2024-12-04 | Completed agent-token-optimization | Reduced 21 agents by 22.5% lines, 34.5% characters |
-| 2024-12-04 | Added Phase 0 with agent-token-optimization | Optimize existing agents before adding new ones |
-| 2024-12-04 | Initial v1.1 roadmap created | Project planning session |
+| 2025-12-04 | Added cmd-list-commands | Command discoverability - lists all 12 commands by category |
+| 2025-12-04 | Completed Phase 3 (new commands + optimization) | 4 new commands, 2 optimized (147→54 lines, 63% reduction) |
+| 2025-12-04 | Completed agent-token-optimization | Reduced 21 agents by 22.5% lines, 34.5% characters |
+| 2025-12-04 | Added Phase 0 with agent-token-optimization | Optimize existing agents before adding new ones |
+| 2025-12-04 | Initial v1.1 roadmap created | Project planning session |
 
 ---
 
