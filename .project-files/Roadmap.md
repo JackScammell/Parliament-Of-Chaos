@@ -6,7 +6,7 @@
 
 **Current Phase**: v1.1 Development
 
-**Overall Progress**: 7 of 18 items complete
+**Overall Progress**: 10 of 18 items complete
 
 ---
 
@@ -58,9 +58,9 @@ _Goal: Add specialized review perspectives_
 
 | Item | Status | Dependencies |
 |------|--------|--------------|
-| [grumpy-accessibility-auditor](./roadmap/grumpy-accessibility-auditor/) | Not Started | None |
-| [grumpy-documentation-pedant](./roadmap/grumpy-documentation-pedant/) | Not Started | None |
-| [grumpy-testing-tyrant](./roadmap/grumpy-testing-tyrant/) | Not Started | None |
+| [grumpy-accessibility-auditor](./roadmap/phase-2-grumpy-reviewers/) | Complete | None |
+| [grumpy-documentation-pedant](./roadmap/phase-2-grumpy-reviewers/) | Complete | None |
+| [grumpy-testing-tyrant](./roadmap/phase-2-grumpy-reviewers/) | Complete | None |
 
 **Milestone**: Grumpy council expanded to 9 reviewers
 
