@@ -12,7 +12,7 @@ Parliament of Chaos transforms Claude Code into a multi-agent development team. 
 
 - **29 Agents** including specialists, planners, reviewers, and an orchestrator
 - **9 Grumpy Reviewers** who find flaws others miss
-- **11 Slash Commands** for project planning, scoping, implementation, and code review
+- **12 Slash Commands** for project planning, scoping, implementation, and code review
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
@@ -53,11 +53,12 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | `/parliament-review` | Full review using all 9 grumpy reviewers for maximum scrutiny |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
 
-### Agent Discovery Commands
+### Discovery Commands
 
 | Command | Description |
 |---------|-------------|
 | `/list-agents` | Display all agents grouped by category |
+| `/list-commands` | Display all commands grouped by category |
 | `/explain-agent <agent>` | Detailed explanation of what an agent does and when to use it |
 
 ### Project Planning Commands
