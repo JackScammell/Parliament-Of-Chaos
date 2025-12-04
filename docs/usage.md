@@ -319,14 +319,14 @@ After scoping completes:
 
 ### /implement-task-list
 
-Systematically execute all tasks for a roadmap item with safety checks.
+Implement roadmap tasks with full Parliament oversight - specialists handle implementation while grumpy reviewers ensure quality.
 
 #### When to Use
 
 - Implementing a scoped roadmap item
-- When you want tracked, methodical progress
-- Ensuring previous work is not broken during implementation
-- When you need clear documentation of what was done
+- When you want thorough, reviewed implementation
+- Ensuring previous work is not broken
+- When quality matters more than speed
 
 #### Syntax
 
@@ -342,7 +342,7 @@ If `item-name` is omitted, shows available items and asks you to choose.
 /implement-task-list user-authentication
 ```
 
-Implement the user-authentication feature.
+Implement the user-authentication feature with full council review.
 
 ```
 /implement-task-list
@@ -352,61 +352,64 @@ Interactive selection from available items.
 
 #### How It Works
 
-##### Step 1: Safety Check (Mandatory)
+This command uses **senior-council** orchestration, meaning every task goes through the full Parliament review cycle.
+
+##### Phase 1: Safety & Planning
 
 Before any implementation:
 - Scans all `.project-files/roadmap/*/work_complete.md` files
 - Builds a "Do Not Break" list of critical files and interfaces
 - Reports potential overlaps with current tasks
-- Identifies APIs and data structures that must remain compatible
+- Loads `tasks.md` and `Spec.md` for context
 
-##### Step 2: Task Loading
+##### Phase 2: Council Orchestration
 
-- Reads `tasks.md` for the target item
-- Reads `Spec.md` for full context
-- Plans execution order based on dependencies
+For each task:
 
-##### Step 3: Task Execution
+1. **Analyse Task** - Senior Council identifies relevant domains
+2. **Summon Specialists** - Appropriate agents implement the work:
 
-For each uncompleted task:
-1. Announces what is about to happen
-2. Checks for "Do Not Break" conflicts
-3. Executes the implementation
-4. Verifies completion
-5. Marks task as done in tasks.md
-6. Documents what changed
+| Domain | Agent |
+|--------|-------|
+| Architecture | system-architect |
+| Database | data-warlock |
+| API | api-keeper |
+| Security | security-knight |
+| Performance | backend-goblin |
+| Tests | test-prophet |
+| UI/UX | ui-ux-guru |
+| Docs | doc-bard |
+| Dependencies | package-wizard |
+| Resilience | resilience-tamer |
+| CI/CD | pipeline-engineer |
 
-##### Step 4: Completion Documentation
+3. **Grumpy Review** - ALL reviewers scrutinise the output:
+   - grumpy-code-reviewer
+   - grumpy-standards-enforcer
+   - grumpy-architecture-skeptic
+   - grumpy-maintainability-curmudgeon
+   - grumpy-security-nag
+   - grumpy-performance-troll
+
+4. **Iterate** - Address objections, re-route to specialists until approved
+5. **Mark Complete** - Update tasks.md after grumpy approval
+
+##### Phase 3: Documentation
 
 Creates `work_complete.md` containing:
 - Summary of accomplishments
 - All files modified or created
-- Decisions made and rationale
-- Integration points established
-- Regression checks performed
+- Agents consulted and review rounds
+- Decisions made with trade-offs
 - Follow-up items identified
-
-#### Specialist Delegation
-
-The task-executor may delegate specialized work to other agents:
-
-| Task Type | Delegated To |
-|-----------|--------------|
-| Architecture decisions | system-architect |
-| Database changes | data-warlock |
-| API design | api-keeper |
-| Security concerns | security-knight |
-| Performance work | backend-goblin |
-| Test creation | test-prophet |
-| Documentation | doc-bard |
 
 #### Safety Rules
 
-1. Always perform the safety check first
-2. Never skip documenting completed work
-3. Stop and ask if potential regressions detected
+1. Always perform safety check first
+2. Never skip grumpy review for implementation tasks
+3. Document all trade-offs when grumps disagree
 4. Keep tasks atomic and reversible
-5. Update tasks.md after each task completion
+5. Update tasks.md only after grumpy approval
 
 #### Output Structure
 
@@ -418,6 +421,14 @@ Creates completion record:
     <item-name>/
       work_complete.md   # Full documentation of completed work
 ```
+
+#### Output for Each Task
+
+1. **Task Summary** - What was implemented
+2. **Agents Consulted** - Which specialists contributed
+3. **Review Summary** - Grumpy objections raised and resolved
+4. **Final Implementation** - Approved code/changes
+5. **Trade-offs** - Any compromises made
 
 
 ---

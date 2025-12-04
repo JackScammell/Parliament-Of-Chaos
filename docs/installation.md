@@ -5,33 +5,21 @@ This guide covers installing Parliament of Chaos as a Claude Code plugin.
 ## Prerequisites
 
 - Claude Code CLI installed and authenticated
-- Access to the plugin marketplace
+- Git available for cloning repositories
 
-## Installation Steps
+## Installation
 
-### 1. Add the Plugin Marketplace Source
-
-First, register the Parliament of Chaos repository as a plugin source:
+### Quick Install
 
 ```
-/plugin marketplace add owner/parliament-of-chaos
+/install-github-plugin JackScammell/Parliament-Of-Chaos
 ```
 
-Replace `owner` with the GitHub username or organisation hosting the plugin.
-
-### 2. Install the Plugin
-
-Install the plugin into your Claude Code environment:
-
-```
-/plugin install parliament-of-chaos@parliament-of-chaos
-```
-
-This installs:
+This single command installs:
 - 7 slash commands for orchestration, reviews, and project planning
 - 21 specialist, reviewer, and planning agents
 
-### 3. Verify Installation
+### Verify Installation
 
 Confirm the plugin is active by running:
 
@@ -50,30 +38,30 @@ The plugin adds the following to your Claude Code configuration:
   agents/
     parliament-of-chaos/
       # Planning Agents (3)
-      project-oracle.md          # Project planning and roadmap generation
+      project-oracle.md          # Project planning via Q&A
       scope-weaver.md            # Scopes roadmap items into tasks
-      task-executor.md           # Executes implementation tasks
+      task-executor.md           # Task tracking and documentation
 
       # Specialist Agents (11)
-      backend-goblin.md          # Backend development expertise
+      backend-goblin.md          # Backend performance
       system-architect.md        # System design and architecture
-      security-knight.md         # Security analysis and hardening
-      data-warlock.md            # Database and data layer concerns
-      api-keeper.md              # API design and integration
-      test-prophet.md            # Testing strategies and coverage
+      security-knight.md         # Security analysis
+      data-warlock.md            # Database and data layer
+      api-keeper.md              # API design
+      test-prophet.md            # Testing strategies
       ui-ux-guru.md              # User interface and experience
-      pipeline-engineer.md       # CI/CD and deployment pipelines
-      doc-bard.md                # Documentation and technical writing
-      package-wizard.md          # Dependency and package management
-      resilience-tamer.md        # Error handling and system resilience
+      pipeline-engineer.md       # CI/CD and deployment
+      doc-bard.md                # Documentation
+      package-wizard.md          # Dependency management
+      resilience-tamer.md        # Error handling and resilience
 
       # Grumpy Reviewers (6)
-      grumpy-code-reviewer.md             # General code quality nitpicking
-      grumpy-standards-enforcer.md        # Coding standards compliance
-      grumpy-architecture-skeptic.md      # Architectural decision questioning
-      grumpy-maintainability-curmudgeon.md # Long-term maintainability concerns
-      grumpy-security-nag.md              # Security vulnerability hunting
-      grumpy-performance-troll.md         # Performance issue detection
+      grumpy-code-reviewer.md             # General code quality
+      grumpy-standards-enforcer.md        # Standards compliance
+      grumpy-architecture-skeptic.md      # Architectural decisions
+      grumpy-maintainability-curmudgeon.md # Maintainability
+      grumpy-security-nag.md              # Security vulnerabilities
+      grumpy-performance-troll.md         # Performance issues
 
       # Orchestrator (1)
       senior-council.md          # Coordinates multi-agent sessions
@@ -86,41 +74,40 @@ The plugin adds the following to your Claude Code configuration:
 
       # Planning Commands
       plan-project.md            # Interactive project planning
-      project-status.md          # Project dashboard and progress
-      roadmap-add-item.md        # Add items to project roadmap
-      roadmap-item-scope.md      # Scope roadmap items into tasks
-      implement-task-list.md     # Execute implementation tasks
+      project-status.md          # Project dashboard
+      roadmap-add-item.md        # Add items to roadmap
+      roadmap-item-scope.md      # Scope items into tasks
+      implement-task-list.md     # Execute tasks with council review
 ```
 
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `/summon-council` | Convene the full parliament for multi-agent code review and discussion |
-| `/summon-grumpy-reviewer` | Quick code review with the grumpy reviewer panel |
-| `/plan-project` | Interactive project planning with the Project Oracle |
-| `/project-status` | View project dashboard showing roadmap and task progress |
-| `/roadmap-add-item` | Add new items to the project roadmap |
-| `/roadmap-item-scope` | Break down roadmap items into actionable tasks |
-| `/implement-task-list` | Execute tasks from your task list |
+| `/summon-council` | Full parliament orchestration with specialists and grumpy review |
+| `/summon-grumpy-reviewer` | Quick code review from grumpy perspective |
+| `/plan-project` | Interactive project planning with Project Oracle |
+| `/project-status` | View project progress dashboard |
+| `/roadmap-add-item` | Add new items to the roadmap |
+| `/roadmap-item-scope` | Break down items into specs and tasks |
+| `/implement-task-list` | Execute tasks with full council oversight |
 
-## Updating the Plugin
+## Updating
 
-To update to the latest version:
+To update to the latest version, re-run the install command:
 
 ```
-/plugin update parliament-of-chaos
+/install-github-plugin JackScammell/Parliament-Of-Chaos
 ```
 
 ## Uninstalling
 
-To remove the plugin:
+To remove the plugin, delete the installed directories:
 
 ```
-/plugin uninstall parliament-of-chaos
+rm -rf .claude/agents/parliament-of-chaos
+rm -rf .claude/commands/parliament-of-chaos
 ```
-
-This removes all agents and commands added by the plugin.
 
 ## Troubleshooting
 
@@ -128,7 +115,7 @@ This removes all agents and commands added by the plugin.
 
 If `/summon-council` is not recognised:
 
-1. Verify the plugin installed successfully with `/plugin list`
+1. Verify the directories exist in `.claude/`
 2. Try restarting your Claude Code session
 3. Re-run the installation command
 
@@ -136,18 +123,18 @@ If `/summon-council` is not recognised:
 
 If the Senior Council cannot find specialist agents:
 
-1. Ensure the full plugin was installed (check for the `agents/parliament-of-chaos/` directory)
-2. Verify file permissions allow Claude Code to read the agent definitions
+1. Ensure all agent files are present in `.claude/agents/parliament-of-chaos/`
+2. Check that files have `.md` extension and correct YAML frontmatter
 
 ### Planning commands not working
 
 If `/plan-project` or other planning commands fail:
 
-1. Ensure the planning agents (`project-oracle.md`, `scope-weaver.md`, `task-executor.md`) are installed
-2. Check that the `.project-files/` directory is writable for storing project data
+1. Ensure planning agents are installed (`project-oracle.md`, `scope-weaver.md`, `task-executor.md`)
+2. Check that `.project-files/` directory is writable
 
 ## Next Steps
 
 - Read the [Usage Guide](usage.md) to learn how to use the commands effectively
-- Try `/summon-grumpy-reviewer` on some existing code to see the review process in action
-- Use `/plan-project` to begin planning a new project with the Project Oracle
+- Try `/summon-grumpy-reviewer` on some existing code
+- Use `/plan-project` to begin planning a new project

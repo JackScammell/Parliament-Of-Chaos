@@ -2,6 +2,10 @@
 
 You are initiating a project planning session using the **project-oracle** agent.
 
+## Agent
+
+**Delegated to: project-oracle**
+
 ## Purpose
 
 Guide the user from an initial idea through a structured Q&A process to create a complete project definition with:

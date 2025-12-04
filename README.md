@@ -23,7 +23,7 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 ### Install the Plugin
 
 ```
-/install-github-plugin JackHopkins/parliament-of-chaos
+/install-github-plugin JackScammell/Parliament-Of-Chaos
 ```
 
 ### Your First Command
@@ -59,7 +59,7 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | `/project-status` | Dashboard showing roadmap progress across all phases |
 | `/roadmap-add-item <name> --phase <n>` | Add a new item to an existing roadmap |
 | `/roadmap-item-scope <item>` | Create detailed Spec.md and tasks.md for a roadmap item |
-| `/implement-task-list [item]` | Systematically execute tasks from a task list |
+| `/implement-task-list [item]` | Execute tasks with full council review (specialists + grumpy approval) |
 
 ---
 
@@ -71,7 +71,7 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 |-------|------|
 | project-oracle | Conducts project scoping via Q&A, creates project outline and roadmap |
 | scope-weaver | Breaks roadmap items into detailed specs and actionable tasks |
-| task-executor | Systematically implements tasks from task lists with verification |
+| task-executor | Handles task tracking, safety checks, and documentation (utility for senior-council) |
 
 ### Specialist Agents (11)
 
@@ -129,7 +129,7 @@ When you invoke `/plan-project`:
 3. **Features** - Generates `feature-implementation.md` breaking down capabilities
 4. **Roadmap** - Produces `Roadmap.md` with phased implementation plan
 
-Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/implement-task-list` to execute them systematically.
+Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/implement-task-list` to execute them with full council oversight (specialists implement, grumpy reviewers approve).
 
 ---
 
@@ -165,7 +165,7 @@ Parliament of Chaos creates and manages files in `.project-files/`:
 ## Installation
 
 ```
-/install-github-plugin JackHopkins/parliament-of-chaos
+/install-github-plugin JackScammell/Parliament-Of-Chaos
 ```
 
 For detailed installation steps, verification, and troubleshooting, see the [Installation Guide](docs/installation.md).
