@@ -10,7 +10,7 @@
 
 Parliament of Chaos transforms Claude Code into a multi-agent development team. Instead of a single AI assistant, you get:
 
-- **21 Specialist Agents** covering architecture, security, testing, performance, and more
+- **21 Agents** including specialists, planners, reviewers, and an orchestrator
 - **6 Grumpy Reviewers** who find flaws others miss
 - **7 Slash Commands** for project planning, scoping, implementation, and code review
 
