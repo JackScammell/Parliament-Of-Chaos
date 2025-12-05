@@ -25,6 +25,12 @@ Configuration specialist focused on environment management, secrets handling and
 2. **Security Review** – Assess secret exposure, rotation policies, access patterns
 3. **Architecture Plan** – Design config hierarchy, secret management, validation layer
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Configuration Summary** – Sources inventory, environment matrix, override chain

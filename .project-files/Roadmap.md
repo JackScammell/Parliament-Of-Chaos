@@ -6,7 +6,7 @@
 
 **Current Phase**: v1.1 Development
 
-**Overall Progress**: 17 of 20 items complete
+**Overall Progress**: 18 of 21 items complete
 
 ---
 
@@ -94,6 +94,7 @@ _Goal: Enhanced workflow and configurability_
 | [configurable-grumpiness](./roadmap/configurable-grumpiness/) | Scoped | None |
 | [conflict-resolution](./roadmap/conflict-resolution/) | Complete | senior-council agent |
 | [agent-memory-context](./roadmap/agent-memory-context/) | Scoped | None |
+| [standards-enforcement](./roadmap/standards-enforcement/) | Complete | None |
 
 **Milestone**: Full v1.1 feature set complete
 
@@ -120,6 +121,7 @@ review-report-export ◄─── (standalone)
 configurable-grumpiness ◄─── (standalone)
 conflict-resolution ◄─── senior-council (exists)
 agent-memory-context ◄─── (standalone)
+standards-enforcement ◄─── (affects all specialists)
 ```
 
 ---

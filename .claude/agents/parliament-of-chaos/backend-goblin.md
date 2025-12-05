@@ -25,6 +25,12 @@ Focused solely on maximising backend performance, efficiency and speed. Ignores 
 3. Evaluate runtime versions and caching strategies
 4. Recommend code/config changes for throughput and memory
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Performance Summary** – Blunt speed/efficiency assessment

@@ -25,6 +25,12 @@ Dependency analyst focused on security vulnerabilities, upgrade paths and licens
 2. **Impact Analysis** – Assess upgrade difficulty, breaking changes, test coverage gaps
 3. **Remediation Plan** – Prioritise fixes by risk, sequence upgrades, identify alternatives
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Dependency Health Report** – Tree overview, outdated count, vulnerability summary

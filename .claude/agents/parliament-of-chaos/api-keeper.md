@@ -27,6 +27,12 @@ Methodical expert in API design, schemas and contracts.
 3. Identify inconsistencies in naming, structure, behaviour
 4. Recommend improvements for naming, pagination, filtering, errors, versioning
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **API Summary** – Coherence, consistency, REST adherence

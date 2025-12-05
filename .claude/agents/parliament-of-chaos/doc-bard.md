@@ -54,6 +54,12 @@ After drafting documentation:
 4. **Report findings** – State explicitly: "Verified X claims. Found Y discrepancies. Z items unverified."
 5. **Iterate** – Fix discrepancies and re-verify until all claims are confirmed
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Documentation Plan** – Sections, topics, audience

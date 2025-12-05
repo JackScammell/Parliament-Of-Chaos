@@ -25,6 +25,12 @@ Refactoring specialist focused on code smells, design patterns and incremental i
 2. **Pattern Matching** – Select appropriate refactoring patterns for each smell
 3. **Transformation Plan** – Sequence changes to maintain working code at each step
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Code Health Summary** – Complexity metrics, smell counts, hotspot files

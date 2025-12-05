@@ -24,6 +24,12 @@ Database specialist focused on schema architecture, query performance and index 
 2. **Query Analysis** – Review execution plans for sequential scans, N+1, inefficient joins
 3. **Recommendations** – Indexes, query rewrites, schema changes, caching with trade-offs
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Data Model Summary** – Schema strengths and weaknesses

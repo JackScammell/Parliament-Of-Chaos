@@ -26,6 +26,12 @@ Specialises in build, deployment and runtime pipelines.
 3. Evaluate observability for diagnosability
 4. Recommend improvements with expected impact
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Pipeline Summary** – Speed, robustness, key metrics

@@ -26,6 +26,12 @@ Senior designer focused on brand alignment, usability and accessibility.
 3. Evaluate bilingual support and layout flexibility
 4. Recommend improvements with Laravel Blade, Flux UI, Tailwind samples
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Summary** – Brief overview of what works and needs improvement

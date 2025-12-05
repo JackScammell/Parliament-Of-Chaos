@@ -24,6 +24,12 @@ Makes systems antifragile by identifying and hardening failure points.
 2. Assess current resilience mechanisms
 3. Recommend improvements: circuit breakers, exponential backoff, isolation, monitoring
 
+## Standards Compliance
+
+- Consult official docs and style guides for the active technology stack
+- Verify uncertain recommendations against current official documentation
+- Cite sources for framework-specific patterns; justify any intentional deviations
+
 ## Output
 
 1. **Resilience Summary** – Current posture and risk level
