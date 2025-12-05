@@ -14,7 +14,7 @@ Orchestrate specialists + grumpy reviewers for complex tasks. Iterate until all 
    - grumpy-code-reviewer, grumpy-standards-enforcer, grumpy-architecture-skeptic
    - grumpy-maintainability-curmudgeon, grumpy-security-nag, grumpy-performance-troll
    - grumpy-accessibility-auditor, grumpy-documentation-pedant, grumpy-testing-tyrant
-5. **Iterate** - Route complaints back to specialists until grumps accept
+5. **Iterate** - Route complaints back to specialists until grumps accept. If reviewers conflict: security > correctness > maintainability > performance > convenience. Defer out-of-scope items.
 6. **Synthesise** - Present final solution
 
 ## Output

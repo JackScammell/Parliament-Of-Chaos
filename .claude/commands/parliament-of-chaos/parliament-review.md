@@ -37,3 +37,6 @@ Prioritised action items.
 
 ### Reviewer Notes
 Notable disagreements or trade-offs between reviewers.
+
+### Deferred
+Out-of-scope recommendations logged for future work.

@@ -93,9 +93,16 @@ The plugin adds the following to your Claude Code configuration:
       roadmap-add-item.md        # Add items to roadmap
       roadmap-item-scope.md      # Scope items into tasks
       implement-task-list.md     # Execute tasks with council review
+
+      # Discovery Commands
+      list-agents.md             # Display all agents by category
+      list-commands.md           # Display all commands by category
+      explain-agent.md           # Detailed agent explanation
 ```
 
 ## Available Commands
+
+### Council Commands
 
 | Command | Description |
 |---------|-------------|
@@ -111,6 +118,14 @@ The plugin adds the following to your Claude Code configuration:
 | `/roadmap-add-item` | Add new items to the roadmap |
 | `/roadmap-item-scope` | Break down items into specs and tasks |
 | `/implement-task-list` | Execute tasks with full council oversight |
+
+### Discovery Commands
+
+| Command | Description |
+|---------|-------------|
+| `/list-agents` | Display all agents grouped by category |
+| `/list-commands` | Display all commands grouped by category |
+| `/explain-agent` | Detailed explanation of what an agent does and when to use it |
 
 ## Updating
 

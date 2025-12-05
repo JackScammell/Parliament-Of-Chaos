@@ -135,7 +135,7 @@ When you invoke `/summon-council`:
 1. **Analyse** - The Senior Council identifies which domains your task requires
 2. **Dispatch** - Appropriate specialists are selected and consulted
 3. **Review** - All outputs pass through the grumpy reviewer panel
-4. **Iterate** - Feedback routes back to specialists until all reviewers approve
+4. **Iterate** - Feedback routes back to specialists until all reviewers approve. Conflicts resolved via priority (security > correctness > maintainability > performance)
 5. **Synthesise** - Final solution is delivered with documented trade-offs
 
 ### The Planning Workflow

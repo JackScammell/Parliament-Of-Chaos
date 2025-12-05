@@ -6,7 +6,7 @@
 
 **Current Phase**: v1.1 Development
 
-**Overall Progress**: 16 of 20 items complete
+**Overall Progress**: 17 of 20 items complete
 
 ---
 
@@ -90,10 +90,10 @@ _Goal: Enhanced workflow and configurability_
 
 | Item | Status | Dependencies |
 |------|--------|--------------|
-| [review-report-export](./roadmap/review-report-export/) | Not Started | None |
-| [configurable-grumpiness](./roadmap/configurable-grumpiness/) | Not Started | None |
-| [conflict-resolution](./roadmap/conflict-resolution/) | Not Started | senior-council agent |
-| [agent-memory-context](./roadmap/agent-memory-context/) | Not Started | None |
+| [review-report-export](./roadmap/review-report-export/) | Scoped | None |
+| [configurable-grumpiness](./roadmap/configurable-grumpiness/) | Scoped | None |
+| [conflict-resolution](./roadmap/conflict-resolution/) | Complete | senior-council agent |
+| [agent-memory-context](./roadmap/agent-memory-context/) | Scoped | None |
 
 **Milestone**: Full v1.1 feature set complete
 
@@ -139,6 +139,7 @@ agent-memory-context ◄─── (standalone)
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2025-12-04 | Completed conflict-resolution | Priority-based conflict handling for reviewer disagreements |
 | 2025-12-04 | Added cmd-list-commands | Command discoverability - lists all 12 commands by category |
 | 2025-12-04 | Completed Phase 3 (new commands + optimization) | 4 new commands, 2 optimized (147→54 lines, 63% reduction) |
 | 2025-12-04 | Completed agent-token-optimization | Reduced 21 agents by 22.5% lines, 34.5% characters |

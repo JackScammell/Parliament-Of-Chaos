@@ -484,6 +484,19 @@ The council returns:
 3. **Final Solution** - The approved code, design, or recommendation
 4. **Notes and Trade-offs** - Important context and decisions made
 
+#### Conflict Resolution
+
+When reviewers disagree, the council applies this priority order:
+
+**security > correctness > maintainability > performance > convenience**
+
+Example conflict:
+- **grumpy-security-nag**: "Add input validation on all endpoints"
+- **grumpy-performance-troll**: "Validation adds 5ms latency per request"
+- **Resolution**: Security wins. Validation stays. Trade-off documented.
+
+Out-of-scope recommendations (e.g., documentation requests on a hotfix) are logged to a "Deferred" section for future work rather than blocking approval.
+
 #### Optional: Enable Logging
 
 Add `scribe: on` to your request to save the deliberation process:
@@ -642,17 +655,22 @@ You can reference these directly when asking the council to focus on specific ar
 
 | Agent | Expertise |
 |-------|-----------|
-| backend-goblin | Performance, caching, async patterns |
-| system-architect | High-level design, patterns, trade-offs |
-| security-knight | Auth, vulnerabilities, hardening |
-| data-warlock | Database design, queries, migrations |
 | api-keeper | API design, versioning, contracts |
+| backend-goblin | Performance, caching, async patterns |
+| config-curator | Environment config, secrets, feature flags |
+| data-warlock | Database design, queries, migrations |
+| dependency-detective | Vulnerability chains, license compliance |
+| doc-bard | Documentation, comments, READMEs |
+| migration-monk | Schema migrations, rollback strategies |
+| observability-oracle | Logging, metrics, tracing, alerting |
+| package-wizard | Dependencies, versions, compatibility |
+| pipeline-engineer | CI/CD, deployment, infrastructure |
+| refactor-ranger | Code smells, refactoring patterns |
+| resilience-tamer | Error handling, retries, failure modes |
+| security-knight | Auth, vulnerabilities, hardening |
+| system-architect | High-level design, patterns, trade-offs |
 | test-prophet | Testing strategy, coverage, TDD |
 | ui-ux-guru | Accessibility, UX patterns, frontend |
-| pipeline-engineer | CI/CD, deployment, infrastructure |
-| doc-bard | Documentation, comments, READMEs |
-| package-wizard | Dependencies, versions, compatibility |
-| resilience-tamer | Error handling, retries, failure modes |
 
 ### Grumpy Reviewers
 
@@ -664,6 +682,9 @@ You can reference these directly when asking the council to focus on specific ar
 | grumpy-maintainability-curmudgeon | Long-term maintenance burden |
 | grumpy-security-nag | Security oversights |
 | grumpy-performance-troll | Performance issues |
+| grumpy-accessibility-auditor | WCAG compliance, inclusive design |
+| grumpy-documentation-pedant | Documentation completeness |
+| grumpy-testing-tyrant | Test coverage and quality |
 
 ---
 

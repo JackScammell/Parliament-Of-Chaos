@@ -74,6 +74,7 @@ Slash commands that orchestrate agents and manage workflow.
 | /summon-grumpy-reviewer | Run grumpy review on code | Complete |
 | /plan-project | Interactive project planning | Complete |
 | /project-status | Show project progress dashboard | Complete |
+| /roadmap-add-item | Add items to existing roadmap | Complete |
 | /roadmap-item-scope | Scope a roadmap item into tasks | Complete |
 | /implement-task-list | Execute tasks systematically | Complete |
 
@@ -85,6 +86,7 @@ Slash commands that orchestrate agents and manage workflow.
 | /parliament-review | Review-only mode | Run grumpy council on existing code without implementation |
 | /explain-agent `<name>` | Describe agent | Show what an agent does, when to use it, example usage |
 | /list-agents | List all agents | Display all agents grouped by category with descriptions |
+| /list-commands | List all commands | Display all commands grouped by category with descriptions |
 
 ---
 
