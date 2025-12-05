@@ -103,17 +103,57 @@ Parliament of Chaos includes a ready-to-use Microsoft Teams notification hook. H
 
 ### Step 1: Configure the Webhook URL
 
-Edit `.claude/hooks/.env`:
+Edit the plugin's `.env` file:
 
 ```bash
+# Location: ~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/.env
 TEAMS_WEBHOOK_URL="https://your-org.webhook.office.com/webhookb2/..."
 APP_NAME="My Project"
+```
+
+Or copy the hook to your project and configure locally:
+
+```bash
+mkdir -p .claude/hooks
+cp ~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/notify_teams.sh .claude/hooks/
+cp ~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/.env .claude/hooks/
+# Edit .claude/hooks/.env with your webhook URL
 ```
 
 ### Step 2: Configure the Hook
 
 Add to `.claude/settings.local.json`:
 
+**Option A: Use plugin's hook directly**
+```json
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/notify_teams.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/notify_teams.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Option B: Use local copy (if you copied to your project)**
 ```json
 {
   "hooks": {
@@ -200,11 +240,14 @@ LOG_FILE="${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/hook_debug.log"
 exit 0
 ```
 
-Save this to `.claude/hooks/debug_hook.sh` and make it executable:
+Save this to your project's `.claude/hooks/debug_hook.sh` and make it executable:
 
 ```bash
+mkdir -p .claude/hooks
 chmod +x .claude/hooks/debug_hook.sh
 ```
+
+Note: A debug hook is also included with the plugin at `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/debug_hook.sh`
 
 ### Example: Slack Notification Hook
 
@@ -317,28 +360,60 @@ Log all tool usage for compliance:
 
 ---
 
-## Project File Structure
+## File Locations
 
-The Parliament of Chaos hooks setup uses this structure:
+### Plugin Hooks (Marketplace Installation)
+
+When installed via the marketplace, Parliament of Chaos hook scripts are stored in the centralised plugin cache:
+
+```
+~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/
+  .env                  # Webhook URLs and secrets
+  notify_teams.sh       # Teams notification script
+  debug_hook.sh         # Debug logging script
+```
+
+### Configuration Files (Your Project)
+
+Hook **configuration** still lives in your project's settings files:
 
 ```
 .claude/
   settings.json           # Shared hooks (committed)
   settings.local.json     # Personal hooks (gitignored)
-  hooks/
-    .env                  # Webhook URLs and secrets (gitignored)
-    notify_teams.sh       # Teams notification script
-    debug_hook.sh         # Debug logging script
-    hook_debug.log        # Debug output (gitignored)
 ```
+
+### Using Plugin Hooks in Configuration
+
+When referencing the plugin's hook scripts, use the centralised path:
+
+```json
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/notify_teams.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Or** copy the hook scripts to your project's `.claude/hooks/` directory for local customisation.
 
 ### Files Included with Parliament of Chaos
 
-| File | Purpose |
-|------|---------|
-| `hooks/notify_teams.sh` | Microsoft Teams webhook notifications |
-| `hooks/debug_hook.sh` | Event logging for debugging |
-| `hooks/.env` | Environment variables template |
+| File | Location | Purpose |
+|------|----------|---------|
+| `notify_teams.sh` | Plugin cache | Microsoft Teams webhook notifications |
+| `debug_hook.sh` | Plugin cache | Event logging for debugging |
+| `.env` | Plugin cache | Environment variables template |
 
 ---
 
@@ -425,4 +500,4 @@ Never commit webhook URLs or API keys:
 
 - Review the [Usage Guide](usage.md) for Parliament of Chaos commands
 - See [Safe Progress Assurance](safe-progress-assurance.md) for implementation safety
-- Explore the example hooks in `.claude/hooks/`
+- Explore the example hooks in `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/`

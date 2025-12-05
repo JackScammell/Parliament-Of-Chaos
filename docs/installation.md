@@ -29,9 +29,47 @@ Confirm the plugin is active by running:
 
 You should see the grumpy reviewer persona activate and prompt you for code to review.
 
-## What Gets Installed
+## Where Plugin Files Live
 
-The plugin adds the following to your Claude Code configuration:
+When installed via the marketplace, plugin files are stored in a **centralised user-level cache**, not in your project directory:
+
+```
+~/.claude/plugins/marketplaces/<plugin-name>/
+```
+
+For Parliament of Chaos, this means:
+
+| Content | Location |
+|---------|----------|
+| Commands | `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/commands/parliament-of-chaos/` |
+| Agents | `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/agents/parliament-of-chaos/` |
+| Plugin metadata | `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude-plugin/marketplace.json` |
+
+### Why This Location?
+
+The centralised approach means:
+- **One copy serves all projects** - no duplication across repositories
+- **Automatic updates** - updating the plugin updates it everywhere
+- **Clean project directories** - your `.claude/` folder isn't cluttered with plugin files
+- **Git-friendly** - plugin files don't pollute your project's version control
+
+### Plugin Registry
+
+Claude Code tracks installed plugins in:
+
+```
+~/.claude/plugins/installed_plugins.json
+```
+
+This file records:
+- Plugin name and version
+- Installation path
+- Git commit SHA (for update tracking)
+- Installation timestamp
+
+## Logical Structure
+
+While the files live in the centralised cache, Claude Code presents them as if they were installed at:
 
 ```
 .claude/
@@ -137,11 +175,19 @@ To update to the latest version, re-run the install command:
 
 ## Uninstalling
 
-To remove the plugin, delete the installed directories:
+To remove the plugin via Claude Code:
 
 ```
-rm -rf .claude/agents/parliament-of-chaos
-rm -rf .claude/commands/parliament-of-chaos
+/uninstall-plugin parliament-of-chaos
+```
+
+Or manually delete the plugin files:
+
+```bash
+# Remove plugin files
+rm -rf ~/.claude/plugins/marketplaces/parliament-of-chaos
+
+# Edit installed_plugins.json to remove the entry (optional - Claude Code handles this)
 ```
 
 ## Troubleshooting
@@ -150,15 +196,16 @@ rm -rf .claude/commands/parliament-of-chaos
 
 If `/summon-council` is not recognised:
 
-1. Verify the directories exist in `.claude/`
-2. Try restarting your Claude Code session
-3. Re-run the installation command
+1. Verify the plugin is registered: `cat ~/.claude/plugins/installed_plugins.json`
+2. Check the plugin files exist: `ls ~/.claude/plugins/marketplaces/parliament-of-chaos/`
+3. Try restarting your Claude Code session
+4. Re-run the installation command
 
 ### Agent not found errors
 
 If the Senior Council cannot find specialist agents:
 
-1. Ensure all agent files are present in `.claude/agents/parliament-of-chaos/`
+1. Ensure all agent files are present in `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/agents/parliament-of-chaos/`
 2. Check that files have `.md` extension and correct YAML frontmatter
 
 ### Planning commands not working
@@ -166,7 +213,11 @@ If the Senior Council cannot find specialist agents:
 If `/plan-project` or other planning commands fail:
 
 1. Ensure planning agents are installed (`project-oracle.md`, `scope-weaver.md`, `task-executor.md`)
-2. Check that `.project-files/` directory is writable
+2. Check that `.project-files/` directory is writable in your current project
+
+### Files not in project directory
+
+This is expected behaviour. Marketplace plugins are stored in a centralised location (`~/.claude/plugins/marketplaces/`) rather than copied into each project. See [Where Plugin Files Live](#where-plugin-files-live) above.
 
 ## Next Steps
 
