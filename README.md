@@ -157,6 +157,7 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 |----------|-------------|
 | [Installation Guide](docs/installation.md) | Detailed setup instructions and troubleshooting |
 | [Usage Guide](docs/usage.md) | In-depth command usage with examples |
+| [Hooks Configuration](docs/hooks.md) | Set up notifications and automated actions |
 | [Safe Progress Assurance](docs/safe-progress-assurance.md) | How the system ensures reliable task completion |
 | [Example Project Files](docs/example-project-files/) | Sample outputs from the planning workflow |
 

@@ -17,7 +17,7 @@ This guide covers installing Parliament of Chaos as a Claude Code plugin.
 
 This single command installs:
 - 12 slash commands for orchestration, reviews, and project planning
-- 29 specialist, reviewer, and planning agents
+- 29 agents (specialists, reviewers, planners, and orchestrator)
 
 ### Verify Installation
 
@@ -43,22 +43,22 @@ The plugin adds the following to your Claude Code configuration:
       task-executor.md           # Task tracking and documentation
 
       # Specialist Agents (16)
-      api-keeper.md              # API design
-      backend-goblin.md          # Backend performance
-      config-curator.md          # Configuration management
-      data-warlock.md            # Database and data layer
-      dependency-detective.md    # Dependency analysis
-      doc-bard.md                # Documentation
-      migration-monk.md          # Database migrations
-      observability-oracle.md    # Logging, metrics, tracing
+      api-keeper.md              # API design and versioning
+      backend-goblin.md          # Backend performance and caching
+      config-curator.md          # Environment config and feature flags
+      data-warlock.md            # Database design and migrations
+      dependency-detective.md    # Vulnerability and license compliance
+      doc-bard.md                # Documentation and READMEs
+      migration-monk.md          # Schema migrations and rollbacks
+      observability-oracle.md    # Logging, metrics, and tracing
       package-wizard.md          # Dependency management
       pipeline-engineer.md       # CI/CD and deployment
-      refactor-ranger.md         # Code refactoring
+      refactor-ranger.md         # Code smells and refactoring
       resilience-tamer.md        # Error handling and resilience
-      security-knight.md         # Security analysis
+      security-knight.md         # Security analysis and hardening
       system-architect.md        # System design and architecture
-      test-prophet.md            # Testing strategies
-      ui-ux-guru.md              # User interface and experience
+      test-prophet.md            # Testing strategies and TDD
+      ui-ux-guru.md              # User interface and accessibility
 
       # Grumpy Reviewers (9)
       grumpy-accessibility-auditor.md     # WCAG compliance
@@ -79,8 +79,13 @@ The plugin adds the following to your Claude Code configuration:
       # Council Commands
       summon-council.md          # Full multi-agent orchestration
       summon-grumpy-reviewer.md  # Quick code review session
-      summon-specialist.md       # Direct specialist invocation
-      parliament-review.md       # Full 9-reviewer scrutiny
+      summon-specialist.md       # Invoke a specific specialist
+      parliament-review.md       # Full review with all 9 grumpy reviewers
+
+      # Discovery Commands
+      list-agents.md             # Display all agents by category
+      list-commands.md           # Display all commands by category
+      explain-agent.md           # Detailed agent explanation
 
       # Planning Commands
       plan-project.md            # Interactive project planning
@@ -103,13 +108,11 @@ The plugin adds the following to your Claude Code configuration:
 |---------|-------------|
 | `/summon-council` | Full parliament orchestration with specialists and grumpy review |
 | `/summon-grumpy-reviewer` | Quick code review from grumpy perspective |
-| `/summon-specialist` | Directly invoke a specialist agent on your current task |
-| `/parliament-review` | Full review using all 9 grumpy reviewers for maximum scrutiny |
-
-### Planning Commands
-
-| Command | Description |
-|---------|-------------|
+| `/summon-specialist` | Directly invoke a specialist agent |
+| `/parliament-review` | Full review using all 9 grumpy reviewers |
+| `/list-agents` | Display all agents grouped by category |
+| `/list-commands` | Display all commands grouped by category |
+| `/explain-agent` | Detailed explanation of what an agent does |
 | `/plan-project` | Interactive project planning with Project Oracle |
 | `/project-status` | View project progress dashboard |
 | `/roadmap-add-item` | Add new items to the roadmap |
