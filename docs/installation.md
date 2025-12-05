@@ -16,8 +16,8 @@ This guide covers installing Parliament of Chaos as a Claude Code plugin.
 ```
 
 This single command installs:
-- 7 slash commands for orchestration, reviews, and project planning
-- 21 specialist, reviewer, and planning agents
+- 12 slash commands for orchestration, reviews, and project planning
+- 29 agents (specialists, reviewers, planners, and orchestrator)
 
 ### Verify Installation
 
@@ -42,35 +42,50 @@ The plugin adds the following to your Claude Code configuration:
       scope-weaver.md            # Scopes roadmap items into tasks
       task-executor.md           # Task tracking and documentation
 
-      # Specialist Agents (11)
-      backend-goblin.md          # Backend performance
-      system-architect.md        # System design and architecture
-      security-knight.md         # Security analysis
-      data-warlock.md            # Database and data layer
-      api-keeper.md              # API design
-      test-prophet.md            # Testing strategies
-      ui-ux-guru.md              # User interface and experience
-      pipeline-engineer.md       # CI/CD and deployment
-      doc-bard.md                # Documentation
+      # Specialist Agents (16)
+      api-keeper.md              # API design and versioning
+      backend-goblin.md          # Backend performance and caching
+      config-curator.md          # Environment config and feature flags
+      data-warlock.md            # Database design and migrations
+      dependency-detective.md    # Vulnerability and license compliance
+      doc-bard.md                # Documentation and READMEs
+      migration-monk.md          # Schema migrations and rollbacks
+      observability-oracle.md    # Logging, metrics, and tracing
       package-wizard.md          # Dependency management
+      pipeline-engineer.md       # CI/CD and deployment
+      refactor-ranger.md         # Code smells and refactoring
       resilience-tamer.md        # Error handling and resilience
+      security-knight.md         # Security analysis and hardening
+      system-architect.md        # System design and architecture
+      test-prophet.md            # Testing strategies and TDD
+      ui-ux-guru.md              # User interface and accessibility
 
-      # Grumpy Reviewers (6)
-      grumpy-code-reviewer.md             # General code quality
-      grumpy-standards-enforcer.md        # Standards compliance
+      # Grumpy Reviewers (9)
+      grumpy-accessibility-auditor.md     # WCAG compliance
       grumpy-architecture-skeptic.md      # Architectural decisions
+      grumpy-code-reviewer.md             # General code quality
+      grumpy-documentation-pedant.md      # Documentation completeness
       grumpy-maintainability-curmudgeon.md # Maintainability
-      grumpy-security-nag.md              # Security vulnerabilities
       grumpy-performance-troll.md         # Performance issues
+      grumpy-security-nag.md              # Security vulnerabilities
+      grumpy-standards-enforcer.md        # Standards compliance
+      grumpy-testing-tyrant.md            # Test coverage and quality
 
       # Orchestrator (1)
       senior-council.md          # Coordinates multi-agent sessions
 
   commands/
     parliament-of-chaos/
-      # Core Commands
+      # Council Commands
       summon-council.md          # Full multi-agent orchestration
       summon-grumpy-reviewer.md  # Quick code review session
+      summon-specialist.md       # Invoke a specific specialist
+      parliament-review.md       # Full review with all 9 grumpy reviewers
+
+      # Discovery Commands
+      list-agents.md             # Display all agents by category
+      list-commands.md           # Display all commands by category
+      explain-agent.md           # Detailed agent explanation
 
       # Planning Commands
       plan-project.md            # Interactive project planning
@@ -86,6 +101,11 @@ The plugin adds the following to your Claude Code configuration:
 |---------|-------------|
 | `/summon-council` | Full parliament orchestration with specialists and grumpy review |
 | `/summon-grumpy-reviewer` | Quick code review from grumpy perspective |
+| `/summon-specialist` | Directly invoke a specialist agent |
+| `/parliament-review` | Full review using all 9 grumpy reviewers |
+| `/list-agents` | Display all agents grouped by category |
+| `/list-commands` | Display all commands grouped by category |
+| `/explain-agent` | Detailed explanation of what an agent does |
 | `/plan-project` | Interactive project planning with Project Oracle |
 | `/project-status` | View project progress dashboard |
 | `/roadmap-add-item` | Add new items to the roadmap |

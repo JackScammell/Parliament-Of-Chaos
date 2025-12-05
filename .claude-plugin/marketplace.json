@@ -1,0 +1,42 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "parliament-of-chaos",
+  "description": "A Claude Code plugin that summons a council of opinionated AI specialists to plan, build, review, and refine your projects through structured debate and iteration.",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Jack Scammell",
+    "url": "https://github.com/JackScammell"
+  },
+  "plugins": [
+    {
+      "name": "parliament-of-chaos",
+      "source": "./",
+      "description": "Specialist agents, grumpy reviewers, and slash commands for project planning, scoping, implementation, and code review. Transforms Claude Code into a multi-agent development team.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Jack Scammell",
+        "url": "https://github.com/JackScammell"
+      },
+      "homepage": "https://github.com/JackScammell/Parliament-Of-Chaos",
+      "repository": "https://github.com/JackScammell/Parliament-Of-Chaos",
+      "license": "MIT",
+      "keywords": [
+        "agents",
+        "code-review",
+        "project-management",
+        "planning",
+        "specialists",
+        "grumpy-reviewers",
+        "council"
+      ],
+      "category": "development",
+      "commands": [
+        "./.claude/commands/parliament-of-chaos/"
+      ],
+      "agents": [
+        "./.claude/agents/parliament-of-chaos/"
+      ],
+      "strict": false
+    }
+  ]
+}
