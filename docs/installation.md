@@ -127,13 +127,130 @@ The plugin adds the following to your Claude Code configuration:
 | `/list-commands` | Display all commands grouped by category |
 | `/explain-agent` | Detailed explanation of what an agent does and when to use it |
 
-## Updating
+## Updating the Plugin
+
+### How Updates Work
+
+**Claude Code does NOT automatically update plugins.** You must manually update when new versions are released.
+
+### When to Update
+
+Update Parliament of Chaos when:
+- A new version is released on GitHub
+- New agents or commands are announced
+- Bug fixes or improvements are available
+- You see an update notification in the repository
+
+### How to Update
 
 To update to the latest version, re-run the install command:
 
 ```
 /install-github-plugin JackScammell/Parliament-Of-Chaos
 ```
+
+**What happens during update:**
+1. Claude Code fetches the latest version from GitHub
+2. Existing plugin files are replaced with new versions
+3. New agents/commands are added automatically
+4. Your project files (`.project-files/`) are not affected
+5. Custom hooks and settings are preserved
+
+### Update Process
+
+**Step 1: Check for Updates**
+
+Visit the repository to see if a new version is available:
+- https://github.com/JackScammell/Parliament-Of-Chaos
+
+Look for:
+- New release tags
+- Updated `version` in `.claude-plugin/marketplace.json`
+- CHANGELOG or release notes
+
+**Step 2: Run Update Command**
+
+```
+/install-github-plugin JackScammell/Parliament-Of-Chaos
+```
+
+**Step 3: Verify Update**
+
+After updating, verify the new version is active:
+
+```
+/list-agents
+```
+
+Check that any newly announced agents appear in the list.
+
+### Update Frequency
+
+**Recommended:** Check for updates monthly or when:
+- Starting a new major project
+- You need a feature mentioned in release notes
+- A bug you've encountered is fixed
+
+### What Gets Updated
+
+During an update, these are replaced with new versions:
+- `.claude/agents/parliament-of-chaos/` - All agent files
+- `.claude/commands/parliament-of-chaos/` - All command files
+
+**Not affected by updates:**
+- `.project-files/` - Your project plans and roadmaps
+- `.claude/settings.json` - Your hook configurations
+- `.claude/settings.local.json` - Your personal settings
+- `.claude/hooks/` - Your custom hook scripts
+
+### Automatic Updates
+
+**Claude Code does NOT have automatic plugin updates.**
+
+This is by design to ensure:
+- Stability of your development environment
+- Control over when changes are introduced
+- Compatibility with your existing workflows
+
+You must manually run `/install-github-plugin` to get updates.
+
+### Checking Your Current Version
+
+To see which version you have installed:
+
+1. Check the version in your local installation:
+   ```bash
+   cat .claude-plugin/marketplace.json | grep version
+   ```
+
+2. Compare with the latest version on GitHub:
+   - Visit: https://github.com/JackScammell/Parliament-Of-Chaos
+   - Check `.claude-plugin/marketplace.json` in the repository
+
+### FAQ: Updates
+
+**Q: Will the plugin update automatically when I start Claude Code?**
+
+**A:** No. Claude Code does not automatically update plugins. You must manually run `/install-github-plugin JackScammell/Parliament-Of-Chaos` to get updates.
+
+**Q: How will I know when an update is available?**
+
+**A:** Check the GitHub repository periodically:
+- Watch for release notifications if you've starred the repo
+- Check the repository's releases page
+- Review the CHANGELOG or release notes
+
+**Q: Do I need to uninstall before updating?**
+
+**A:** No. Simply re-run `/install-github-plugin JackScammell/Parliament-Of-Chaos`. The command will replace old files with new ones automatically.
+
+**Q: Will updating break my existing projects?**
+
+**A:** No. Your project files (`.project-files/`), roadmaps, and custom configurations are not touched during updates. Only the agent and command files are replaced.
+
+**Q: What if I want to stay on an older version?**
+
+**A:** Simply don't run the update command. Your current version will continue to work. To install a specific version, you would need to manually download and install it from a specific GitHub tag/release.
 
 ## Uninstalling
 
