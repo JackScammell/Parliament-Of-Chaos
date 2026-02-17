@@ -15,6 +15,8 @@ from datetime import datetime
 from ..models.schemas import (
     DebateStatement, RoundSummary, AgentPosition, DebateState
 )
+from .token_counter import TokenCounter
+from .statement_pruner import StatementDeduplicator, ContextPruner
 
 logger = logging.getLogger(__name__)
 
@@ -28,11 +30,12 @@ class ImmediateContext:
     This is the most recent and detailed information.
     """
     
-    def __init__(self, round_number: int):
+    def __init__(self, round_number: int, token_counter: Optional[TokenCounter] = None):
         self.round_number = round_number
         self.agent_statements: List[DebateStatement] = []
         self.votes: List[Dict] = []
         self.amendments: List[str] = []
+        self.token_counter = token_counter or TokenCounter()
         
     def add_statement(self, statement: DebateStatement):
         """Add an agent statement to current round."""
@@ -73,9 +76,9 @@ class ImmediateContext:
         return " ".join(words[:max_words]) + "..."
     
     def estimate_tokens(self) -> int:
-        """Estimate token count for this context (rough approximation)."""
-        json_str = str(self.to_structured_json())
-        return len(json_str) // 4  # Rough estimate: 4 chars per token
+        """Estimate token count for this context using TokenCounter."""
+        json_data = self.to_structured_json()
+        return self.token_counter.count_tokens_dict(json_data)
 
 
 class HistoricalContext:
@@ -84,11 +87,12 @@ class HistoricalContext:
     Uses rolling compression to maintain bounded memory.
     """
     
-    def __init__(self):
+    def __init__(self, token_counter: Optional[TokenCounter] = None):
         self.summaries: Dict[str, RoundSummary] = {}
         self.unresolved_conflicts: List[str] = []
         self.consensus_trend: List[float] = []
         self.entropy_trend: List[float] = []
+        self.token_counter = token_counter or TokenCounter()
         
     def add_round_summary(self, round_num: int, summary: RoundSummary):
         """Add a compressed round summary."""
@@ -137,9 +141,9 @@ class HistoricalContext:
         }
     
     def estimate_tokens(self, max_rounds: int = 3) -> int:
-        """Estimate token count for historical context."""
-        json_str = str(self.get_compressed_history(max_rounds))
-        return len(json_str) // 4
+        """Estimate token count for historical context using TokenCounter."""
+        json_data = self.get_compressed_history(max_rounds)
+        return self.token_counter.count_tokens_dict(json_data)
 
 
 class ReferenceContext:
@@ -147,10 +151,11 @@ class ReferenceContext:
     Optional reference context for rules, constraints, and semantic retrieval.
     """
     
-    def __init__(self):
+    def __init__(self, token_counter: Optional[TokenCounter] = None):
         self.rules: List[str] = []
         self.constraints: List[str] = []
         self.semantic_results: List[Dict] = []  # From vector DB
+        self.token_counter = token_counter or TokenCounter()
         
     def add_rule(self, rule: str):
         """Add a reference rule."""
@@ -175,9 +180,9 @@ class ReferenceContext:
         }
     
     def estimate_tokens(self) -> int:
-        """Estimate token count for reference context."""
-        json_str = str(self.to_structured_json())
-        return len(json_str) // 4
+        """Estimate token count for reference context using TokenCounter."""
+        json_data = self.to_structured_json()
+        return self.token_counter.count_tokens_dict(json_data)
 
 
 class ContextManager:
@@ -199,12 +204,26 @@ class ContextManager:
     └─────────────────────────────┘
     """
     
-    def __init__(self, max_historical_rounds: int = 3):
+    def __init__(
+        self, 
+        max_historical_rounds: int = 3, 
+        model_name: str = "gpt-4",
+        enable_deduplication: bool = True,
+        enable_pruning: bool = True,
+        min_confidence: float = 0.5
+    ):
+        self.token_counter = TokenCounter(model_name)
         self.immediate_context: Optional[ImmediateContext] = None
-        self.historical_context = HistoricalContext()
-        self.reference_context = ReferenceContext()
+        self.historical_context = HistoricalContext(self.token_counter)
+        self.reference_context = ReferenceContext(self.token_counter)
         self.max_historical_rounds = max_historical_rounds
         self._current_round = 0
+        
+        # Deduplication and pruning
+        self.enable_deduplication = enable_deduplication
+        self.enable_pruning = enable_pruning
+        self.deduplicator = StatementDeduplicator() if enable_deduplication else None
+        self.pruner = ContextPruner(min_confidence=min_confidence) if enable_pruning else None
         
         # Token tracking
         self._token_stats = {
@@ -213,17 +232,34 @@ class ContextManager:
             "reference_tokens": [],
             "total_tokens": []
         }
+        
+        logger.info(
+            f"ContextManager initialized: "
+            f"max_historical_rounds={max_historical_rounds}, "
+            f"deduplication={enable_deduplication}, "
+            f"pruning={enable_pruning}"
+        )
     
     def start_new_round(self, round_number: int):
         """Start a new round, creating fresh immediate context."""
-        self.immediate_context = ImmediateContext(round_number)
+        self.immediate_context = ImmediateContext(round_number, self.token_counter)
         self._current_round = round_number
         logger.info(f"Started new round {round_number}")
     
     def add_statement(self, statement: DebateStatement):
-        """Add a statement to current immediate context."""
+        """
+        Add a statement to current immediate context.
+        Applies deduplication if enabled.
+        """
         if self.immediate_context is None:
             raise RuntimeError("No active round - call start_new_round first")
+        
+        # Check for duplicates if enabled
+        if self.enable_deduplication and self.deduplicator:
+            if self.deduplicator.is_duplicate(statement):
+                logger.info(f"Skipping duplicate statement from {statement.agent_id}")
+                return
+        
         self.immediate_context.add_statement(statement)
     
     def add_vote(self, vote: Dict):
@@ -257,7 +293,8 @@ class ContextManager:
         agent_id: str, 
         agent_position: Optional[AgentPosition] = None,
         topic: str = "",
-        include_reference: bool = False
+        include_reference: bool = False,
+        agent_influence: Optional[Dict[str, float]] = None
     ) -> Dict:
         """
         Build optimized context for a specific agent.
@@ -270,15 +307,43 @@ class ContextManager:
         - Reference Context: ~50 tokens (optional)
         
         Returns structured JSON for prompt injection.
+        
+        Args:
+            agent_id: Agent identifier
+            agent_position: Agent's current position
+            topic: Debate topic
+            include_reference: Whether to include reference context
+            agent_influence: Optional dict of agent influence scores for pruning
         """
         context = {
             "round": self._current_round,
             "topic": topic
         }
         
-        # Add immediate context if available
+        # Add immediate context if available (with pruning)
         if self.immediate_context:
-            context["immediate_context"] = self.immediate_context.to_structured_json()
+            immediate_json = self.immediate_context.to_structured_json()
+            
+            # Apply pruning if enabled
+            if self.enable_pruning and self.pruner:
+                statements = self.immediate_context.agent_statements
+                pruned_statements = self.pruner.prune_statements(
+                    statements,
+                    agent_influence=agent_influence
+                )
+                # Update JSON with pruned statements
+                immediate_json["agent_statements"] = [
+                    {
+                        "agent_id": s.agent_id,
+                        "position": s.position,
+                        "argument": self.immediate_context._summarize_argument(s.argument),
+                        "amendment": s.amendment,
+                        "confidence": s.confidence
+                    }
+                    for s in pruned_statements
+                ]
+            
+            context["immediate_context"] = immediate_json
         
         # Add compressed historical context
         context["historical_summary"] = self.historical_context.get_compressed_history(
@@ -469,8 +534,8 @@ Respond with ONLY valid JSON matching the {schema_name} schema."""
     def reset(self):
         """Reset context manager for new debate."""
         self.immediate_context = None
-        self.historical_context = HistoricalContext()
-        self.reference_context = ReferenceContext()
+        self.historical_context = HistoricalContext(self.token_counter)
+        self.reference_context = ReferenceContext(self.token_counter)
         self._current_round = 0
         self._token_stats = {
             "immediate_tokens": [],
@@ -478,4 +543,9 @@ Respond with ONLY valid JSON matching the {schema_name} schema."""
             "reference_tokens": [],
             "total_tokens": []
         }
+        
+        # Reset deduplication and pruning
+        if self.deduplicator:
+            self.deduplicator.reset()
+        
         logger.info("Context manager reset")
