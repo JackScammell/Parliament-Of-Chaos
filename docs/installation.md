@@ -16,8 +16,8 @@ This guide covers installing Parliament of Chaos as a Claude Code plugin.
 ```
 
 This single command installs:
-- 12 slash commands for orchestration, reviews, and project planning
-- 29 agents (specialists, reviewers, planners, and orchestrator)
+- 16 slash commands for orchestration, reviews, project planning, and analytics
+- 30 agents (specialists, reviewers, planners, and orchestrators)
 
 ### Verify Installation
 
@@ -71,8 +71,9 @@ The plugin adds the following to your Claude Code configuration:
       grumpy-standards-enforcer.md        # Standards compliance
       grumpy-testing-tyrant.md            # Test coverage and quality
 
-      # Orchestrator (1)
+      # Orchestrators (2)
       senior-council.md          # Coordinates multi-agent sessions
+      deliberation-conductor.md  # Orchestrates structured debates
 
   commands/
     parliament-of-chaos/
@@ -94,10 +95,11 @@ The plugin adds the following to your Claude Code configuration:
       roadmap-item-scope.md      # Scope items into tasks
       implement-task-list.md     # Execute tasks with council review
 
-      # Discovery Commands
-      list-agents.md             # Display all agents by category
-      list-commands.md           # Display all commands by category
-      explain-agent.md           # Detailed agent explanation
+      # Analytics & Plugin Commands
+      debate-analytics.md        # Generate analytics dashboard
+      debate-topic.md            # Run structured deliberation
+      plugin-install.md          # Install community plugins
+      plugin-list.md             # List installed plugins
 ```
 
 ## Available Commands
@@ -110,14 +112,7 @@ The plugin adds the following to your Claude Code configuration:
 | `/summon-grumpy-reviewer` | Quick code review from grumpy perspective |
 | `/summon-specialist` | Directly invoke a specialist agent |
 | `/parliament-review` | Full review using all 9 grumpy reviewers |
-| `/list-agents` | Display all agents grouped by category |
-| `/list-commands` | Display all commands grouped by category |
-| `/explain-agent` | Detailed explanation of what an agent does |
-| `/plan-project` | Interactive project planning with Project Oracle |
-| `/project-status` | View project progress dashboard |
-| `/roadmap-add-item` | Add new items to the roadmap |
-| `/roadmap-item-scope` | Break down items into specs and tasks |
-| `/implement-task-list` | Execute tasks with full council oversight |
+| `/debate-topic` | Run structured multi-agent deliberation with convergence detection |
 
 ### Discovery Commands
 
@@ -126,6 +121,24 @@ The plugin adds the following to your Claude Code configuration:
 | `/list-agents` | Display all agents grouped by category |
 | `/list-commands` | Display all commands grouped by category |
 | `/explain-agent` | Detailed explanation of what an agent does and when to use it |
+
+### Project Planning Commands
+
+| Command | Description |
+|---------|-------------|
+| `/plan-project` | Interactive project planning with Project Oracle |
+| `/project-status` | View project progress dashboard |
+| `/roadmap-add-item` | Add new items to the roadmap |
+| `/roadmap-item-scope` | Break down items into specs and tasks |
+| `/implement-task-list` | Execute tasks with full council oversight |
+
+### Analytics & Plugin Commands
+
+| Command | Description |
+|---------|-------------|
+| `/debate-analytics` | Generate comprehensive analytics dashboard with metrics and insights |
+| `/plugin-install` | Install community agent plugins from the marketplace |
+| `/plugin-list` | List all installed plugins and marketplace summary |
 
 ## Updating the Plugin
 
