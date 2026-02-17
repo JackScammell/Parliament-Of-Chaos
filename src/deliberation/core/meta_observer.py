@@ -218,7 +218,7 @@ class Summariser:
     ) -> str:
         """Build prompt for generating round summary."""
         statements_text = "\n".join([
-            f"- {s.agent_id}: {s.position} | {s.argument[:100]}..."
+            f"- {s.agent_id}: {s.position} | {s.argument[:100]}{'...' if len(s.argument) > 100 else ''}"
             for s in statements
         ])
         

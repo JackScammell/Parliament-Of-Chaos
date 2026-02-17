@@ -3,7 +3,7 @@ Structured state engine for Parliament of Chaos.
 Manages debate state as structured data with rolling memory compression.
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import json
 import logging
 from datetime import datetime
@@ -26,7 +26,7 @@ class StateEngine:
     def __init__(self, initial_state: Optional[DebateState] = None):
         self.state = initial_state or DebateState()
         self._round_transcripts: Dict[int, List[str]] = {}  # Temporary, discarded after compression
-        self._metadata: Dict[str, any] = {
+        self._metadata: Dict[str, Any] = {
             "created_at": datetime.utcnow().isoformat(),
             "last_updated": datetime.utcnow().isoformat()
         }
