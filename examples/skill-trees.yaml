@@ -1,0 +1,48 @@
+# Parliament of Chaos - Agent Skill Tree Configuration
+# Define hierarchical skills for specialist agents
+
+ui-ux-guru:
+  primary_domain: "UI/UX Design"
+  skills:
+    Accessibility:
+      - "WCAG Compliance"
+      - "Screen Reader Support"
+      - "Keyboard Navigation"
+      - "Aria Labels"
+    Color Psychology:
+      - "Color Theory"
+      - "Contrast Ratios"
+      - "Brand Identity"
+      - "Emotion Mapping"
+    Usability Testing:
+      - "A/B Testing"
+      - "User Feedback"
+      - "Heuristic Evaluation"
+      - "Analytics Integration"
+  skill_levels:
+    Accessibility: 5
+    Color Psychology: 4
+    Usability Testing: 5
+
+security-knight:
+  primary_domain: "Security"
+  skills:
+    Authentication:
+      - "OAuth2"
+      - "JWT"
+      - "Multi-Factor Auth"
+      - "Session Management"
+    Encryption:
+      - "TLS/SSL"
+      - "Data at Rest"
+      - "Key Management"
+      - "Hashing Algorithms"
+    Vulnerabilities:
+      - "SQL Injection"
+      - "XSS"
+      - "CSRF"
+      - "Code Injection"
+  skill_levels:
+    Authentication: 5
+    Encryption: 5
+    Vulnerabilities: 5

@@ -47,3 +47,10 @@ htmlcov/
 *.log
 *.tmp
 /tmp/
+
+# Parliament of Chaos storage directories
+.parliament-memory/
+.parliament-plugins/
+.parliament-sessions/
+.parliament-learning/
+.parliament-skills/
