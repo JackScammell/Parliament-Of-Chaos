@@ -4,7 +4,7 @@ Provides accurate token counting using tiktoken and automatic budget enforcement
 """
 
 import logging
-from typing import Dict, Optional, List, Any
+from typing import Dict, Optional, List, Any, Tuple
 import json
 
 logger = logging.getLogger(__name__)
@@ -240,7 +240,7 @@ class TokenBudgetEnforcer:
         self._enforcement_count = 0
         logger.info(f"TokenBudgetEnforcer initialized with budget={max_tokens_per_agent}")
     
-    def check_budget(self, context: Dict) -> tuple[bool, int]:
+    def check_budget(self, context: Dict) -> Tuple[bool, int]:
         """
         Check if context fits within token budget.
         

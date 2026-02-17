@@ -50,6 +50,16 @@ class ImmediateContext:
         if amendment and amendment not in self.amendments:
             self.amendments.append(amendment)
     
+    def summarize_argument(self, argument: str, max_words: int = 50) -> str:
+        """
+        Summarize long arguments to key points.
+        Public method for internal and external use.
+        """
+        words = argument.split()
+        if len(words) <= max_words:
+            return argument
+        return " ".join(words[:max_words]) + "..."
+    
     def to_structured_json(self) -> Dict:
         """Convert to structured JSON for agent consumption."""
         return {
@@ -58,7 +68,7 @@ class ImmediateContext:
                 {
                     "agent_id": s.agent_id,
                     "position": s.position,
-                    "argument": self._summarize_argument(s.argument),
+                    "argument": self.summarize_argument(s.argument),
                     "amendment": s.amendment,
                     "confidence": s.confidence
                 }
@@ -67,13 +77,6 @@ class ImmediateContext:
             "votes": self.votes,
             "amendments": self.amendments
         }
-    
-    def _summarize_argument(self, argument: str, max_words: int = 50) -> str:
-        """Summarize long arguments to key points."""
-        words = argument.split()
-        if len(words) <= max_words:
-            return argument
-        return " ".join(words[:max_words]) + "..."
     
     def estimate_tokens(self) -> int:
         """Estimate token count for this context using TokenCounter."""
@@ -336,7 +339,7 @@ class ContextManager:
                     {
                         "agent_id": s.agent_id,
                         "position": s.position,
-                        "argument": self.immediate_context._summarize_argument(s.argument),
+                        "argument": self.immediate_context.summarize_argument(s.argument),
                         "amendment": s.amendment,
                         "confidence": s.confidence
                     }
