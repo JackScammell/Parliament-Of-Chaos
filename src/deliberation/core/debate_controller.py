@@ -45,7 +45,7 @@ class DebateController:
         # Initialize components
         self.model_caller = model_caller or ModelCaller(get_registry())
         self.validator = Validator(max_retries=1)
-        self.state_engine = StateEngine()
+        self.state_engine = StateEngine(use_context_optimization=True)
         self.meta_observer = MetaObserver(
             self.model_caller,
             convergence_threshold=config.convergence_threshold,
@@ -53,8 +53,11 @@ class DebateController:
         )
         self.summariser = Summariser(self.model_caller)
         self.metrics = MetricsCollector()
+        
+        # Pass context manager to agent runtime
         self.agent_runtime = AgentRuntime(
-            self.model_caller, self.validator, config
+            self.model_caller, self.validator, config,
+            context_manager=self.state_engine.context_manager
         )
         
         self._debate_active = False
@@ -86,6 +89,10 @@ class DebateController:
         )
         
         try:
+            # Initialize context manager for first round
+            if self.state_engine.context_manager:
+                self.state_engine.context_manager.start_new_round(0)
+            
             # Run debate rounds
             for round_num in range(self.config.max_rounds):
                 logger.info(f"=== Round {round_num + 1}/{self.config.max_rounds} ===")
@@ -111,13 +118,20 @@ class DebateController:
             self.metrics.end_debate()
         
         # Return results
-        return {
+        result = {
             "topic": topic,
             "outcome": outcome,
             "final_state": self.state_engine.export_state(),
             "metrics": self.metrics.export_metrics(),
             "config": self.config.model_dump()
         }
+        
+        # Add context optimization statistics if available
+        context_stats = self.state_engine.get_context_statistics()
+        if context_stats:
+            result["context_optimization"] = context_stats
+        
+        return result
     
     async def _execute_round(
         self, topic: str, agents: List[str], context: Dict
