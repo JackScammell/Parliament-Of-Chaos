@@ -4,7 +4,7 @@ All agents MUST output strict JSON matching these predefined schemas.
 """
 
 from typing import List, Optional, Dict, Literal
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class DebateStatement(BaseModel):
@@ -16,10 +16,11 @@ class DebateStatement(BaseModel):
     references: List[str] = Field(default_factory=list, description="Citations or supporting sources")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence level (0-1)")
 
-    @validator('confidence')
+    @field_validator('confidence', mode='before')
+    @classmethod
     def clamp_confidence(cls, v):
         """Ensure confidence is clamped between 0 and 1."""
-        return max(0.0, min(1.0, v))
+        return max(0.0, min(1.0, float(v)))
 
 
 class Vote(BaseModel):
@@ -29,10 +30,11 @@ class Vote(BaseModel):
     reasoning: str = Field(..., description="Explanation for vote")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in vote (0-1)")
 
-    @validator('confidence')
+    @field_validator('confidence', mode='before')
+    @classmethod
     def clamp_confidence(cls, v):
         """Ensure confidence is clamped between 0 and 1."""
-        return max(0.0, min(1.0, v))
+        return max(0.0, min(1.0, float(v)))
 
 
 class RoundSummary(BaseModel):
@@ -42,10 +44,11 @@ class RoundSummary(BaseModel):
     amendments: List[str] = Field(default_factory=list, description="Proposed changes")
     consensus_level: float = Field(..., ge=0.0, le=1.0, description="Degree of consensus (0-1)")
 
-    @validator('consensus_level')
+    @field_validator('consensus_level', mode='before')
+    @classmethod
     def clamp_consensus(cls, v):
         """Ensure consensus level is clamped between 0 and 1."""
-        return max(0.0, min(1.0, v))
+        return max(0.0, min(1.0, float(v)))
 
 
 class AgentAlignment(BaseModel):
@@ -54,10 +57,11 @@ class AgentAlignment(BaseModel):
     social: float = Field(..., ge=-1.0, le=1.0, description="Social alignment (-1 to 1)")
     risk_tolerance: float = Field(..., ge=-1.0, le=1.0, description="Risk tolerance (-1 to 1)")
 
-    @validator('economic', 'social', 'risk_tolerance')
+    @field_validator('economic', 'social', 'risk_tolerance', mode='before')
+    @classmethod
     def clamp_alignment(cls, v):
         """Ensure alignment values are clamped between -1 and 1."""
-        return max(-1.0, min(1.0, v))
+        return max(-1.0, min(1.0, float(v)))
 
 
 class AgentPosition(BaseModel):
@@ -86,10 +90,11 @@ class MetaAnalysis(BaseModel):
     convergence_trend: float = Field(..., ge=0.0, le=1.0, description="Trend toward consensus")
     recommend_terminate: bool = Field(False, description="Should debate end early")
 
-    @validator('novelty_score', 'argument_overlap', 'convergence_trend')
+    @field_validator('novelty_score', 'argument_overlap', 'convergence_trend', mode='before')
+    @classmethod
     def clamp_scores(cls, v):
         """Ensure scores are clamped between 0 and 1."""
-        return max(0.0, min(1.0, v))
+        return max(0.0, min(1.0, float(v)))
 
 
 class DeliberationConfig(BaseModel):

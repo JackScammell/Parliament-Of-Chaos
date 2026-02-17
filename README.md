@@ -10,9 +10,9 @@
 
 Parliament of Chaos transforms Claude Code into a multi-agent development team. Instead of a single AI assistant, you get:
 
-- **29 Agents** including specialists, planners, reviewers, and an orchestrator
+- **30 Agents** including specialists, planners, reviewers, and orchestrators
 - **9 Grumpy Reviewers** who find flaws others miss
-- **12 Slash Commands** for project planning, scoping, implementation, and code review
+- **13 Slash Commands** for project planning, scoping, implementation, code review, and structured deliberation
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
@@ -52,6 +52,7 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
 | `/parliament-review` | Full review using all 9 grumpy reviewers for maximum scrutiny |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
+| `/debate-topic [topic]` | **NEW**: Run structured multi-agent deliberation with convergence detection |
 
 ### Discovery Commands
 
@@ -74,6 +75,13 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 ---
 
 ## Agents
+
+### Orchestration Agents (2)
+
+| Agent | Role |
+|-------|------|
+| senior-council | Coordinates all agents, runs iterative review cycles until approval |
+| deliberation-conductor | **NEW**: Orchestrates structured debates with parallel execution and convergence detection |
 
 ### Planning Agents (3)
 
@@ -118,11 +126,12 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | grumpy-documentation-pedant | Documentation completeness |
 | grumpy-testing-tyrant | Test coverage and quality |
 
-### Orchestrator (1)
+### Orchestrators (2)
 
 | Agent | Role |
 |-------|------|
 | senior-council | Coordinates all agents, runs iterative review cycles until approval |
+| deliberation-conductor | Orchestrates structured debates with parallel execution and convergence detection |
 
 ---
 

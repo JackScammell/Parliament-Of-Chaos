@@ -9,7 +9,7 @@ import logging
 
 from ..models.schemas import (
     DeliberationConfig, DebateState, DebateStatement, 
-    Vote, RoundSummary, MetaAnalysis
+    Vote, RoundSummary, MetaAnalysis, AgentPosition
 )
 from ..core.state_engine import StateEngine
 from ..core.model_tier import ModelCaller, get_registry
@@ -135,26 +135,40 @@ class DebateController:
         state = self.state_engine.get_current_state()
         
         # Agents make statements in parallel
+        from ..agents.agent_runtime import AgentPrompt
+        
         if state.round == 0:
             # Opening statements
-            results = await self.agent_runtime.execute_parallel([
-                self.agent_runtime._create_opening_statement_prompt(
-                    agent_id, topic, self.state_engine.get_agent_context(agent_id)
+            prompts = [
+                AgentPrompt(
+                    agent_id=agent_id,
+                    role="agent",
+                    prompt=self.agent_runtime._build_opening_statement_prompt(
+                        agent_id, topic, self.state_engine.get_agent_context(agent_id)
+                    ),
+                    expected_schema=DebateStatement
                 )
                 for agent_id in agents
-            ])
+            ]
+            results = await self.agent_runtime.execute_parallel(prompts)
         else:
             # Rebuttals based on previous round
             prev_summary_key = f"round_{state.round - 1}"
             prev_summary = state.history_summary.get(prev_summary_key)
-            results = await self.agent_runtime.execute_parallel([
-                self.agent_runtime._create_rebuttal_prompt(
-                    agent_id, topic, 
-                    self.state_engine.get_agent_context(agent_id),
-                    prev_summary
+            prompts = [
+                AgentPrompt(
+                    agent_id=agent_id,
+                    role="agent",
+                    prompt=self.agent_runtime._build_rebuttal_prompt(
+                        agent_id, topic, 
+                        self.state_engine.get_agent_context(agent_id),
+                        [prev_summary] if prev_summary else []
+                    ),
+                    expected_schema=DebateStatement
                 )
                 for agent_id in agents
-            ])
+            ]
+            results = await self.agent_runtime.execute_parallel(prompts)
         
         # Extract valid statements
         statements: List[DebateStatement] = []
@@ -237,6 +251,8 @@ Maximum 200 words."""
         self, agents: List[str], topic: str, final_proposal: str
     ) -> List[Vote]:
         """Execute parallel voting on final proposal."""
+        from ..agents.agent_runtime import AgentPrompt
+        
         # Build voting prompts
         prompts = []
         for agent_id in agents:
@@ -244,7 +260,7 @@ Maximum 200 words."""
             prompt_text = self.agent_runtime._build_voting_prompt(
                 agent_id, topic, context, final_proposal
             )
-            prompts.append(self.agent_runtime.AgentPrompt(
+            prompts.append(AgentPrompt(
                 agent_id=agent_id,
                 role="agent",
                 prompt=prompt_text,
