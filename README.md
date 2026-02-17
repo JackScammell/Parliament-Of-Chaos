@@ -172,6 +172,14 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 
 Parliament of Chaos now includes advanced features leveraging Claude Code's latest capabilities:
 
+### 🎯 Context Optimization and Management **NEW**
+- **60-70% Token Reduction**: Structured JSON compression and rolling summaries
+- **Bounded Memory**: Token usage independent of debate length
+- **Multi-Session Support**: Persist and restore context across sessions
+- **Semantic Retrieval**: Optional vector memory integration for relevant arguments
+- **Token Tracking**: Real-time metrics and optimization statistics
+- **Backward Compatible**: Opt-in system maintaining legacy support
+
 ### 🤝 Native Agent Teams Integration
 - **Structured Debate Teams**: Advocate, Opponent, Moderator, and Synthesis roles
 - **Parallel Execution**: Teams work simultaneously for faster deliberation
@@ -222,6 +230,7 @@ Parliament of Chaos now includes advanced features leveraging Claude Code's late
 | [Installation Guide](docs/installation.md) | Detailed setup instructions and troubleshooting |
 | [Update Guide](docs/UPDATE.md) | **How plugin updates work - NOT automatic** |
 | [Usage Guide](docs/usage.md) | In-depth command usage with examples |
+| [Context Optimization](docs/CONTEXT_OPTIMIZATION.md) | **NEW: Token reduction and multi-session context management** |
 | [Hooks Configuration](docs/hooks.md) | Set up notifications and automated actions |
 | [Safe Progress Assurance](docs/safe-progress-assurance.md) | How the system ensures reliable task completion |
 | [Example Project Files](docs/example-project-files/) | Sample outputs from the planning workflow |
