@@ -234,12 +234,16 @@ Parliament of Chaos now includes advanced features leveraging Claude Code's late
 | [Installation Guide](docs/installation.md) | Detailed setup instructions and troubleshooting |
 | [Update Guide](docs/UPDATE.md) | **How plugin updates work - NOT automatic** |
 | [Usage Guide](docs/usage.md) | In-depth command usage with examples |
+| [API Reference](docs/API_REFERENCE.md) | Python library API documentation |
+| [Development Guide](docs/DEVELOPMENT.md) | Development environment setup and contribution workflow |
 | [Deliberation System](docs/DELIBERATION_SYSTEM.md) | Multi-agent deliberation architecture and features |
 | [Context Optimization](docs/CONTEXT_OPTIMIZATION.md) | Token reduction architecture and design |
 | [Token Reduction Guide](docs/TOKEN_REDUCTION_GUIDE.md) | Complete guide to session token reduction features |
 | [Hooks Configuration](docs/hooks.md) | Set up notifications and automated actions |
 | [Safe Progress Assurance](docs/safe-progress-assurance.md) | How the system ensures reliable task completion |
 | [Example Project Files](docs/example-project-files/) | Sample outputs from the planning workflow |
+| [Contributing Guide](CONTRIBUTING.md) | **How to contribute to the project** |
+| [Changelog](CHANGELOG.md) | **Version history and release notes** |
 
 ---
 
