@@ -3,7 +3,7 @@ Memory manager for cross-session learning.
 """
 
 from typing import List, Dict, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 
 from .memory_store import MemoryStore
@@ -44,7 +44,7 @@ class MemoryManager:
         entry = MemoryEntry(
             session_id=session_id,
             topic=topic,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             outcome=outcome,
             key_learnings=key_learnings,
             patterns=self._extract_patterns(outcome, key_learnings)

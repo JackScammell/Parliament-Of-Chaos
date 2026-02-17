@@ -3,7 +3,7 @@ Markdown dashboard generator for debate analytics.
 """
 
 from typing import Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class DebateDashboard:
@@ -33,7 +33,7 @@ class DebateDashboard:
         lines.append("# Debate Analytics Dashboard")
         lines.append("")
         lines.append(f"**Topic:** {debate_results.get('topic', 'N/A')}")
-        lines.append(f"**Generated:** {datetime.utcnow().isoformat()}Z")
+        lines.append(f"**Generated:** {datetime.now(timezone.utc).isoformat()}Z")
         lines.append("")
         lines.append("---")
         lines.append("")
