@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-02-17
+
 ### Added
 - Documentation review and updates
 - CONTRIBUTING.md with comprehensive contribution guidelines
@@ -186,5 +188,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-[Unreleased]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/JackScammell/Parliament-Of-Chaos/releases/tag/v1.0.0
