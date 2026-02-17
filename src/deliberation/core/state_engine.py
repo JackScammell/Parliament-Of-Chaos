@@ -53,6 +53,11 @@ class StateEngine:
         Args:
             agent_id: The agent's unique identifier
             use_optimization: Override to force optimization on/off. If None, uses self.use_context_optimization
+        
+        Note:
+            When using optimization, the topic is not included in the returned context.
+            The caller (typically DebateController) should provide the topic separately
+            when building prompts via context_manager.build_prompt_with_context().
         """
         # Determine whether to use optimization
         should_optimize = use_optimization if use_optimization is not None else self.use_context_optimization
