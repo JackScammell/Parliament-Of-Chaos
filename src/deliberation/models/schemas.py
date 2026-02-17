@@ -99,7 +99,7 @@ class MetaAnalysis(BaseModel):
 
 class DeliberationConfig(BaseModel):
     """Configuration schema for debate runtime."""
-    mode: Literal["fast", "adversarial", "consensus", "deep_deliberation"] = Field(
+    mode: Literal["fast", "adversarial", "consensus", "deep_deliberation", "team_debate"] = Field(
         "consensus", description="Deliberation mode"
     )
     max_rounds: int = Field(5, ge=1, description="Maximum number of rounds")
@@ -107,9 +107,12 @@ class DeliberationConfig(BaseModel):
     temperature: float = Field(0.7, ge=0.0, le=2.0, description="Model temperature")
     convergence_threshold: float = Field(0.85, ge=0.0, le=1.0, description="Consensus threshold")
     novelty_threshold: float = Field(0.1, ge=0.0, le=1.0, description="Minimum novelty to continue")
-    voting_system: Literal["majority", "supermajority", "quadratic", "influence_weighted"] = Field(
+    voting_system: Literal["majority", "supermajority", "quadratic", "influence_weighted", "delegated", "coalition"] = Field(
         "majority", description="Voting system type"
     )
+    use_persistent_memory: bool = Field(False, description="Enable cross-session memory")
+    enable_constraints: bool = Field(False, description="Enable user-defined constraints")
+    enable_self_improvement: bool = Field(False, description="Enable meta-learning")
 
 
 class PerformanceMetrics(BaseModel):
@@ -122,3 +125,70 @@ class PerformanceMetrics(BaseModel):
     argument_redundancy_score: float = Field(0.0, ge=0.0, le=1.0, description="Redundancy measure")
     start_time: Optional[str] = Field(None, description="Debate start timestamp")
     end_time: Optional[str] = Field(None, description="Debate end timestamp")
+    # Analytics extensions
+    consensus_score: float = Field(0.0, ge=0.0, le=1.0, description="Overall consensus level")
+    agent_influence_scores: Dict[str, float] = Field(default_factory=dict, description="Agent influence ratings")
+    argument_novelty_scores: List[float] = Field(default_factory=list, description="Novelty by round")
+    time_to_convergence: Optional[float] = Field(None, description="Time to reach convergence (seconds)")
+
+
+class TeamRole(BaseModel):
+    """Schema for debate team roles."""
+    role: Literal["advocate", "opponent", "moderator", "synthesis"] = Field(..., description="Team role type")
+    description: str = Field(..., description="Role description")
+    agents: List[str] = Field(default_factory=list, description="Agents assigned to this role")
+    priority: int = Field(1, ge=1, le=4, description="Role priority in debate flow")
+
+
+class DebateTeamsConfig(BaseModel):
+    """Configuration for structured debate teams."""
+    enable_teams: bool = Field(False, description="Enable team-based debate mode")
+    teams: List[TeamRole] = Field(default_factory=list, description="Debate teams")
+    team_coordination_mode: Literal["sequential", "parallel", "hybrid"] = Field(
+        "parallel", description="How teams interact"
+    )
+
+
+class AgentSkillTree(BaseModel):
+    """Hierarchical skill tree for specialist agents."""
+    agent_id: str = Field(..., description="Agent identifier")
+    primary_domain: str = Field(..., description="Main area of expertise")
+    skills: Dict[str, List[str]] = Field(default_factory=dict, description="Hierarchical skills")
+    skill_level: Dict[str, int] = Field(default_factory=dict, description="Proficiency per skill (1-5)")
+
+
+class MemoryEntry(BaseModel):
+    """Schema for persistent memory entries."""
+    session_id: str = Field(..., description="Debate session identifier")
+    topic: str = Field(..., description="Debate topic")
+    timestamp: str = Field(..., description="ISO timestamp")
+    outcome: Dict = Field(default_factory=dict, description="Debate outcome")
+    key_learnings: List[str] = Field(default_factory=list, description="Lessons learned")
+    patterns: List[str] = Field(default_factory=list, description="Identified patterns")
+    embeddings: Optional[List[float]] = Field(None, description="Vector embedding for semantic search")
+
+
+class ConstraintDefinition(BaseModel):
+    """User-defined constraints for debates."""
+    max_rounds: Optional[int] = Field(None, description="Override max rounds")
+    disallowed_patterns: List[str] = Field(default_factory=list, description="Patterns to avoid")
+    required_validators: List[str] = Field(default_factory=list, description="Must-pass validation rules")
+    custom_rules: Dict[str, str] = Field(default_factory=dict, description="Custom constraint rules")
+
+
+class SessionState(BaseModel):
+    """State for multi-session debate chaining."""
+    session_id: str = Field(..., description="Current session ID")
+    previous_sessions: List[str] = Field(default_factory=list, description="Linked previous sessions")
+    carried_forward_context: Dict = Field(default_factory=dict, description="Context from previous sessions")
+    unresolved_conflicts: List[str] = Field(default_factory=list, description="Conflicts needing resolution")
+    session_summaries: Dict[str, str] = Field(default_factory=dict, description="Summaries by session")
+
+
+class MetaLearning(BaseModel):
+    """Meta-learning data for self-improvement."""
+    strategy_id: str = Field(..., description="Strategy identifier")
+    performance_history: List[float] = Field(default_factory=list, description="Performance scores")
+    adaptation_count: int = Field(0, description="Number of adaptations")
+    successful_patterns: List[str] = Field(default_factory=list, description="Winning patterns")
+    failed_patterns: List[str] = Field(default_factory=list, description="Patterns to avoid")

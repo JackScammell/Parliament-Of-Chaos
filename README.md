@@ -52,7 +52,7 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
 | `/parliament-review` | Full review using all 9 grumpy reviewers for maximum scrutiny |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
-| `/debate-topic [topic]` | **NEW**: Run structured multi-agent deliberation with convergence detection |
+| `/debate-topic [topic]` | Run structured multi-agent deliberation with convergence detection |
 
 ### Discovery Commands
 
@@ -71,6 +71,14 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | `/roadmap-add-item <name> --phase <n>` | Add a new item to an existing roadmap |
 | `/roadmap-item-scope <item>` | Create detailed Spec.md and tasks.md for a roadmap item |
 | `/implement-task-list [item]` | Execute tasks with full council review (specialists + grumpy approval) |
+
+### Analytics & Plugin Commands
+
+| Command | Description |
+|---------|-------------|
+| `/debate-analytics [topic]` | **NEW**: Generate comprehensive analytics dashboard with metrics, influence scores, and insights |
+| `/plugin-install <name>` | **NEW**: Install community agent plugins from the marketplace |
+| `/plugin-list` | **NEW**: List all installed plugins and marketplace summary |
 
 ---
 
@@ -157,6 +165,53 @@ When you invoke `/plan-project`:
 4. **Roadmap** - Produces `Roadmap.md` with phased implementation plan
 
 Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/implement-task-list` to execute them with full council oversight (specialists implement, grumpy reviewers approve).
+
+---
+
+## Enhanced Features
+
+Parliament of Chaos now includes advanced features leveraging Claude Code's latest capabilities:
+
+### 🤝 Native Agent Teams Integration
+- **Structured Debate Teams**: Advocate, Opponent, Moderator, and Synthesis roles
+- **Parallel Execution**: Teams work simultaneously for faster deliberation
+- **Real-time Coordination**: Visual output showing debate activity and progress
+
+### 🧠 Persistent Memory System
+- **Cross-Session Learning**: Remember debates across projects
+- **Pattern Recognition**: Track conceptual evolution and solutions
+- **Semantic Search**: Find relevant past discussions by topic
+
+### 🔌 Plugin Marketplace
+- **Community Agents**: Install specialist agents from the marketplace
+- **Extensible System**: `/plugin-install [name]` to add new capabilities
+- **Skill Trees**: Hierarchical expertise for token-efficient specialization
+
+### 📊 Debate Analytics Dashboard
+- **Comprehensive Metrics**: Consensus scores, agent influence, argument novelty
+- **Visual Reports**: Markdown dashboards with trends and insights
+- **Performance Tracking**: Token usage, latency, time to convergence
+
+### 🎯 Advanced Governance Models
+- **Confidence-Weighted Voting**: Votes weighted by agent confidence
+- **Coalition Formation**: Agents align based on positions and values
+- **Delegated Voting**: High-confidence agents receive more weight
+- **Supermajority & Quadratic**: Multiple voting system options
+
+### ⚙️ User-Driven Constraints
+- **YAML Configuration**: Define debate rules and patterns to avoid
+- **Automatic Validation**: Agents check against constraints
+- **Custom Rules**: Pattern matching and requirement enforcement
+
+### 🔄 Multi-Session Debate Chaining
+- **Stateful Debates**: Carry context across multiple sessions
+- **Conflict Tracking**: Monitor and resolve unresolved issues
+- **Session Summaries**: Compressed history for long-running topics
+
+### 🎓 Self-Improving Agents
+- **Meta-Learning**: Track strategy performance over time
+- **Adaptive Behavior**: Agents learn from past debates
+- **Pattern Evolution**: Identify successful and failed approaches
 
 ---
 
