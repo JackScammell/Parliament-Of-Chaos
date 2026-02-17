@@ -172,8 +172,12 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 
 Parliament of Chaos now includes advanced features leveraging Claude Code's latest capabilities:
 
-### 🎯 Context Optimization and Management **NEW**
-- **60-70% Token Reduction**: Structured JSON compression and rolling summaries
+### 🎯 Context Optimization and Management **ENHANCED**
+- **70% Token Reduction**: Accurate token counting with tiktoken, dynamic pruning, and deduplication
+- **Session Token Monitor**: Real-time tracking with automatic compression triggers
+- **Token Budget Enforcer**: Per-agent budget limits with automatic context compression
+- **Statement Deduplication**: Jaccard similarity detection to prevent redundant arguments
+- **Context Pruning**: Remove low-confidence statements while preserving high-influence agents
 - **Bounded Memory**: Token usage independent of debate length
 - **Multi-Session Support**: Persist and restore context across sessions
 - **Semantic Retrieval**: Optional vector memory integration for relevant arguments
@@ -230,7 +234,8 @@ Parliament of Chaos now includes advanced features leveraging Claude Code's late
 | [Installation Guide](docs/installation.md) | Detailed setup instructions and troubleshooting |
 | [Update Guide](docs/UPDATE.md) | **How plugin updates work - NOT automatic** |
 | [Usage Guide](docs/usage.md) | In-depth command usage with examples |
-| [Context Optimization](docs/CONTEXT_OPTIMIZATION.md) | **NEW: Token reduction and multi-session context management** |
+| [Context Optimization](docs/CONTEXT_OPTIMIZATION.md) | Token reduction architecture and design |
+| [Token Reduction Guide](docs/TOKEN_REDUCTION_GUIDE.md) | **NEW: Complete guide to session token reduction features** |
 | [Hooks Configuration](docs/hooks.md) | Set up notifications and automated actions |
 | [Safe Progress Assurance](docs/safe-progress-assurance.md) | How the system ensures reliable task completion |
 | [Example Project Files](docs/example-project-files/) | Sample outputs from the planning workflow |
