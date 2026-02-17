@@ -165,6 +165,7 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 | Document | Description |
 |----------|-------------|
 | [Installation Guide](docs/installation.md) | Detailed setup instructions and troubleshooting |
+| [Update Guide](docs/UPDATE.md) | **How plugin updates work - NOT automatic** |
 | [Usage Guide](docs/usage.md) | In-depth command usage with examples |
 | [Hooks Configuration](docs/hooks.md) | Set up notifications and automated actions |
 | [Safe Progress Assurance](docs/safe-progress-assurance.md) | How the system ensures reliable task completion |
@@ -197,6 +198,17 @@ Parliament of Chaos creates and manages files in `.project-files/`:
 ```
 
 For detailed installation steps, verification, and troubleshooting, see the [Installation Guide](docs/installation.md).
+
+### Updating
+
+**Important:** Claude Code does NOT automatically update plugins.
+
+To update to the latest version, re-run:
+```
+/install-github-plugin JackScammell/Parliament-Of-Chaos
+```
+
+For complete update instructions and FAQs, see the [Update Guide](docs/UPDATE.md).
 
 ---
 
