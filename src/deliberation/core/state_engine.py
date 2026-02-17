@@ -12,6 +12,7 @@ from ..models.schemas import (
     DebateState, AgentPosition, RoundSummary, 
     DebateStatement, Vote
 )
+from .context_manager import ContextManager
 
 logger = logging.getLogger(__name__)
 
@@ -21,26 +22,62 @@ class StateEngine:
     Manages structured debate state.
     Agents receive current state, previous summary, and their last position.
     Full transcripts are NOT persisted unless explicitly required.
+    
+    Now integrated with ContextManager for token-efficient context handling.
     """
     
-    def __init__(self, initial_state: Optional[DebateState] = None):
+    def __init__(self, initial_state: Optional[DebateState] = None, use_context_optimization: bool = False):
         self.state = initial_state or DebateState()
         self._round_transcripts: Dict[int, List[str]] = {}  # Temporary, discarded after compression
         self._metadata: Dict[str, Any] = {
             "created_at": datetime.utcnow().isoformat(),
             "last_updated": datetime.utcnow().isoformat()
         }
+        
+        # Context optimization (disabled by default for backward compatibility)
+        self.use_context_optimization = use_context_optimization
+        self.context_manager = ContextManager() if use_context_optimization else None
     
     def get_current_state(self) -> DebateState:
         """Get current structured state."""
         return self.state
     
-    def get_agent_context(self, agent_id: str) -> Dict:
+    def get_agent_context(self, agent_id: str, use_optimization: Optional[bool] = None) -> Dict:
         """
         Get context for a specific agent.
         Returns: current state, previous round summary, agent's last position.
         Does NOT include full transcripts.
+        
+        If context optimization is enabled, uses ContextManager for token efficiency.
+        
+        Args:
+            agent_id: The agent's unique identifier
+            use_optimization: Override to force optimization on/off. If None, uses self.use_context_optimization
+        
+        Note:
+            When using optimization, the topic is not included in the returned context.
+            The caller (typically DebateController) should provide the topic separately
+            when building prompts via context_manager.build_prompt_with_context().
         """
+        # Determine whether to use optimization
+        should_optimize = use_optimization if use_optimization is not None else self.use_context_optimization
+        
+        if should_optimize and self.context_manager:
+            # Use optimized context manager
+            agent_position = self.state.agent_positions.get(agent_id)
+            optimized_context = self.context_manager.build_agent_context(
+                agent_id=agent_id,
+                agent_position=agent_position,
+                topic=""  # Topic should be provided by caller if needed
+            )
+            # Add legacy fields for backward compatibility
+            optimized_context["policy_vector"] = self.state.policy_vector
+            optimized_context["open_amendments_legacy"] = self.state.open_amendments
+            optimized_context["conflict_map"] = self.state.conflict_map
+            optimized_context["agent_position"] = agent_position
+            return optimized_context
+        
+        # Legacy context (less optimized)
         context = {
             "round": self.state.round,
             "policy_vector": self.state.policy_vector,
@@ -62,6 +99,8 @@ class StateEngine:
         """
         Update an agent's position based on their debate statement.
         Mutates state only after validation.
+        
+        If context optimization is enabled, also updates ContextManager.
         """
         if agent_id not in self.state.agent_positions:
             self.state.agent_positions[agent_id] = AgentPosition(
@@ -85,6 +124,10 @@ class StateEngine:
             
             old_position.stance = statement.position
             old_position.confidence = statement.confidence
+        
+        # Update context manager if enabled
+        if self.use_context_optimization and self.context_manager:
+            self.context_manager.add_statement(statement)
         
         self._metadata["last_updated"] = datetime.utcnow().isoformat()
         logger.info(f"Updated position for agent '{agent_id}'")
@@ -126,6 +169,8 @@ class StateEngine:
         1. Store structured summary
         2. Discard raw transcript
         3. Advance round counter
+        
+        If context optimization is enabled, also updates ContextManager.
         """
         summary_key = f"round_{round_num}"
         self.state.history_summary[summary_key] = summary
@@ -139,9 +184,17 @@ class StateEngine:
                 f"Discarded {transcript_size} transcript entries, stored summary"
             )
         
+        # Compress in context manager if enabled
+        if self.use_context_optimization and self.context_manager:
+            self.context_manager.compress_round(summary)
+        
         # Advance round
         self.state.round += 1
         self._metadata["last_updated"] = datetime.utcnow().isoformat()
+        
+        # Start next round in context manager
+        if self.use_context_optimization and self.context_manager:
+            self.context_manager.start_new_round(self.state.round)
     
     def get_round_transcript(self, round_num: int) -> List[str]:
         """
@@ -195,4 +248,18 @@ class StateEngine:
             "created_at": datetime.utcnow().isoformat(),
             "last_updated": datetime.utcnow().isoformat()
         }
+        
+        # Reset context manager if enabled
+        if self.use_context_optimization and self.context_manager:
+            self.context_manager.reset()
+        
         logger.info("State engine reset")
+    
+    def get_context_statistics(self) -> Optional[Dict]:
+        """
+        Get context optimization statistics if enabled.
+        Returns None if context optimization is disabled.
+        """
+        if self.use_context_optimization and self.context_manager:
+            return self.context_manager.get_token_statistics()
+        return None

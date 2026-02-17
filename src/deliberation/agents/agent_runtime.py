@@ -12,6 +12,7 @@ from datetime import datetime
 from ..models.schemas import DebateStatement, Vote, DeliberationConfig
 from ..core.model_tier import ModelCaller, ModelRole
 from ..utils.validation import Validator, ValidationResult
+from ..core.context_manager import ContextManager
 
 logger = logging.getLogger(__name__)
 
@@ -29,13 +30,16 @@ class AgentRuntime:
     """
     Runtime for executing agent calls in parallel.
     All independent agent calls MUST run concurrently.
+    
+    Supports optimized context management for token reduction.
     """
     
     def __init__(self, model_caller: ModelCaller, validator: Validator,
-                 config: DeliberationConfig):
+                 config: DeliberationConfig, context_manager: Optional[ContextManager] = None):
         self.model_caller = model_caller
         self.validator = validator
         self.config = config
+        self.context_manager = context_manager  # Optional context optimization
         self._metrics: Dict[str, Any] = {
             "total_calls": 0,
             "parallel_batches": 0,
@@ -219,7 +223,29 @@ class AgentRuntime:
     def _build_opening_statement_prompt(
         self, agent_id: str, topic: str, context: Dict
     ) -> str:
-        """Build standardized prompt for opening statement."""
+        """
+        Build standardized prompt for opening statement.
+        Uses optimized context if available.
+        """
+        if self.context_manager:
+            # Use optimized context manager
+            from ..models.schemas import AgentPosition
+            agent_position = context.get("agent_position")
+            if isinstance(agent_position, dict):
+                # Convert dict to AgentPosition if needed
+                agent_position = AgentPosition(**agent_position) if agent_position else None
+            
+            return self.context_manager.build_prompt_with_context(
+                agent_id=agent_id,
+                role=f"Debate Agent ({agent_id})",
+                objective="Provide opening position on debate topic",
+                agent_position=agent_position,
+                topic=topic,
+                max_tokens=self.config.max_tokens_per_agent,
+                schema_name="DebateStatement"
+            )
+        
+        # Legacy prompt building (more verbose)
         return f"""ROLE: Debate Agent ({agent_id})
 
 OBJECTIVE: Provide opening position on debate topic

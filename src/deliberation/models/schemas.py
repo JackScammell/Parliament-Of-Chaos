@@ -192,3 +192,23 @@ class MetaLearning(BaseModel):
     adaptation_count: int = Field(0, description="Number of adaptations")
     successful_patterns: List[str] = Field(default_factory=list, description="Winning patterns")
     failed_patterns: List[str] = Field(default_factory=list, description="Patterns to avoid")
+
+
+class VectorMemoryEntry(BaseModel):
+    """Schema for vector memory storage."""
+    entry_id: str = Field(..., description="Unique entry identifier")
+    content: str = Field(..., description="Text content to embed")
+    metadata: Dict = Field(default_factory=dict, description="Additional metadata")
+    embedding: Optional[List[float]] = Field(None, description="Vector embedding")
+    timestamp: str = Field(..., description="ISO timestamp")
+
+
+class ContextOptimizationMetrics(BaseModel):
+    """Metrics for context optimization effectiveness."""
+    average_tokens_per_agent: float = Field(0.0, ge=0.0, description="Average tokens per agent call")
+    token_reduction_percentage: float = Field(0.0, ge=0.0, le=100.0, description="Reduction vs baseline")
+    immediate_context_tokens: int = Field(0, ge=0, description="Tokens in immediate context")
+    historical_context_tokens: int = Field(0, ge=0, description="Tokens in historical summaries")
+    reference_context_tokens: int = Field(0, ge=0, description="Tokens in reference context")
+    compression_ratio: float = Field(0.0, ge=0.0, description="Ratio of compressed to full")
+    rounds_tracked: int = Field(0, ge=0, description="Number of rounds tracked")
