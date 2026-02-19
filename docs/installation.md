@@ -34,6 +34,10 @@ You should see the grumpy reviewer persona activate and prompt you for code to r
 The plugin adds the following to your Claude Code configuration:
 
 ```
+src/
+  deliberation/           # Python deliberation system (analytics, plugins, core modules)
+requirements.txt          # Python dependencies for the deliberation system
+
 .claude/
   agents/
     parliament-of-chaos/
