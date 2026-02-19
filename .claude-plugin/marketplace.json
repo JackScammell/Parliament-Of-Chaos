@@ -2,7 +2,7 @@
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "parliament-of-chaos",
   "description": "A Claude Code plugin that summons a council of opinionated AI specialists to plan, build, review, and refine your projects through structured debate and iteration.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "owner": {
     "name": "Jack Scammell",
     "url": "https://github.com/JackScammell"
@@ -79,6 +79,10 @@
         "./.claude/agents/parliament-of-chaos/task-executor.md",
         "./.claude/agents/parliament-of-chaos/test-prophet.md",
         "./.claude/agents/parliament-of-chaos/ui-ux-guru.md"
+      ],
+      "files": [
+        "./src/",
+        "./requirements.txt"
       ],
       "strict": false
     }
