@@ -1,3 +1,7 @@
+---
+description: Add a new item to an existing phase in the project roadmap
+---
+
 # Roadmap Add Item
 
 Add a new item to an existing phase in the project roadmap without re-running `/plan-project`.

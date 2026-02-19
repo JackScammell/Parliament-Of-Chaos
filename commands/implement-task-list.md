@@ -1,3 +1,7 @@
+---
+description: Implement a roadmap item's tasks with full Parliament oversight
+---
+
 # Implement Task List
 
 You are implementing a roadmap item's tasks using the **senior-council** orchestrator, which coordinates specialists and grumpy reviewers to ensure quality.

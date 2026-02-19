@@ -559,7 +559,7 @@ When invoked, it:
 
 To implement a custom agent:
 
-1. Create an agent definition in `.claude/agents/parliament-of-chaos/`
+1. Create an agent definition in `agents/`
 2. Define the agent's expertise and role
 3. Integrate with the deliberation system via `DebateController`
 

@@ -41,8 +41,8 @@ For Parliament of Chaos, this means:
 
 | Content | Location |
 |---------|----------|
-| Commands | `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/commands/parliament-of-chaos/` |
-| Agents | `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/agents/parliament-of-chaos/` |
+| Commands | `~/.claude/plugins/marketplaces/parliament-of-chaos/commands/` |
+| Agents | `~/.claude/plugins/marketplaces/parliament-of-chaos/agents/` |
 | Plugin metadata | `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude-plugin/marketplace.json` |
 
 ### Why This Location?
@@ -249,8 +249,8 @@ Check that any newly announced agents appear in the list.
 ### What Gets Updated
 
 During an update, these are replaced with new versions:
-- `.claude/agents/parliament-of-chaos/` - All agent files
-- `.claude/commands/parliament-of-chaos/` - All command files
+- `agents/` - All agent files
+- `commands/` - All command files
 
 **Not affected by updates:**
 - `.project-files/` - Your project plans and roadmaps
@@ -339,7 +339,7 @@ If `/summon-council` is not recognised:
 
 If the Senior Council cannot find specialist agents:
 
-1. Ensure all agent files are present in `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/agents/parliament-of-chaos/`
+1. Ensure all agent files are present in `~/.claude/plugins/marketplaces/parliament-of-chaos/agents/`
 2. Check that files have `.md` extension and correct YAML frontmatter
 
 ### Planning commands not working

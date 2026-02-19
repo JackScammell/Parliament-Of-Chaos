@@ -1,5 +1,4 @@
 ---
-name: plugin-list
 description: List all installed agent plugins from the marketplace
 ---
 

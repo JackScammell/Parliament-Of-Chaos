@@ -54,3 +54,7 @@ htmlcov/
 .parliament-sessions/
 .parliament-learning/
 .parliament-skills/
+
+# User-specific Claude Code settings (not part of the plugin)
+.claude/settings.local.json
+.claude/hooks/

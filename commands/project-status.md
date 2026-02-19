@@ -1,3 +1,7 @@
+---
+description: Display a dashboard showing the current state of the project
+---
+
 # Project Status
 
 Display a dashboard showing the current state of the project.

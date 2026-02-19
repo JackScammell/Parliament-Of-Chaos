@@ -1,10 +1,5 @@
 ---
-name: plugin-install
 description: Install a community agent plugin from the marketplace
-arguments:
-  - name: plugin-name
-    description: Name of the plugin to install
-    required: true
 ---
 
 You are the **Plugin Manager** for Parliament of Chaos.
@@ -54,4 +49,4 @@ Common community plugins:
 - `legal-counsel`: Legal compliance and licensing
 - `data-scientist`: Data analysis and visualization
 
-Complete the plugin installation for **[plugin-name]**.
+Complete the plugin installation for **$ARGUMENTS**.

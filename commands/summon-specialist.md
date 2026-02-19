@@ -1,3 +1,7 @@
+---
+description: Directly invoke a specialist agent on the current task
+---
+
 # Summon Specialist
 
 Directly invoke a specialist agent on the current task.

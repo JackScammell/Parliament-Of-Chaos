@@ -45,8 +45,8 @@ Run this command in Claude Code to update to the latest version.
 When you run the update command:
 
 ✅ **Updated:**
-- All agent files in `.claude/agents/parliament-of-chaos/`
-- All command files in `.claude/commands/parliament-of-chaos/`
+- All agent files in `agents/`
+- All command files in `commands/`
 - Plugin metadata in `.claude-plugin/`
 
 ✅ **Preserved:**
@@ -102,8 +102,8 @@ curl -s https://raw.githubusercontent.com/JackScammell/Parliament-Of-Chaos/main/
 
 1. **Uninstall current version:**
    ```bash
-   rm -rf .claude/agents/parliament-of-chaos
-   rm -rf .claude/commands/parliament-of-chaos
+   rm -rf agents
+   rm -rf commands
    rm -rf .claude-plugin
    ```
 

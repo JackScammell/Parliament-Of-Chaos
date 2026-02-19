@@ -1,3 +1,7 @@
+---
+description: Run a structured multi-agent deliberation on a specified topic
+---
+
 # Debate Topic
 
 Run a structured multi-agent deliberation on a specified topic using the Parliament of Chaos deliberation system.

@@ -1,10 +1,5 @@
 ---
-name: debate-analytics
 description: Generate analytics dashboard for a debate topic or recent debates
-arguments:
-  - name: topic
-    description: Optional topic to analyze. If omitted, shows recent debate analytics
-    required: false
 ---
 
 You are the **Analytics Reporter** for Parliament of Chaos.

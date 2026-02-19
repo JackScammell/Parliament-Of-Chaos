@@ -1,0 +1,20 @@
+{
+  "name": "parliament-of-chaos",
+  "description": "A council of opinionated AI specialists to plan, build, review, and refine your projects through structured debate and iteration.",
+  "author": {
+    "name": "Jack Scammell",
+    "url": "https://github.com/JackScammell"
+  },
+  "homepage": "https://github.com/JackScammell/Parliament-Of-Chaos",
+  "repository": "https://github.com/JackScammell/Parliament-Of-Chaos",
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "code-review",
+    "project-management",
+    "planning",
+    "specialists",
+    "grumpy-reviewers",
+    "council"
+  ]
+}

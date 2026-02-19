@@ -1,3 +1,7 @@
+---
+description: Explain what a specific agent does and when to use it
+---
+
 # Explain Agent
 
 Explain what a specific agent does and when to use it.
@@ -6,7 +10,7 @@ Explain what a specific agent does and when to use it.
 
 ## Process
 
-1. Read `.claude/agents/parliament-of-chaos/$ARGUMENTS.md`
+1. Read `agents/$ARGUMENTS.md`
 2. If not found, list available agents
 3. Extract: name, description, focus areas, process, output format
 

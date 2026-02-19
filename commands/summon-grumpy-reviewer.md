@@ -1,3 +1,9 @@
+---
+description: Ruthless senior code review focusing on quality, structure, standards, and maintainability
+---
+
+# Summon Grumpy Reviewer
+
 Ruthless senior code review focusing on quality, structure, standards, and maintainability.
 
 Combines: grumpy-code-reviewer + shades of grumpy-standards-enforcer, grumpy-architecture-skeptic, grumpy-maintainability-curmudgeon.

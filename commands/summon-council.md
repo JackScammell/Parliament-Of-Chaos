@@ -1,3 +1,7 @@
+---
+description: Orchestrate specialists and grumpy reviewers for complex tasks
+---
+
 # Summon the Council
 
 Orchestrate specialists + grumpy reviewers for complex tasks. Iterate until all reviewers approve.

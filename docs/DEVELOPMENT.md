@@ -375,7 +375,7 @@ Press F5 to start debugging.
 
 1. **Create agent file**:
    ```bash
-   touch .claude/agents/parliament-of-chaos/my-new-agent.md
+   touch agents/my-new-agent.md
    ```
 
 2. **Add agent definition** following the template in [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -391,7 +391,7 @@ Press F5 to start debugging.
 
 1. **Create command file**:
    ```bash
-   touch .claude/commands/parliament-of-chaos/my-new-command.md
+   touch commands/my-new-command.md
    ```
 
 2. **Add command definition** following the template in [CONTRIBUTING.md](CONTRIBUTING.md)

@@ -1,3 +1,7 @@
+---
+description: Guide a project from idea to structured plan with outline, features, and roadmap
+---
+
 # Plan Project
 
 You are initiating a project planning session using the **project-oracle** agent.

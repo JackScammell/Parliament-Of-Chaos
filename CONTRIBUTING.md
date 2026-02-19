@@ -141,7 +141,7 @@ def process_statement(agent_id: str, statement: str, confidence: float) -> Debat
 
 ### Agent Definition Files (.md)
 
-Agent files in `.claude/agents/parliament-of-chaos/` should follow this structure:
+Agent files in `agents/` should follow this structure:
 
 ```markdown
 ---
@@ -170,7 +170,7 @@ What kind of output this agent provides.
 
 ### Command Definition Files (.md)
 
-Command files in `.claude/commands/parliament-of-chaos/` should follow this structure:
+Command files in `commands/` should follow this structure:
 
 ```markdown
 ---
@@ -326,7 +326,7 @@ When making changes that affect documentation:
 ### Steps to Create a New Agent
 
 1. **Define the agent's role** and expertise area
-2. **Create agent file** in `.claude/agents/parliament-of-chaos/`
+2. **Create agent file** in `agents/`
 3. **Follow the agent template** (see Code Style Guidelines)
 4. **Update README.md** to include the new agent
 5. **Add tests** if the agent has Python implementation
@@ -346,7 +346,7 @@ When making changes that affect documentation:
 ### Steps to Create a New Command
 
 1. **Define the command's purpose** and use cases
-2. **Create command file** in `.claude/commands/parliament-of-chaos/`
+2. **Create command file** in `commands/`
 3. **Follow the command template** (see Code Style Guidelines)
 4. **Update documentation**:
    - Add to README.md commands table

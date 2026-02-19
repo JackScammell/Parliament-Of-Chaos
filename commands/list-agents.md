@@ -1,10 +1,14 @@
+---
+description: Display all Parliament of Chaos agents grouped by category
+---
+
 # List Agents
 
 Display all Parliament of Chaos agents grouped by category.
 
 ## Process
 
-1. Read all `.claude/agents/parliament-of-chaos/*.md` files
+1. Read all `agents/*.md` files
 2. Extract name and description from YAML frontmatter
 3. Group by category:
    - **Orchestrator**: senior-council
