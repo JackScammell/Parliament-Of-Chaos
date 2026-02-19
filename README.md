@@ -10,9 +10,9 @@
 
 Parliament of Chaos transforms Claude Code into a multi-agent development team. Instead of a single AI assistant, you get:
 
-- **29 Agents** including specialists, planners, reviewers, and an orchestrator
+- **30 Agents** including specialists, planners, reviewers, and orchestrators
 - **9 Grumpy Reviewers** who find flaws others miss
-- **12 Slash Commands** for project planning, scoping, implementation, and code review
+- **13 Slash Commands** for project planning, scoping, implementation, code review, and structured deliberation
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
@@ -52,6 +52,7 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
 | `/parliament-review` | Full review using all 9 grumpy reviewers for maximum scrutiny |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
+| `/debate-topic [topic]` | Run structured multi-agent deliberation with convergence detection |
 
 ### Discovery Commands
 
@@ -71,9 +72,24 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | `/roadmap-item-scope <item>` | Create detailed Spec.md and tasks.md for a roadmap item |
 | `/implement-task-list [item]` | Execute tasks with full council review (specialists + grumpy approval) |
 
+### Analytics & Plugin Commands
+
+| Command | Description |
+|---------|-------------|
+| `/debate-analytics [topic]` | **NEW**: Generate comprehensive analytics dashboard with metrics, influence scores, and insights |
+| `/plugin-install <name>` | **NEW**: Install community agent plugins from the marketplace |
+| `/plugin-list` | **NEW**: List all installed plugins and marketplace summary |
+
 ---
 
 ## Agents
+
+### Orchestration Agents (2)
+
+| Agent | Role |
+|-------|------|
+| senior-council | Coordinates all agents, runs iterative review cycles until approval |
+| deliberation-conductor | **NEW**: Orchestrates structured debates with parallel execution and convergence detection |
 
 ### Planning Agents (3)
 
@@ -118,11 +134,12 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | grumpy-documentation-pedant | Documentation completeness |
 | grumpy-testing-tyrant | Test coverage and quality |
 
-### Orchestrator (1)
+### Orchestrators (2)
 
 | Agent | Role |
 |-------|------|
 | senior-council | Coordinates all agents, runs iterative review cycles until approval |
+| deliberation-conductor | Orchestrates structured debates with parallel execution and convergence detection |
 
 ---
 
@@ -151,15 +168,82 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 
 ---
 
+## Enhanced Features
+
+Parliament of Chaos now includes advanced features leveraging Claude Code's latest capabilities:
+
+### 🎯 Context Optimization and Management **ENHANCED**
+- **70% Token Reduction**: Accurate token counting with tiktoken, dynamic pruning, and deduplication
+- **Session Token Monitor**: Real-time tracking with automatic compression triggers
+- **Token Budget Enforcer**: Per-agent budget limits with automatic context compression
+- **Statement Deduplication**: Jaccard similarity detection to prevent redundant arguments
+- **Context Pruning**: Remove low-confidence statements while preserving high-influence agents
+- **Bounded Memory**: Token usage independent of debate length
+- **Multi-Session Support**: Persist and restore context across sessions
+- **Semantic Retrieval**: Optional vector memory integration for relevant arguments
+- **Token Tracking**: Real-time metrics and optimization statistics
+- **Backward Compatible**: Opt-in system maintaining legacy support
+
+### 🤝 Native Agent Teams Integration
+- **Structured Debate Teams**: Advocate, Opponent, Moderator, and Synthesis roles
+- **Parallel Execution**: Teams work simultaneously for faster deliberation
+- **Real-time Coordination**: Visual output showing debate activity and progress
+
+### 🧠 Persistent Memory System
+- **Cross-Session Learning**: Remember debates across projects
+- **Pattern Recognition**: Track conceptual evolution and solutions
+- **Semantic Search**: Find relevant past discussions by topic
+
+### 🔌 Plugin Marketplace
+- **Community Agents**: Install specialist agents from the marketplace
+- **Extensible System**: `/plugin-install [name]` to add new capabilities
+- **Skill Trees**: Hierarchical expertise for token-efficient specialization
+
+### 📊 Debate Analytics Dashboard
+- **Comprehensive Metrics**: Consensus scores, agent influence, argument novelty
+- **Visual Reports**: Markdown dashboards with trends and insights
+- **Performance Tracking**: Token usage, latency, time to convergence
+
+### 🎯 Advanced Governance Models
+- **Confidence-Weighted Voting**: Votes weighted by agent confidence
+- **Coalition Formation**: Agents align based on positions and values
+- **Delegated Voting**: High-confidence agents receive more weight
+- **Supermajority & Quadratic**: Multiple voting system options
+
+### ⚙️ User-Driven Constraints
+- **YAML Configuration**: Define debate rules and patterns to avoid
+- **Automatic Validation**: Agents check against constraints
+- **Custom Rules**: Pattern matching and requirement enforcement
+
+### 🔄 Multi-Session Debate Chaining
+- **Stateful Debates**: Carry context across multiple sessions
+- **Conflict Tracking**: Monitor and resolve unresolved issues
+- **Session Summaries**: Compressed history for long-running topics
+
+### 🎓 Self-Improving Agents
+- **Meta-Learning**: Track strategy performance over time
+- **Adaptive Behavior**: Agents learn from past debates
+- **Pattern Evolution**: Identify successful and failed approaches
+
+---
+
 ## Documentation
 
 | Document | Description |
 |----------|-------------|
 | [Installation Guide](docs/installation.md) | Detailed setup instructions and troubleshooting |
+| [Update Guide](docs/UPDATE.md) | **How plugin updates work - NOT automatic** |
 | [Usage Guide](docs/usage.md) | In-depth command usage with examples |
+| [API Reference](docs/API_REFERENCE.md) | Python library API documentation |
+| [Development Guide](docs/DEVELOPMENT.md) | Development environment setup and contribution workflow |
+| [Deliberation System](docs/DELIBERATION_SYSTEM.md) | Multi-agent deliberation architecture and features |
+| [Context Optimization](docs/CONTEXT_OPTIMIZATION.md) | Token reduction architecture and design |
+| [Token Reduction Guide](docs/TOKEN_REDUCTION_GUIDE.md) | Complete guide to session token reduction features |
 | [Hooks Configuration](docs/hooks.md) | Set up notifications and automated actions |
 | [Safe Progress Assurance](docs/safe-progress-assurance.md) | How the system ensures reliable task completion |
 | [Example Project Files](docs/example-project-files/) | Sample outputs from the planning workflow |
+| [Contributing Guide](CONTRIBUTING.md) | **How to contribute to the project** |
+| [Changelog](CHANGELOG.md) | **Version history and release notes** |
 
 ---
 
@@ -188,6 +272,17 @@ Parliament of Chaos creates and manages files in `.project-files/`:
 ```
 
 For detailed installation steps, verification, and troubleshooting, see the [Installation Guide](docs/installation.md).
+
+### Updating
+
+**Important:** Claude Code does NOT automatically update plugins.
+
+To update to the latest version, re-run:
+```
+/install-github-plugin JackScammell/Parliament-Of-Chaos
+```
+
+For complete update instructions and FAQs, see the [Update Guide](docs/UPDATE.md).
 
 ---
 

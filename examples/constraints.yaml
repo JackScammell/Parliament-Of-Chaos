@@ -1,0 +1,24 @@
+# Parliament of Chaos - Debate Constraints Configuration
+# Define rules and constraints for debate behavior
+
+constraints:
+  # Maximum number of debate rounds
+  max_rounds: 5
+  
+  # Patterns to disallow in debate statements
+  disallowed_patterns:
+    - "nested callbacks"
+    - "global state"
+    - "eval\\("
+    - "dangerous pattern"
+  
+  # Required validation rules
+  required_validators:
+    - "security_check"
+    - "style_compliance"
+  
+  # Custom constraint rules
+  custom_rules:
+    no_profanity: "!profane_word"
+    require_evidence: "evidence|source|citation"
+    length_limit: "^.{0,500}$"
