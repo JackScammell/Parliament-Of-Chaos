@@ -78,8 +78,7 @@ Structured markdown report with:
 
 ## Notes
 
-- Uses deliberation system in `src/deliberation/`
-- All agent outputs are validated JSON
+- All agent outputs follow structured JSON schemas (position, argument, amendment, confidence, references)
 - Tracks token usage and performance
 - Applies rolling memory compression
 - Detects and reports convergence

@@ -79,12 +79,7 @@
         "./.claude/agents/parliament-of-chaos/task-executor.md",
         "./.claude/agents/parliament-of-chaos/test-prophet.md",
         "./.claude/agents/parliament-of-chaos/ui-ux-guru.md"
-      ],
-      "files": [
-        "./src/",
-        "./requirements.txt"
-      ],
-      "strict": false
+      ]
     }
   ]
 }

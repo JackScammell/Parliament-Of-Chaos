@@ -27,17 +27,13 @@ Generate a comprehensive analytics dashboard for debate performance and insights
    - Voting system comparisons
 
 3. **Generate Dashboard**
-   Use the DebateDashboard from `src/deliberation/analytics/dashboard.py`:
-   
-   ```python
-   from src.deliberation import DebateDashboard, AnalyticsEngine
-   
-   dashboard = DebateDashboard()
-   analytics_engine = AnalyticsEngine()
-   
-   # Generate dashboard markdown
-   markdown_output = dashboard.generate_dashboard(debate_results, analytics)
-   ```
+   Synthesise the collected data into a structured analytics dashboard covering:
+   - Executive summary with outcome and key decision
+   - Performance metrics (tokens, latency, rounds, entropy, consensus score)
+   - Agent influence rankings based on argument adoption
+   - Novelty scores by round (visual bar representation)
+   - Voting breakdown with approve/reject/abstain counts
+   - Convergence analysis showing how positions shifted
 
 4. **Output Format**
    Present results as a formatted markdown dashboard with:
