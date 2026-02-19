@@ -139,11 +139,11 @@ Conduct formal multi-agent deliberations with:
 
 ## Integration
 
-Uses the deliberation system in `src/deliberation/`:
-- `DebateController` for orchestration
-- `AgentRuntime` for parallel execution
-- `MetaObserver` for convergence
-- `StateEngine` for structured state
-- `MetricsCollector` for tracking
+Orchestration is performed natively by Claude following structured debate protocols:
+- `DebateController` logic: manages round flow and early termination
+- `AgentRuntime` logic: parallel agent invocation with structured JSON outputs
+- `MetaObserver` logic: convergence detection and novelty scoring
+- `StateEngine` logic: maintains structured debate state across rounds
+- `MetricsCollector` logic: tracks token usage and performance
 
 Neutral, analytical tone. Focus on structured process and measurable outcomes.

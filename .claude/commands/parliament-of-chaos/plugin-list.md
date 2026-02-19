@@ -12,19 +12,7 @@ Display all installed community agent plugins.
 ## Process
 
 1. **Load Plugin Registry**
-   Use the PluginManager from `src/deliberation/plugins/plugin_manager.py`:
-   
-   ```python
-   from src.deliberation import PluginManager
-   
-   manager = PluginManager()
-   
-   # List all plugins
-   plugins = manager.list_installed()
-   
-   # Get marketplace summary
-   summary = manager.get_marketplace_summary()
-   ```
+   List all community agent plugins that have been installed in this session or noted in `.claude/agents/`. Include built-in Parliament of Chaos agents as a reference count.
 
 2. **Display Results**
    Format as markdown table:

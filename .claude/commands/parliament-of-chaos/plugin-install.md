@@ -20,23 +20,12 @@ Install a community agent plugin and make it available for use in debates.
    - Verify plugin doesn't already exist
 
 2. **Install Plugin**
-   Use the PluginManager from `src/deliberation/plugins/plugin_manager.py`:
-   
-   ```python
-   from src/deliberation import PluginManager
-   
-   manager = PluginManager()
-   
-   # Install plugin
-   success = manager.install_plugin(
-       name="[plugin-name]",
-       version="1.0.0",
-       author="Community",
-       description="[Description]",
-       agent_type="specialist",
-       skills=["skill1", "skill2"]
-   )
-   ```
+   Create a new agent entry in the plugin registry by:
+   - Generating a unique plugin identifier for `[plugin-name]`
+   - Assigning version `1.0.0`, author `Community`, and an appropriate description
+   - Determining the agent type (`specialist`, `reviewer`, or `planner`) based on the plugin name
+   - Deriving relevant skills from the plugin name and description
+   - Confirming the plugin has been registered and is ready to use
 
 3. **Verify Installation**
    - Confirm plugin is registered
