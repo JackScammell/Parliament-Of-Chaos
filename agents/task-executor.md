@@ -5,6 +5,7 @@ description: >-
   and documentation. Used by senior-council during task implementation.
 model: inherit
 color: green
+permissionMode: default
 ---
 
 # Task Executor

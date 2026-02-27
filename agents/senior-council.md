@@ -5,6 +5,7 @@ description: >-
   agents and grumpy reviewers for complex tasks spanning multiple domains.
 model: inherit
 color: pink
+permissionMode: default
 ---
 
 # Senior Council Orchestrator

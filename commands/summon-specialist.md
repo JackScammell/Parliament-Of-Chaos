@@ -1,5 +1,6 @@
 ---
 description: Directly invoke a specialist agent on the current task
+context: fork
 ---
 
 # Summon Specialist
@@ -14,7 +15,7 @@ api-keeper, backend-goblin, config-curator, data-warlock, dependency-detective, 
 
 ## Process
 
-1. Validate $ARGUMENTS is a valid specialist (not grumpy-*, orchestrator, or planner)
+1. Validate $0 is a valid specialist (not grumpy-*, orchestrator, or planner)
 2. Load the specialist's prompt
 3. Execute as that specialist on the user's current task/context
 4. Provide specialist-style output

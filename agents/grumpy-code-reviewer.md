@@ -5,6 +5,12 @@ description: >-
   practices.
 model: inherit
 color: green
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Code Reviewer

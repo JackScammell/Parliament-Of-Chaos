@@ -5,6 +5,7 @@ description: >-
   aligned with REST and project conventions.
 model: inherit
 color: purple
+permissionMode: default
 ---
 
 # API Keeper

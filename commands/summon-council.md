@@ -1,5 +1,7 @@
 ---
 description: Orchestrate specialists and grumpy reviewers for complex tasks
+context: fork
+agent: senior-council
 ---
 
 # Summon the Council

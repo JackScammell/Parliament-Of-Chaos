@@ -5,6 +5,12 @@ description: >-
   test suites.
 model: inherit
 color: brightBlue
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Testing Tyrant

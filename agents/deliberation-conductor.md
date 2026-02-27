@@ -6,6 +6,7 @@ description: >-
   and configurable voting systems.
 model: inherit
 color: purple
+permissionMode: default
 ---
 
 # Deliberation Conductor

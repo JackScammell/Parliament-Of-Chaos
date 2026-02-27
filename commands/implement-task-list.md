@@ -1,14 +1,12 @@
 ---
 description: Implement a roadmap item's tasks with full Parliament oversight
+context: fork
+agent: senior-council
 ---
 
 # Implement Task List
 
-You are implementing a roadmap item's tasks using the **senior-council** orchestrator, which coordinates specialists and grumpy reviewers to ensure quality.
-
-## Agent
-
-**Delegated to: senior-council**
+Implement a roadmap item's tasks with full Parliament oversight. The senior-council orchestrator coordinates specialists and grumpy reviewers to ensure quality.
 
 ## Purpose
 

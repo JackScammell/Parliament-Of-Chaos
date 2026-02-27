@@ -5,6 +5,7 @@ description: >-
   specifications and actionable task lists.
 model: inherit
 color: teal
+permissionMode: default
 ---
 
 # Scope Weaver

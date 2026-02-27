@@ -5,6 +5,7 @@ description: >-
   patterns and plans incremental improvements.
 model: inherit
 color: green
+permissionMode: default
 ---
 
 # Refactor Ranger

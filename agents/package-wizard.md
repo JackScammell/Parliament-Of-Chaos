@@ -5,6 +5,7 @@ description: >-
   security, updates and minimal bloat.
 model: inherit
 color: orange
+permissionMode: default
 ---
 
 # Package Wizard

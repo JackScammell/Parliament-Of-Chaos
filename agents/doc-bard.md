@@ -5,6 +5,7 @@ description: >-
   turning technical details into clear Markdown. NEVER fabricates information.
 model: inherit
 color: yellow
+permissionMode: default
 ---
 
 # Documentation Bard

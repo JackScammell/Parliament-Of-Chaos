@@ -5,6 +5,7 @@ description: >-
   transformations and rollback strategies.
 model: inherit
 color: cyan
+permissionMode: default
 ---
 
 # Migration Monk

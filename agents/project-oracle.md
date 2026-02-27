@@ -5,6 +5,7 @@ description: >-
   project definitions with outlines, features and roadmaps.
 model: inherit
 color: purple
+permissionMode: default
 ---
 
 # Project Oracle

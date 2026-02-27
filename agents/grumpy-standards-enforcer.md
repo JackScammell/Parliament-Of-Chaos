@@ -5,6 +5,12 @@ description: >-
   and documented standards.
 model: inherit
 color: blue
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Standards Enforcer

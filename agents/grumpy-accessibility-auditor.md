@@ -5,6 +5,12 @@ description: >-
   inclusive design failures.
 model: inherit
 color: cyan
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Accessibility Auditor
