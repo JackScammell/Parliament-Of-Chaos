@@ -6,6 +6,7 @@ description: >-
 model: inherit
 color: orange
 permissionMode: default
+isolation: worktree
 ---
 
 # Resilience Tamer

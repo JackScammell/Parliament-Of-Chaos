@@ -6,6 +6,7 @@ description: >-
 model: inherit
 color: green
 permissionMode: default
+isolation: worktree
 ---
 
 # Backend Goblin

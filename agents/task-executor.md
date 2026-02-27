@@ -43,6 +43,15 @@ Senior-council handles specialist delegation and grumpy review cycles.
 - Track task status (pending/in_progress/complete)
 - Update tasks.md after each completion
 
+### Native Task Integration
+Use Claude Code's built-in task tools for real-time tracking during sessions:
+- **TaskCreate**: Create native tasks from tasks.md entries, with `blocks`/`blockedBy` for dependencies
+- **TaskUpdate**: Set tasks to `in_progress` when starting, `completed` when done
+- **TaskList**: Check overall progress and find next available task
+- **TaskGet**: Read full task details before starting work
+
+Workflow: Load tasks from tasks.md → create native tasks with dependencies → track progress via native tools → sync back to tasks.md on completion. The file-based tasks.md remains the persistent record across sessions.
+
 ### Documentation
 Create `work_complete.md`:
 ```
