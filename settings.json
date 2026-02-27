@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/notify_teams.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/notify_teams.sh"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/notify_teams.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/notify_teams.sh"
           }
         ]
       }

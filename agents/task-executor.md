@@ -6,6 +6,13 @@ description: >-
 model: inherit
 color: green
 permissionMode: default
+memory: project
+tools: []
+hooks:
+  Stop:
+    - hooks:
+        - type: command
+          command: '"${CLAUDE_PLUGIN_ROOT}"/hooks/log_agent_activity.sh'
 ---
 
 # Task Executor
