@@ -7,6 +7,29 @@ description: >-
 model: inherit
 color: purple
 permissionMode: default
+memory: project
+hooks:
+  Stop:
+    - hooks:
+        - type: command
+          command: '"${CLAUDE_PLUGIN_ROOT}"/hooks/log_debate_completion.sh'
+tools:
+  - Task(backend-goblin)
+  - Task(ui-ux-guru)
+  - Task(data-warlock)
+  - Task(security-knight)
+  - Task(system-architect)
+  - Task(test-prophet)
+  - Task(pipeline-engineer)
+  - Task(api-keeper)
+  - Task(doc-bard)
+  - Task(package-wizard)
+  - Task(resilience-tamer)
+  - Task(migration-monk)
+  - Task(dependency-detective)
+  - Task(refactor-ranger)
+  - Task(config-curator)
+  - Task(observability-oracle)
 ---
 
 # Deliberation Conductor

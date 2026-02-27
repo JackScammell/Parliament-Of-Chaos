@@ -6,6 +6,7 @@ description: >-
 model: inherit
 color: orange
 permissionMode: default
+memory: user
 disallowedTools:
   - Edit
   - Write

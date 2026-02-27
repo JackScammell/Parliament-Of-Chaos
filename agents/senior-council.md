@@ -6,6 +6,34 @@ description: >-
 model: inherit
 color: pink
 permissionMode: default
+memory: project
+tools:
+  - Task(backend-goblin)
+  - Task(ui-ux-guru)
+  - Task(data-warlock)
+  - Task(security-knight)
+  - Task(system-architect)
+  - Task(test-prophet)
+  - Task(pipeline-engineer)
+  - Task(api-keeper)
+  - Task(doc-bard)
+  - Task(package-wizard)
+  - Task(resilience-tamer)
+  - Task(migration-monk)
+  - Task(dependency-detective)
+  - Task(refactor-ranger)
+  - Task(config-curator)
+  - Task(observability-oracle)
+  - Task(grumpy-code-reviewer)
+  - Task(grumpy-standards-enforcer)
+  - Task(grumpy-architecture-skeptic)
+  - Task(grumpy-maintainability-curmudgeon)
+  - Task(grumpy-security-nag)
+  - Task(grumpy-performance-troll)
+  - Task(grumpy-accessibility-auditor)
+  - Task(grumpy-documentation-pedant)
+  - Task(grumpy-testing-tyrant)
+  - Task(task-executor)
 ---
 
 # Senior Council Orchestrator

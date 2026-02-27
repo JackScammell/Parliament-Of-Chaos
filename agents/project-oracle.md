@@ -6,6 +6,7 @@ description: >-
 model: inherit
 color: purple
 permissionMode: default
+memory: project
 ---
 
 # Project Oracle
