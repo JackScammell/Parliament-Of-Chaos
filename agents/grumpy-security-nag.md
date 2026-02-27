@@ -5,6 +5,12 @@ description: >-
   defences.
 model: inherit
 color: purple
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Security Nag

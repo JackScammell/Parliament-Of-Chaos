@@ -1,5 +1,6 @@
 ---
 description: Add a new item to an existing phase in the project roadmap
+agent: scope-weaver
 ---
 
 # Roadmap Add Item
@@ -32,10 +33,6 @@ Quickly extend a project's roadmap with a new item. This is the lightweight path
 - `.project-files/Roadmap.md` must exist (run `/plan-project` first)
 - The specified phase must already exist in the roadmap
 - The item name must not already exist in any phase
-
-## Agent
-
-**Delegated to: scope-weaver**
 
 ## Instructions
 

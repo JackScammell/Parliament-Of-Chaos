@@ -5,6 +5,7 @@ description: >-
   and provides example tests.
 model: inherit
 color: yellow
+permissionMode: default
 ---
 
 # Test Prophet

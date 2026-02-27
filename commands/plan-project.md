@@ -1,14 +1,11 @@
 ---
 description: Guide a project from idea to structured plan with outline, features, and roadmap
+agent: project-oracle
 ---
 
 # Plan Project
 
-You are initiating a project planning session using the **project-oracle** agent.
-
-## Agent
-
-**Delegated to: project-oracle**
+Initiate a project planning session to transform ideas into structured plans.
 
 ## Purpose
 

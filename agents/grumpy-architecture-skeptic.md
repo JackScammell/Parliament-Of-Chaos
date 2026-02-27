@@ -5,6 +5,12 @@ description: >-
   scalability and sustainability.
 model: inherit
 color: orange
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Architecture Skeptic

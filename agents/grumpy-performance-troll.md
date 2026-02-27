@@ -5,6 +5,12 @@ description: >-
   identifies bottlenecks and recommends optimisations.
 model: inherit
 color: red
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Performance Troll

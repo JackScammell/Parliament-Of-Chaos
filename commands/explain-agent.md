@@ -10,7 +10,7 @@ Explain what a specific agent does and when to use it.
 
 ## Process
 
-1. Read `agents/$ARGUMENTS.md`
+1. Read `agents/$0.md`
 2. If not found, list available agents
 3. Extract: name, description, focus areas, process, output format
 

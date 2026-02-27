@@ -1,5 +1,7 @@
 ---
 description: Full review using all 9 grumpy reviewers with maximum scrutiny
+context: fork
+agent: senior-council
 ---
 
 # Parliament Review

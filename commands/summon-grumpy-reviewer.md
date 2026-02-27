@@ -1,5 +1,6 @@
 ---
 description: Ruthless senior code review focusing on quality, structure, standards, and maintainability
+context: fork
 ---
 
 # Summon Grumpy Reviewer

@@ -5,6 +5,11 @@ description: >-
   boundaries, scalability and maintainability.
 model: inherit
 color: orange
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
 ---
 
 # System Architect

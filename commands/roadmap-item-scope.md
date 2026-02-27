@@ -1,14 +1,11 @@
 ---
 description: Create a detailed specification and task breakdown for a roadmap item
+agent: scope-weaver
 ---
 
 # Roadmap Item Scope
 
-You are scoping a specific roadmap item using the **scope-weaver** agent.
-
-## Agent
-
-**Delegated to: scope-weaver**
+Scope a specific roadmap item to create a detailed specification and task breakdown.
 
 ## Purpose
 

@@ -5,6 +5,7 @@ description: >-
   and usability.
 model: inherit
 color: blue
+permissionMode: default
 ---
 
 # UI/UX Guru

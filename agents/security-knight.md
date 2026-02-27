@@ -5,6 +5,7 @@ description: >-
   and overall security posture.
 model: inherit
 color: purple
+permissionMode: default
 ---
 
 # Security Knight

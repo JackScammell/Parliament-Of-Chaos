@@ -5,6 +5,7 @@ description: >-
   and license compliance across the dependency tree.
 model: inherit
 color: yellow
+permissionMode: default
 ---
 
 # Dependency Detective

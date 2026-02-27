@@ -5,6 +5,12 @@ description: >-
   and clarity.
 model: inherit
 color: white
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Documentation Pedant

@@ -5,6 +5,12 @@ description: >-
   readability and technical debt.
 model: inherit
 color: yellow
+permissionMode: default
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
+  - Bash
 ---
 
 # Grumpy Maintainability Curmudgeon

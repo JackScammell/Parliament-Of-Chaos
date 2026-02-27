@@ -5,6 +5,7 @@ description: >-
   database interactions and infrastructure for speed.
 model: inherit
 color: green
+permissionMode: default
 ---
 
 # Backend Goblin

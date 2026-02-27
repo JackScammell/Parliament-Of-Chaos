@@ -5,6 +5,7 @@ description: >-
   external dependencies, distributed systems and failure scenarios.
 model: inherit
 color: orange
+permissionMode: default
 ---
 
 # Resilience Tamer

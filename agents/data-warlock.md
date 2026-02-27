@@ -5,6 +5,7 @@ description: >-
   strategies.
 model: inherit
 color: purple
+permissionMode: default
 ---
 
 # Data Warlock

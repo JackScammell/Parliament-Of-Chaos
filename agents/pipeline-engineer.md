@@ -5,6 +5,7 @@ description: >-
   deployment pipelines.
 model: inherit
 color: green
+permissionMode: default
 ---
 
 # Pipeline Engineer

@@ -1,14 +1,12 @@
 ---
 description: Run a structured multi-agent deliberation on a specified topic
+context: fork
+agent: deliberation-conductor
 ---
 
 # Debate Topic
 
 Run a structured multi-agent deliberation on a specified topic using the Parliament of Chaos deliberation system.
-
-## Agent
-
-**Delegated to: deliberation-conductor**
 
 ## Purpose
 

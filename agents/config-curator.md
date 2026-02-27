@@ -5,6 +5,7 @@ description: >-
   and feature flag strategies.
 model: inherit
 color: blue
+permissionMode: default
 ---
 
 # Config Curator

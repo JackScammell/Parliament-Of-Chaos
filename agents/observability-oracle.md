@@ -5,6 +5,7 @@ description: >-
   distributed tracing and alerting strategies.
 model: inherit
 color: magenta
+permissionMode: default
 ---
 
 # Observability Oracle
