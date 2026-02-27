@@ -7,6 +7,7 @@ model: inherit
 color: white
 permissionMode: default
 memory: user
+background: true
 disallowedTools:
   - Edit
   - Write

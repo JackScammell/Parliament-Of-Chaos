@@ -6,6 +6,7 @@ description: >-
 model: inherit
 color: cyan
 permissionMode: default
+isolation: worktree
 ---
 
 # Migration Monk

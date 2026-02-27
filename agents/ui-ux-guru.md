@@ -6,6 +6,7 @@ description: >-
 model: inherit
 color: blue
 permissionMode: default
+isolation: worktree
 ---
 
 # UI/UX Guru

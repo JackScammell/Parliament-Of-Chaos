@@ -45,6 +45,18 @@ case "$HOOK_EVENT_NAME" in
     TITLE="Claude Code: task complete"
     BASE_TEXT="I have completed my task."
     ;;
+  TaskCompleted)
+    TITLE="Claude Code: agent task completed"
+    BASE_TEXT="An agent has completed its task."
+    ;;
+  SubagentStart)
+    TITLE="Claude Code: agent spawned"
+    BASE_TEXT="A new sub-agent has been started."
+    ;;
+  TeammateIdle)
+    TITLE="Claude Code: teammate idle"
+    BASE_TEXT="A teammate agent is idle and available for work."
+    ;;
   *)
     TITLE="Claude Code: $HOOK_EVENT_NAME"
     BASE_TEXT="Event: $HOOK_EVENT_NAME"

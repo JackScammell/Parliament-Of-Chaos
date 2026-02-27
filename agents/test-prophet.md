@@ -6,6 +6,7 @@ description: >-
 model: inherit
 color: yellow
 permissionMode: default
+isolation: worktree
 ---
 
 # Test Prophet
