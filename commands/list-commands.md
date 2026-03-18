@@ -14,7 +14,7 @@ Display all Parliament of Chaos slash commands grouped by category.
    - **Project Planning**: plan-project, project-status, roadmap-add-item, roadmap-item-scope, implement-task-list
    - **Agent Invocation**: summon-council, summon-specialist, summon-grumpy-reviewer, parliament-review
    - **Deliberation**: debate-topic, debate-analytics
-   - **Operations**: parliament-optimize, parliament-webhook, parliament-loop, parliament-monitor
+   - **Operations**: parliament-optimize, parliament-webhook, parliament-loop, parliament-monitor, changelog-review
    - **Codebase Analysis**: onboard-codebase
    - **Discovery**: list-agents, explain-agent, list-commands
    - **Plugins**: plugin-install, plugin-list
@@ -31,7 +31,7 @@ Display all Parliament of Chaos slash commands grouped by category.
 ## Deliberation (2)
 | Command | Description |
 
-## Operations (4)
+## Operations (5)
 | Command | Description |
 
 ## Codebase Analysis (1)
