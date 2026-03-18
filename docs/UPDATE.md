@@ -13,7 +13,7 @@
 ### Simple Update Command
 
 ```
-/install-github-plugin JackScammell/Parliament-Of-Chaos
+claude plugin update parliament-of-chaos@parliament-of-chaos
 ```
 
 Run this command in Claude Code to update to the latest version.
@@ -31,7 +31,7 @@ Run this command in Claude Code to update to the latest version.
 
 2. **Run Update Command**
    ```
-   /install-github-plugin JackScammell/Parliament-Of-Chaos
+   claude plugin update parliament-of-chaos@parliament-of-chaos
    ```
    
 3. **Verify Update**
@@ -130,7 +130,7 @@ curl -s https://raw.githubusercontent.com/JackScammell/Parliament-Of-Chaos/main/
 
 ### What if the update fails?
 
-**If `/install-github-plugin` fails:**
+**If the update command fails:**
 
 1. **Check your internet connection**
    - Ensure you can access GitHub
@@ -141,7 +141,7 @@ curl -s https://raw.githubusercontent.com/JackScammell/Parliament-Of-Chaos/main/
 
 3. **Try again**
    ```
-   /install-github-plugin JackScammell/Parliament-Of-Chaos
+   claude plugin update parliament-of-chaos@parliament-of-chaos
    ```
 
 4. **Manual installation**
@@ -192,7 +192,7 @@ To see what's changed between versions:
 
 **Remember:**
 - ❌ No automatic updates
-- ✅ Manual update required via `/install-github-plugin`
+- ✅ Manual update required via `claude plugin update`
 - ✅ Your project files are safe during updates
 - ✅ Updates take effect immediately
 - ✅ You control when to update

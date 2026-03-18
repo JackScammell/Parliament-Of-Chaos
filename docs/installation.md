@@ -12,10 +12,11 @@ This guide covers installing Parliament of Chaos as a Claude Code plugin.
 ### Quick Install
 
 ```
-/install-github-plugin JackScammell/Parliament-Of-Chaos
+claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
+claude plugin install parliament-of-chaos@parliament-of-chaos
 ```
 
-This single command installs:
+These commands install:
 - 16 slash commands for orchestration, reviews, project planning, and analytics
 - 30 agents (specialists, reviewers, planners, and orchestrators)
 
@@ -198,10 +199,10 @@ Update Parliament of Chaos when:
 
 ### How to Update
 
-To update to the latest version, re-run the install command:
+To update to the latest version:
 
 ```
-/install-github-plugin JackScammell/Parliament-Of-Chaos
+claude plugin update parliament-of-chaos@parliament-of-chaos
 ```
 
 **What happens during update:**
@@ -226,7 +227,7 @@ Look for:
 **Step 2: Run Update Command**
 
 ```
-/install-github-plugin JackScammell/Parliament-Of-Chaos
+claude plugin update parliament-of-chaos@parliament-of-chaos
 ```
 
 **Step 3: Verify Update**
@@ -267,7 +268,7 @@ This is by design to ensure:
 - Control over when changes are introduced
 - Compatibility with your existing workflows
 
-You must manually run `/install-github-plugin` to get updates.
+You must manually run `claude plugin update parliament-of-chaos@parliament-of-chaos` to get updates.
 
 ### Checking Your Current Version
 
@@ -286,7 +287,11 @@ To see which version you have installed:
 
 **Q: Will the plugin update automatically when I start Claude Code?**
 
-**A:** No. Claude Code does not automatically update plugins. You must manually run `/install-github-plugin JackScammell/Parliament-Of-Chaos` to get updates.
+**A:** No. Claude Code does not automatically update plugins. You must manually update:
+
+```
+claude plugin update parliament-of-chaos@parliament-of-chaos
+```
 
 **Q: How will I know when an update is available?**
 
@@ -297,7 +302,13 @@ To see which version you have installed:
 
 **Q: Do I need to uninstall before updating?**
 
-**A:** No. Simply re-run `/install-github-plugin JackScammell/Parliament-Of-Chaos`. The command will replace old files with new ones automatically.
+**A:** No. Simply run the update command:
+
+```
+claude plugin update parliament-of-chaos@parliament-of-chaos
+```
+
+The command will replace old files with new ones automatically.
 
 **Q: Will updating break my existing projects?**
 

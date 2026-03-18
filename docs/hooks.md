@@ -106,7 +106,7 @@ Parliament of Chaos includes a ready-to-use Microsoft Teams notification hook. H
 Edit the plugin's `.env` file:
 
 ```bash
-# Location: ~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/.env
+# Location: ~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/.env
 TEAMS_WEBHOOK_URL="https://your-org.webhook.office.com/webhookb2/..."
 APP_NAME="My Project"
 ```
@@ -115,8 +115,8 @@ Or copy the hook to your project and configure locally:
 
 ```bash
 mkdir -p .claude/hooks
-cp ~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/notify_teams.sh .claude/hooks/
-cp ~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/.env .claude/hooks/
+cp ~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/notify_teams.sh .claude/hooks/
+cp ~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/.env .claude/hooks/
 # Edit .claude/hooks/.env with your webhook URL
 ```
 
@@ -134,7 +134,7 @@ Add to `.claude/settings.local.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/notify_teams.sh"
+            "command": "~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/notify_teams.sh"
           }
         ]
       }
@@ -144,7 +144,7 @@ Add to `.claude/settings.local.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/notify_teams.sh"
+            "command": "~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/notify_teams.sh"
           }
         ]
       }
@@ -247,7 +247,7 @@ mkdir -p .claude/hooks
 chmod +x .claude/hooks/debug_hook.sh
 ```
 
-Note: A debug hook is also included with the plugin at `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/debug_hook.sh`
+Note: You can save this script to your project's `.claude/hooks/` directory and reference it from your settings.
 
 ### Example: Slack Notification Hook
 
@@ -367,10 +367,10 @@ Log all tool usage for compliance:
 When installed via the marketplace, Parliament of Chaos hook scripts are stored in the centralised plugin cache:
 
 ```
-~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/
-  .env                  # Webhook URLs and secrets
-  notify_teams.sh       # Teams notification script
-  debug_hook.sh         # Debug logging script
+~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/
+  notify_teams.sh           # Teams notification script
+  log_agent_activity.sh     # Agent lifecycle logging
+  log_debate_completion.sh  # Debate completion logging
 ```
 
 ### Configuration Files (Your Project)
@@ -396,7 +396,7 @@ When referencing the plugin's hook scripts, use the centralised path:
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/notify_teams.sh"
+            "command": "~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/notify_teams.sh"
           }
         ]
       }
@@ -412,8 +412,8 @@ When referencing the plugin's hook scripts, use the centralised path:
 | File | Location | Purpose |
 |------|----------|---------|
 | `notify_teams.sh` | Plugin cache | Microsoft Teams webhook notifications |
-| `debug_hook.sh` | Plugin cache | Event logging for debugging |
-| `.env` | Plugin cache | Environment variables template |
+| `log_agent_activity.sh` | Plugin cache | Agent lifecycle event logging |
+| `log_debate_completion.sh` | Plugin cache | Debate completion event logging |
 
 ---
 
@@ -500,4 +500,4 @@ Never commit webhook URLs or API keys:
 
 - Review the [Usage Guide](usage.md) for Parliament of Chaos commands
 - See [Safe Progress Assurance](safe-progress-assurance.md) for implementation safety
-- Explore the example hooks in `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude/hooks/`
+- Explore the bundled hooks in `src/hooks/` of the plugin repository

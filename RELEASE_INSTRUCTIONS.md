@@ -53,7 +53,7 @@ After publishing:
 
 1. Check that the release appears at: https://github.com/JackScammell/Parliament-Of-Chaos/releases
 2. Verify the tag was created: https://github.com/JackScammell/Parliament-Of-Chaos/tags
-3. Test installation with: `/install-github-plugin JackScammell/Parliament-Of-Chaos`
+3. Test installation with: `claude plugin install parliament-of-chaos@parliament-of-chaos`
 
 ### 4. Announce (Optional)
 
@@ -141,10 +141,11 @@ New priority-based conflict resolution when reviewers disagree:
 ### 📦 Installation
 
 ```bash
-/install-github-plugin JackScammell/Parliament-Of-Chaos
+claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
+claude plugin install parliament-of-chaos@parliament-of-chaos
 ```
 
-To update from v1.0.0, simply re-run the installation command.
+To update from a previous version, run `claude plugin update parliament-of-chaos@parliament-of-chaos`.
 
 ---
 

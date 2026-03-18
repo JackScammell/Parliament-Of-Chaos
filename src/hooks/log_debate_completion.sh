@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Log agent lifecycle events for observability and analytics
-# Writes JSONL entries to .project-files/agent-logs/activity.jsonl
+# Log debate completion events for /debate-analytics
+# Writes JSONL entries to .project-files/debate-logs/completions.jsonl
 
 PAYLOAD="$(cat)"
 
@@ -20,10 +20,10 @@ TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$CWD}"
 [ -z "$PROJECT_DIR" ] && exit 0
 
-LOG_DIR="$PROJECT_DIR/.project-files/agent-logs"
+LOG_DIR="$PROJECT_DIR/.project-files/debate-logs"
 mkdir -p "$LOG_DIR"
 
-printf '{"event":"%s","session":"%s","timestamp":"%s"}\n' \
-  "$EVENT" "$SESSION" "$TIMESTAMP" >> "$LOG_DIR/activity.jsonl"
+jq -n --arg event "$EVENT" --arg session "$SESSION" --arg ts "$TIMESTAMP" \
+  '{"event":$event,"session":$session,"timestamp":$ts,"type":"debate_completion"}' >> "$LOG_DIR/completions.jsonl"
 
 exit 0

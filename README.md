@@ -23,7 +23,8 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 ### Install the Plugin
 
 ```
-/install-github-plugin JackScammell/Parliament-Of-Chaos
+claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
+claude plugin install parliament-of-chaos@parliament-of-chaos
 ```
 
 ### Your First Command
@@ -290,7 +291,8 @@ Parliament of Chaos creates and manages files in `.project-files/`:
 ## Installation
 
 ```
-/install-github-plugin JackScammell/Parliament-Of-Chaos
+claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
+claude plugin install parliament-of-chaos@parliament-of-chaos
 ```
 
 For detailed installation steps, verification, and troubleshooting, see the [Installation Guide](docs/installation.md).
@@ -299,9 +301,9 @@ For detailed installation steps, verification, and troubleshooting, see the [Ins
 
 **Important:** Claude Code does NOT automatically update plugins.
 
-To update to the latest version, re-run:
+To update to the latest version:
 ```
-/install-github-plugin JackScammell/Parliament-Of-Chaos
+claude plugin update parliament-of-chaos@parliament-of-chaos
 ```
 
 For complete update instructions and FAQs, see the [Update Guide](docs/UPDATE.md).

@@ -22,16 +22,14 @@ TEAMS_WEBHOOK_URL="${TEAMS_WEBHOOK_URL:-}"
 # Read JSON from stdin (hook payload)
 HOOK_JSON="$(cat)"
 
-# Extract metadata if jq is available
-if command -v jq >/dev/null 2>&1; then
-  HOOK_EVENT_NAME="$(printf '%s' "$HOOK_JSON" | jq -r '.hook_event_name // "UnknownEvent"')"
-  CWD="$(printf '%s' "$HOOK_JSON" | jq -r '.cwd // ""')"
-  SESSION_ID="$(printf '%s' "$HOOK_JSON" | jq -r '.session_id // "unknown-session"')"
-else
-  HOOK_EVENT_NAME="UnknownEvent"
-  CWD=""
-  SESSION_ID="unknown-session"
+# Require jq for JSON parsing and safe payload construction
+if ! command -v jq >/dev/null 2>&1; then
+  exit 0
 fi
+
+HOOK_EVENT_NAME="$(printf '%s' "$HOOK_JSON" | jq -r '.hook_event_name // "UnknownEvent"')"
+CWD="$(printf '%s' "$HOOK_JSON" | jq -r '.cwd // ""')"
+SESSION_ID="$(printf '%s' "$HOOK_JSON" | jq -r '.session_id // "unknown-session"')"
 
 PROJECT_NAME="$(basename "$CWD")"
 APP_NAME="${APP_NAME:-}"
@@ -71,17 +69,17 @@ EXTRA=""
 TEXT="$BASE_TEXT"
 [ -n "$EXTRA" ] && TEXT="$TEXT\n\n$EXTRA"
 
-PAYLOAD=$(cat <<EOF
-{
-  "@type": "MessageCard",
-  "@context": "http://schema.org/extensions",
-  "summary": "$TITLE",
-  "themeColor": "0076D7",
-  "title": "$TITLE",
-  "text": "$TEXT"
-}
-EOF
-)
+PAYLOAD=$(jq -n \
+  --arg title "$TITLE" \
+  --arg text "$TEXT" \
+  '{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    summary: $title,
+    themeColor: "0076D7",
+    title: $title,
+    text: $text
+  }')
 
 # Send silently to Teams
 curl -sS -X POST \

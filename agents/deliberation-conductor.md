@@ -12,7 +12,7 @@ hooks:
   Stop:
     - hooks:
         - type: command
-          command: '"${CLAUDE_PLUGIN_ROOT}"/hooks/log_debate_completion.sh'
+          command: '"${CLAUDE_PLUGIN_ROOT}"/src/hooks/log_debate_completion.sh'
 tools:
   - Task(backend-goblin)
   - Task(ui-ux-guru)

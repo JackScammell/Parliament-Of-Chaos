@@ -10,6 +10,7 @@ disallowedTools:
   - Edit
   - Write
   - NotebookEdit
+  - Bash
 ---
 
 # System Architect
