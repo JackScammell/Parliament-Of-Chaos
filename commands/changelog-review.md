@@ -1,25 +1,25 @@
 ---
-description: Review Claude Code changelog and propose new features for Parliament of Chaos
+description: Review new Claude Code changelog entries since last review and propose Parliament features
 context: fork
 agent: deliberation-conductor
 ---
 
 # Changelog Review
 
-Fetch the latest Claude Code changelog, identify relevant new features, and run a structured deliberation to propose implementation plans for Parliament of Chaos.
+Fetch the Claude Code changelog, identify **only new entries since the last review**, and run a structured deliberation to propose implementation plans for Parliament of Chaos.
 
 ## Usage
 
 ```
-/changelog-review [--mode fast|consensus|deep] [--focus <area>]
+/changelog-review [--mode fast|consensus|deep] [--focus <area>] [--full]
 ```
 
 **Examples**:
 ```
-/changelog-review
-/changelog-review --mode deep
-/changelog-review --focus hooks
-/changelog-review --focus agents
+/changelog-review                          # Only new entries since last review
+/changelog-review --full                   # Review entire changelog (first run or reset)
+/changelog-review --mode deep              # Deep analysis of new entries
+/changelog-review --focus hooks            # Only hook-related new entries
 ```
 
 ## Options
@@ -37,14 +37,39 @@ Fetch the latest Claude Code changelog, identify relevant new features, and run 
   - `performance`: Performance and token optimisations
   - `all`: Everything (default)
 
+- `--full` (optional): Ignore the last-reviewed marker and review the entire changelog. Useful for first run or to reset the review state.
+
+## State Tracking
+
+The command maintains a state file at `.project-files/changelog-review/last-reviewed.json`:
+
+```json
+{
+  "last_reviewed_version": "v2.1.78",
+  "last_reviewed_date": "2026-03-18",
+  "parliament_version": "1.4.0",
+  "entries_reviewed": 45,
+  "features_proposed": 12,
+  "features_implemented": 8
+}
+```
+
+This file is updated after each review so that subsequent runs only process **new changelog entries**.
+
 ## Process
 
-1. **Fetch Changelog**
-   - Fetch https://code.claude.com/docs/en/changelog using WebFetch
-   - Extract all entries with dates and feature descriptions
-   - Focus on features relevant to plugin/agent systems
+1. **Load Review State**
+   - Read `.project-files/changelog-review/last-reviewed.json`
+   - If file does not exist or `--full` is passed, treat as first run (review everything)
+   - Extract `last_reviewed_version` to determine the cutoff point
 
-2. **Categorise Features**
+2. **Fetch Changelog**
+   - Fetch https://code.claude.com/docs/en/changelog using WebFetch
+   - Extract all entries with dates and version numbers
+   - **Filter to only entries newer than `last_reviewed_version`**
+   - If no new entries found, report "No new Claude Code releases since last review" and exit
+
+3. **Categorise New Features**
    Group new capabilities into:
    - **Agent & Team Features**: frontmatter, memory, isolation, teams
    - **Plugin System**: persistent state, settings, variables
@@ -52,13 +77,14 @@ Fetch the latest Claude Code changelog, identify relevant new features, and run 
    - **Commands & UX**: new slash commands, effort levels
    - **Performance & Config**: model overrides, memory, token optimisation
 
-3. **Compare Against Current State**
+4. **Compare Against Current State**
    - Read current `CHANGELOG.md` to identify what Parliament already implements
    - Read `.claude/rules/agent-standards.md` for current agent standards
    - Read `settings.json` for current hook configuration
-   - Identify gaps between Claude Code capabilities and Parliament features
+   - Identify gaps between new Claude Code capabilities and Parliament features
+   - Skip features already implemented in previous reviews
 
-4. **Deliberation**
+5. **Deliberation** (only if new relevant features found)
    Run a structured debate with relevant Parliament agents:
    - **system-architect**: Evaluate architectural impact
    - **config-curator**: Evaluate configuration implications
@@ -67,63 +93,85 @@ Fetch the latest Claude Code changelog, identify relevant new features, and run 
    - **grumpy-architecture-skeptic**: Challenge proposals
    - **grumpy-maintainability-curmudgeon**: Challenge complexity
 
-5. **Produce Implementation Plan**
-   Generate a phased proposal with:
-   - Feature rankings by impact/effort ratio
-   - Specific agent/command/hook changes needed
-   - Dependencies and implementation order
-   - Features to avoid and why
+6. **Update State and Produce Plan**
+   - Write updated `last-reviewed.json` with the newest version reviewed
+   - Save review results to `.project-files/changelog-review/reviews/YYYY-MM-DD.md`
+   - Generate implementation proposal
 
 ## Output
 
 ```markdown
 # Claude Code Changelog Review
 
-**Reviewed**: [date range of changelog entries]
-**Current Parliament Version**: [version from plugin.json]
-**New Features Found**: N relevant / M total
+**New entries**: [version range, e.g. v2.1.79 — v2.1.82]
+**Previous review**: v2.1.78 on 2026-03-18
+**Current Parliament Version**: 1.4.0
+**New features found**: N relevant / M total in new entries
 
-## Feature Categories
+## New Entries Reviewed
 
-### Already Implemented
-- [features Parliament already leverages]
+### v2.1.82 (2026-03-25)
+- [feature 1]
+- [feature 2]
 
-### Recommended for Next Release
-| Priority | Feature | Impact | Effort | Phase |
-|----------|---------|--------|--------|-------|
-| 1 | ... | High | Low | 1 |
+### v2.1.81 (2026-03-24)
+- [feature 1]
 
-### Deferred / Not Applicable
-- [features not relevant to Parliament]
+## Relevance Assessment
+
+### Relevant to Parliament (N features)
+| Feature | Version | Category | Impact |
+|---------|---------|----------|--------|
+| ... | v2.1.82 | hooks | High |
+
+### Not Relevant (M features)
+- [brief list of skipped features with reason]
 
 ## Deliberation Summary
-[condensed debate results with agent positions and vote]
+[condensed debate results — only runs if relevant features found]
 
-## Proposed Roadmap
-### Phase 1: [theme]
+## Proposed Changes
+### Priority 1 (implement now)
 - [specific changes]
 
-### Phase 2: [theme]
+### Priority 2 (next release)
 - [specific changes]
+
+### Deferred
+- [features to revisit later]
 
 ## Next Steps
 - Run `/roadmap-add-item` for approved items
 - Run `/roadmap-item-scope` to detail specifications
+
+## Review State Updated
+- Last reviewed version: v2.1.82
+- Review saved to: .project-files/changelog-review/reviews/2026-03-25.md
 ```
+
+## Review History
+
+Past reviews are saved to `.project-files/changelog-review/reviews/` with one file per review date. This provides:
+
+- **Audit trail**: What was reviewed and when
+- **Decision history**: Why features were accepted, deferred, or rejected
+- **Trend tracking**: How frequently Claude Code adds relevant features
 
 ## Integration
 
-This command is designed to be run regularly (monthly or after major Claude Code releases) to keep Parliament of Chaos aligned with the latest platform capabilities. It:
+This command is designed to be run regularly to keep Parliament of Chaos aligned with Claude Code:
 
-1. Automates the manual process of reading release notes
-2. Cross-references against current implementation
-3. Uses the Parliament's own deliberation system to evaluate proposals
-4. Produces actionable roadmap items ready for `/roadmap-add-item`
+1. **Incremental by default** — only reviews new entries since the last run
+2. **State-tracked** — remembers what has been reviewed via `last-reviewed.json`
+3. **History-preserving** — saves each review for future reference
+4. **Actionable output** — produces items ready for `/roadmap-add-item`
 
 ## Notes
 
 - Requires internet access to fetch the changelog via WebFetch
-- The deliberation uses `--mode fast` by default to keep reviews quick
-- For major Claude Code releases, use `--mode deep` for thorough evaluation
-- Results can be piped into `/roadmap-add-item` for immediate planning
+- First run (or `--full`) reviews the entire changelog and establishes the baseline
+- Subsequent runs only process new entries — fast and focused
+- The deliberation is skipped entirely if no relevant new features are found
+- State file lives in `.project-files/` which is project-specific and gitignored
 - Run `/parliament-loop 1w /changelog-review --mode fast` for weekly automated checks
+- Use `--full` to reset and re-evaluate everything (e.g., after a major Parliament release)
