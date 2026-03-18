@@ -8,6 +8,8 @@ model: inherit
 color: purple
 permissionMode: default
 memory: project
+effort: high
+maxTurns: 30
 hooks:
   Stop:
     - hooks:

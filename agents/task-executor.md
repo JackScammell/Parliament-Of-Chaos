@@ -7,6 +7,8 @@ model: inherit
 color: green
 permissionMode: default
 memory: project
+effort: medium
+maxTurns: 20
 tools: []
 hooks:
   Stop:

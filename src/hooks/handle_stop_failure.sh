@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Log debate completion events for /debate-analytics
-# Writes JSONL entries to .project-files/debate-logs/completions.jsonl
+# Handle API failures (rate limits, auth errors) during Parliament sessions
+# Logs the failure to activity.jsonl. Notification is handled by notify_teams.sh
 
 PAYLOAD="$(cat)"
 
@@ -14,6 +14,7 @@ fi
 EVENT="$(printf '%s' "$PAYLOAD" | jq -r '.hook_event_name // "unknown"')"
 SESSION="$(printf '%s' "$PAYLOAD" | jq -r '.session_id // "unknown"')"
 CWD="$(printf '%s' "$PAYLOAD" | jq -r '.cwd // ""')"
+STOP_REASON="$(printf '%s' "$PAYLOAD" | jq -r '.stop_reason // "unknown"')"
 TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
 # Use CLAUDE_PROJECT_DIR if available, fall back to cwd
@@ -23,10 +24,11 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$CWD}"
 case "$PROJECT_DIR" in *..* ) exit 1 ;; esac
 [[ "$PROJECT_DIR" != /* ]] && exit 1
 
-LOG_DIR="$PROJECT_DIR/.project-files/debate-logs"
+LOG_DIR="$PROJECT_DIR/.project-files/agent-logs"
 mkdir -p "$LOG_DIR"
 
 jq -n --arg event "$EVENT" --arg session "$SESSION" --arg ts "$TIMESTAMP" \
-  '{"event":$event,"session":$session,"timestamp":$ts,"type":"debate_completion"}' >> "$LOG_DIR/completions.jsonl"
+  --arg reason "$STOP_REASON" \
+  '{"event":$event,"session":$session,"timestamp":$ts,"stop_reason":$reason,"type":"stop_failure"}' >> "$LOG_DIR/activity.jsonl"
 
 exit 0

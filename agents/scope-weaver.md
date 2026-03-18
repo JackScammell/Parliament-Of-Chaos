@@ -6,6 +6,9 @@ description: >-
 model: inherit
 color: teal
 permissionMode: default
+memory: project
+effort: medium
+maxTurns: 20
 ---
 
 # Scope Weaver

@@ -8,6 +8,8 @@ color: blue
 permissionMode: default
 memory: user
 background: true
+effort: low
+maxTurns: 5
 disallowedTools:
   - Edit
   - Write

@@ -18,6 +18,8 @@ TEAMS_WEBHOOK_URL="${TEAMS_WEBHOOK_URL:-}"
 
 # If webhook isn't set, exit silently
 [ -z "$TEAMS_WEBHOOK_URL" ] && exit 0
+# Validate URL scheme
+case "$TEAMS_WEBHOOK_URL" in https://*) ;; *) exit 1 ;; esac
 
 # Read JSON from stdin (hook payload)
 HOOK_JSON="$(cat)"
@@ -54,6 +56,18 @@ case "$HOOK_EVENT_NAME" in
   TeammateIdle)
     TITLE="Claude Code: teammate idle"
     BASE_TEXT="A teammate agent is idle and available for work."
+    ;;
+  StopFailure)
+    TITLE="Claude Code: API failure"
+    BASE_TEXT="Parliament session interrupted by an API error (rate limit or auth failure)."
+    ;;
+  PostCompact)
+    TITLE="Claude Code: context compacted"
+    BASE_TEXT="Context window was compacted during a Parliament session."
+    ;;
+  InstructionsLoaded)
+    TITLE="Claude Code: rules reloaded"
+    BASE_TEXT="CLAUDE.md or rules files were reloaded during session."
     ;;
   *)
     TITLE="Claude Code: $HOOK_EVENT_NAME"

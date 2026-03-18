@@ -11,7 +11,7 @@ Display all Parliament of Chaos agents grouped by category.
 1. Read all `agents/*.md` files
 2. Extract name and description from YAML frontmatter
 3. Group by category:
-   - **Orchestrator**: senior-council
+   - **Orchestrators**: senior-council, deliberation-conductor
    - **Planning**: project-oracle, scope-weaver, task-executor
    - **Specialists**: All non-grumpy, non-planning agents
    - **Grumpy Reviewers**: All grumpy-* agents
@@ -19,7 +19,7 @@ Display all Parliament of Chaos agents grouped by category.
 ## Output
 
 ```
-## Orchestrator (1)
+## Orchestrators (2)
 | Agent | Description |
 
 ## Planning Agents (3)

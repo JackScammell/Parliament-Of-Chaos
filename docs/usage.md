@@ -13,6 +13,20 @@ This guide explains how to use Parliament of Chaos commands effectively.
 | `/implement-task-list` | Execute tasks systematically | Safe, tracked implementation |
 | `/summon-council` | Full multi-agent orchestration | Complex tasks, architectural decisions |
 | `/summon-grumpy-reviewer` | Quick critical code review | Code review, PR feedback, refactoring |
+| `/parliament-review` | Full review with all 9 reviewers | Maximum scrutiny on critical code |
+| `/summon-specialist <agent>` | Invoke a specific specialist | Focused domain analysis |
+| `/debate-topic [topic]` | Structured multi-agent deliberation | Technical decisions, architecture debates |
+| `/parliament-optimize` | Audit agent configurations | Verify effort/model settings compliance |
+| `/parliament-webhook` | Configure webhook notifications | Teams, Slack, Discord integrations |
+| `/parliament-loop` | Recurring command execution | Continuous monitoring during development |
+| `/parliament-monitor` | Background monitoring agents | Persistent code oversight |
+| `/onboard-codebase` | Parallel codebase analysis | Onboarding to undocumented codebases |
+| `/list-agents` | Show all agents by category | Discovering available agents |
+| `/list-commands` | Show all commands by category | Discovering available commands |
+| `/explain-agent <agent>` | Detailed agent explanation | Understanding agent capabilities |
+| `/debate-analytics` | Analytics dashboard | Tracking deliberation patterns |
+| `/plugin-install <name>` | Install community plugins | Adding new agent capabilities |
+| `/plugin-list` | List installed plugins | Viewing available plugins |
 
 ---
 
@@ -583,6 +597,102 @@ class OrderService
 
 ---
 
+## Operations Commands (v1.4.0)
+
+### /parliament-optimize
+
+Audit all 30 agent definitions and recommend effort/model settings based on role. Advisory only — reads but never modifies files.
+
+#### When to Use
+
+- After adding new agents to verify they follow standards
+- Reviewing cost optimisation of the agent fleet
+- Checking compliance with `.claude/rules/agent-standards.md`
+
+#### Example Usage
+
+```
+/parliament-optimize
+```
+
+Returns a compliance report with tables showing each agent's frontmatter vs. expected values, plus cost optimisation estimates.
+
+---
+
+### /parliament-webhook
+
+Configure HTTP webhook endpoints for Parliament event notifications.
+
+#### When to Use
+
+- Setting up Slack, Discord, or Teams notifications
+- Configuring webhook for CI/CD integration
+- Testing notification connectivity
+
+#### Example Usage
+
+```
+/parliament-webhook setup
+/parliament-webhook test
+/parliament-webhook status
+/parliament-webhook disable
+```
+
+#### Supported Events
+
+All Parliament hook events (Notification, Stop, StopFailure, TaskCompleted, SubagentStart, PostCompact, InstructionsLoaded, TeammateIdle, PreToolUse, PostToolUse) can trigger webhook notifications.
+
+---
+
+### /parliament-loop
+
+Set up recurring execution of Parliament commands on an interval using Claude Code's `/loop` command.
+
+#### When to Use
+
+- Monitoring roadmap progress during implementation sprints
+- Running periodic code reviews during active development
+- Continuous quality checks on changing code
+
+#### Example Usage
+
+```
+/parliament-loop 5m /project-status
+/parliament-loop 10m /parliament-review
+/parliament-loop 15m /summon-grumpy-reviewer
+```
+
+Requires Claude Code v2.1.71+ for `/loop` support.
+
+---
+
+### /parliament-monitor
+
+Manage background monitoring agents for continuous code oversight.
+
+#### When to Use
+
+- During active development sessions for ongoing review
+- When you want security, quality, or test coverage monitoring
+- For persistent oversight without manual invocation
+
+#### Example Usage
+
+```
+/parliament-monitor start
+/parliament-monitor start grumpy-security-nag grumpy-testing-tyrant
+/parliament-monitor start --all
+/parliament-monitor status
+/parliament-monitor stop
+```
+
+**Default monitors**: grumpy-code-reviewer, grumpy-security-nag, grumpy-testing-tyrant.
+**Full set**: All 9 grumpy reviewers.
+
+All monitoring agents are read-only and use `effort: low` with `maxTurns: 5` for minimal overhead.
+
+---
+
 ## Tips for Best Results
 
 ### Be Specific About Context
@@ -622,6 +732,13 @@ Review for security issues only.
 | Checking progress | `/project-status` |
 | Complex design decisions | `/summon-council` |
 | Code review | `/summon-grumpy-reviewer` |
+| Maximum scrutiny | `/parliament-review` |
+| Technical debate | `/debate-topic` |
+| Agent configuration audit | `/parliament-optimize` |
+| Webhook setup | `/parliament-webhook` |
+| Recurring monitoring | `/parliament-loop` |
+| Background code oversight | `/parliament-monitor` |
+| Onboarding to a codebase | `/onboard-codebase` |
 
 ### Iterate on Feedback
 

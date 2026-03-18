@@ -5,6 +5,42 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-03-18
+
+### Added
+
+#### New Commands (21 total, up from 17)
+- `/parliament-optimize`: Advisory audit of all agent definitions — recommends effort/model settings based on role
+- `/parliament-webhook`: Configure HTTP webhook notification endpoints for Slack, Discord, Teams, or custom URLs
+- `/parliament-loop`: Set up recurring execution of Parliament commands via Claude Code's `/loop` integration
+- `/parliament-monitor`: Manage background monitoring agents for continuous code oversight during sessions
+
+#### Agent Frontmatter Enhancements
+- **Effort tiers**: All 30 agents now have `effort` frontmatter — orchestrators `high`, specialists `medium`, reviewers `low`. Estimated 40-60% token cost reduction on review tasks
+- **maxTurns limits**: All agents now have `maxTurns` — orchestrators 30, planning 20, specialists 15, reviewers 5
+- **Memory scopes**: All 16 specialists now have `memory: project` for persistent project knowledge across sessions
+- **Worktree isolation**: All 15 implementation specialists now have `isolation: worktree` for parallel work in isolated git branches (security-knight, doc-bard, package-wizard, dependency-detective, observability-oracle added)
+
+#### New Hooks
+- **StopFailure**: Fires on API errors (rate limits, auth failures) during Parliament sessions — logs failure and optionally notifies via webhook
+- **PostCompact**: Fires after context compaction — checkpoints state for monitoring context usage patterns
+- **InstructionsLoaded**: Fires when CLAUDE.md or rules files are loaded/reloaded — detects stale rules in long sessions
+
+#### Agent Standards
+- `.claude/rules/agent-standards.md`: Comprehensive frontmatter standards document covering effort tiers, maxTurns guidelines, memory scopes, tool restrictions, isolation patterns, and templates for each agent role
+
+#### Agent Teams Abstraction (Phase 3 Scaffold)
+- `CommunicationLayer` abstraction in `src/deliberation/core/communication.py` — unified interface for inter-agent communication
+- `TaskCommunication`: Stable implementation using current Task() subagent model
+- `AgentTeamsCommunication`: Experimental placeholder for Agent Teams (v2.1.32+), behind `PARLIAMENT_USE_AGENT_TEAMS=1` feature flag
+- Go/no-go gate: Agent Teams integration activates only when the feature exits Claude Code's research preview
+
+### Changed
+- **notify_teams.sh**: Added support for StopFailure, PostCompact, and InstructionsLoaded hook events
+- **settings.json**: Added StopFailure, PostCompact, and InstructionsLoaded hook configurations with dedicated handler scripts
+- **Agent count**: 30 agents (unchanged), now with standardised frontmatter across all roles
+- **Command count**: 21 commands (up from 17)
+
 ## [1.3.0] - 2026-03-18
 
 ### Added
@@ -81,6 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.4.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/V1.0.0...v1.1.0

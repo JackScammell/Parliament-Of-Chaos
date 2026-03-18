@@ -6,6 +6,10 @@ description: >-
 model: inherit
 color: magenta
 permissionMode: default
+memory: project
+effort: medium
+maxTurns: 15
+isolation: worktree
 ---
 
 # Observability Oracle

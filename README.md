@@ -12,7 +12,7 @@ Parliament of Chaos transforms Claude Code into a multi-agent development team. 
 
 - **30 Agents** including specialists, planners, reviewers, and orchestrators
 - **9 Grumpy Reviewers** who find flaws others miss
-- **14 Slash Commands** for project planning, scoping, implementation, code review, onboarding, and structured deliberation
+- **21 Slash Commands** for project planning, code review, deliberation, monitoring, and operations
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
@@ -85,13 +85,22 @@ claude plugin install parliament-of-chaos@parliament-of-chaos
 |---------|-------------|
 | `/onboard-codebase` | Analyse an undocumented codebase in parallel and generate comprehensive `docs/getting_started/` documentation |
 
+### Operations Commands
+
+| Command | Description |
+|---------|-------------|
+| `/parliament-optimize` | Audit agent definitions and recommend effort/model settings |
+| `/parliament-webhook` | Configure webhook notification endpoints (Teams, Slack, Discord) |
+| `/parliament-loop` | Set up recurring Parliament commands via `/loop` integration |
+| `/parliament-monitor` | Manage background monitoring agents for continuous oversight |
+
 ### Analytics & Plugin Commands
 
 | Command | Description |
 |---------|-------------|
-| `/debate-analytics [topic]` | **NEW**: Generate comprehensive analytics dashboard with metrics, influence scores, and insights |
-| `/plugin-install <name>` | **NEW**: Install community agent plugins from the marketplace |
-| `/plugin-list` | **NEW**: List all installed plugins and marketplace summary |
+| `/debate-analytics [topic]` | Generate comprehensive analytics dashboard with metrics and insights |
+| `/plugin-install <name>` | Install community agent plugins from the marketplace |
+| `/plugin-list` | List all installed plugins and marketplace summary |
 
 ---
 
@@ -147,13 +156,6 @@ claude plugin install parliament-of-chaos@parliament-of-chaos
 | grumpy-documentation-pedant | Documentation completeness |
 | grumpy-testing-tyrant | Test coverage and quality |
 
-### Orchestrators (2)
-
-| Agent | Role |
-|-------|------|
-| senior-council | Coordinates all agents, runs iterative review cycles until approval |
-| deliberation-conductor | Orchestrates structured debates with parallel execution and convergence detection |
-
 ---
 
 ## How It Works
@@ -191,62 +193,51 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 
 ---
 
-## Enhanced Features
+## Features
 
-Parliament of Chaos now includes advanced features leveraging Claude Code's latest capabilities:
+### Agent Effort Tiers (v1.4.0)
+- **Cost-Optimised Reasoning**: Orchestrators use `effort: high`, specialists use `effort: medium`, reviewers use `effort: low` — estimated 40-60% token savings on review tasks
+- **Turn Limits**: `maxTurns` per agent role prevents runaway sessions (orchestrators 30, specialists 15, reviewers 5)
+- **Persistent Memory**: All agents have scoped memory (`memory: project` for specialists, `memory: user` for reviewers) for cross-session knowledge
 
-### 🎯 Context Optimization and Management **ENHANCED**
-- **70% Token Reduction**: Accurate token counting with tiktoken, dynamic pruning, and deduplication
+### Worktree Isolation
+- **Parallel Implementation**: 15 of 16 specialists work in isolated git worktrees via `isolation: worktree` (system-architect excluded — read-only advisory agent)
+- **No Conflicts**: Each specialist operates on an isolated copy of the repo
+- **Automatic Cleanup**: Worktrees are cleaned up after the agent finishes
+
+### Background Monitoring (v1.4.0)
+- **Continuous Oversight**: All 9 grumpy reviewers have `background: true` for persistent monitoring
+- **Managed via `/parliament-monitor`**: Start, stop, and check status of background agents
+- **Low Overhead**: Reviewers use `effort: low` and `maxTurns: 5` for minimal resource consumption
+
+### Hook System
+- **10 Hook Events**: Notification, Stop, StopFailure, TaskCompleted, SubagentStart, PostCompact, InstructionsLoaded, TeammateIdle, PreToolUse, PostToolUse
+- **Teams/Slack/Discord**: Webhook notifications via `/parliament-webhook`
+- **Activity Logging**: All events logged to `.project-files/agent-logs/activity.jsonl`
+- **Security Hardened**: Path validation, HTTPS enforcement, secrets gitignored
+
+### Context Optimisation
+- **70% Token Reduction**: Accurate token counting, dynamic pruning, and deduplication
 - **Session Token Monitor**: Real-time tracking with automatic compression triggers
-- **Token Budget Enforcer**: Per-agent budget limits with automatic context compression
 - **Statement Deduplication**: Jaccard similarity detection to prevent redundant arguments
-- **Context Pruning**: Remove low-confidence statements while preserving high-influence agents
 - **Bounded Memory**: Token usage independent of debate length
-- **Multi-Session Support**: Persist and restore context across sessions
-- **Semantic Retrieval**: Optional vector memory integration for relevant arguments
-- **Token Tracking**: Real-time metrics and optimization statistics
-- **Backward Compatible**: Opt-in system maintaining legacy support
 
-### 🤝 Native Agent Teams Integration
-- **Structured Debate Teams**: Advocate, Opponent, Moderator, and Synthesis roles
-- **Parallel Execution**: Teams work simultaneously for faster deliberation
-- **Real-time Coordination**: Visual output showing debate activity and progress
+### Structured Deliberation
+- **4 Debate Modes**: fast (3 rounds), adversarial (5-7), consensus (5), deep (7-10)
+- **4 Voting Systems**: majority, supermajority, quadratic, influence-weighted
+- **Convergence Detection**: Automatic early termination when consensus reached
+- **Performance Metrics**: Token usage, latency, convergence trajectory
 
-### 🧠 Persistent Memory System
-- **Cross-Session Learning**: Remember debates across projects
-- **Pattern Recognition**: Track conceptual evolution and solutions
-- **Semantic Search**: Find relevant past discussions by topic
+### Agent Teams Abstraction (v1.4.0)
+- **CommunicationLayer**: Unified interface for inter-agent messaging
+- **Task()-Based Today**: Stable implementation using current subagent model
+- **Agent Teams Ready**: Experimental path behind `PARLIAMENT_USE_AGENT_TEAMS=1` feature flag
+- **Go/No-Go Gate**: Activates only when Agent Teams exits Claude Code research preview
 
-### 🔌 Plugin Marketplace
-- **Community Agents**: Install specialist agents from the marketplace
-- **Extensible System**: `/plugin-install [name]` to add new capabilities
-- **Skill Trees**: Hierarchical expertise for token-efficient specialization
-
-### 📊 Debate Analytics Dashboard
-- **Comprehensive Metrics**: Consensus scores, agent influence, argument novelty
-- **Visual Reports**: Markdown dashboards with trends and insights
-- **Performance Tracking**: Token usage, latency, time to convergence
-
-### 🎯 Advanced Governance Models
-- **Confidence-Weighted Voting**: Votes weighted by agent confidence
-- **Coalition Formation**: Agents align based on positions and values
-- **Delegated Voting**: High-confidence agents receive more weight
-- **Supermajority & Quadratic**: Multiple voting system options
-
-### ⚙️ User-Driven Constraints
-- **YAML Configuration**: Define debate rules and patterns to avoid
-- **Automatic Validation**: Agents check against constraints
-- **Custom Rules**: Pattern matching and requirement enforcement
-
-### 🔄 Multi-Session Debate Chaining
-- **Stateful Debates**: Carry context across multiple sessions
-- **Conflict Tracking**: Monitor and resolve unresolved issues
-- **Session Summaries**: Compressed history for long-running topics
-
-### 🎓 Self-Improving Agents
-- **Meta-Learning**: Track strategy performance over time
-- **Adaptive Behavior**: Agents learn from past debates
-- **Pattern Evolution**: Identify successful and failed approaches
+### Governance
+- **Conflict Resolution**: security > correctness > maintainability > performance > convenience
+- **Agent Standards**: `.claude/rules/agent-standards.md` enforces frontmatter consistency
+- **Read-Only Reviewers**: All 9 grumpy reviewers have `disallowedTools: [Edit, Write, NotebookEdit, Bash]`
 
 ---
 

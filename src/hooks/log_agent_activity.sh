@@ -19,6 +19,9 @@ TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 # Use CLAUDE_PROJECT_DIR if available, fall back to cwd
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$CWD}"
 [ -z "$PROJECT_DIR" ] && exit 0
+# Validate path: must be absolute, no traversal sequences
+case "$PROJECT_DIR" in *..* ) exit 1 ;; esac
+[[ "$PROJECT_DIR" != /* ]] && exit 1
 
 LOG_DIR="$PROJECT_DIR/.project-files/agent-logs"
 mkdir -p "$LOG_DIR"

@@ -7,6 +7,8 @@ model: inherit
 color: pink
 permissionMode: default
 memory: project
+effort: high
+maxTurns: 30
 tools:
   - Task(backend-goblin)
   - Task(ui-ux-guru)

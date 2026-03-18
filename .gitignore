@@ -43,6 +43,10 @@ Thumbs.db
 htmlcov/
 *.cover
 
+# Secrets
+.env
+src/hooks/.env
+
 # Temporary files
 *.log
 *.tmp

@@ -17,7 +17,7 @@ claude plugin install parliament-of-chaos@parliament-of-chaos
 ```
 
 These commands install:
-- 16 slash commands for orchestration, reviews, project planning, and analytics
+- 21 slash commands for orchestration, reviews, project planning, operations, and analytics
 - 30 agents (specialists, reviewers, planners, and orchestrators)
 
 ### Verify Installation
@@ -138,6 +138,12 @@ requirements.txt          # Python dependencies for the deliberation system
       roadmap-item-scope.md      # Scope items into tasks
       implement-task-list.md     # Execute tasks with council review
 
+      # Operations Commands (v1.4.0)
+      parliament-optimize.md     # Audit agent configurations
+      parliament-webhook.md      # Configure webhook notifications
+      parliament-loop.md         # Recurring command execution
+      parliament-monitor.md      # Background monitoring agents
+
       # Analytics & Plugin Commands
       debate-analytics.md        # Generate analytics dashboard
       debate-topic.md            # Run structured deliberation
@@ -174,6 +180,15 @@ requirements.txt          # Python dependencies for the deliberation system
 | `/roadmap-add-item` | Add new items to the roadmap |
 | `/roadmap-item-scope` | Break down items into specs and tasks |
 | `/implement-task-list` | Execute tasks with full council oversight |
+
+### Operations Commands
+
+| Command | Description |
+|---------|-------------|
+| `/parliament-optimize` | Audit agent definitions and recommend effort/model settings |
+| `/parliament-webhook` | Configure webhook notification endpoints (Teams, Slack, Discord) |
+| `/parliament-loop` | Set up recurring Parliament commands via `/loop` integration |
+| `/parliament-monitor` | Manage background monitoring agents for continuous oversight |
 
 ### Analytics & Plugin Commands
 

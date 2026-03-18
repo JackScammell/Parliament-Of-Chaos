@@ -81,6 +81,12 @@ Hooks are configured in the `hooks` section of your settings file:
 |-------|---------|-------------|
 | `Notification` | Claude displays a notification | Alert when waiting for input |
 | `Stop` | Claude stops executing | Alert when task completes |
+| `StopFailure` | Turn ends due to API error (rate limit, auth) | Error recovery, incident alerts |
+| `TaskCompleted` | Agent finishes a task | Progress tracking |
+| `SubagentStart` | New sub-agent spawned | Activity monitoring |
+| `PostCompact` | Context window compacted | State checkpointing |
+| `InstructionsLoaded` | CLAUDE.md or rules files loaded/reloaded | Detect stale rules in long sessions |
+| `TeammateIdle` | Teammate agent is idle | Multi-agent coordination |
 | `PreToolUse` | Before a tool is executed | Validation, logging |
 | `PostToolUse` | After a tool completes | Auditing, notifications |
 
@@ -414,6 +420,50 @@ When referencing the plugin's hook scripts, use the centralised path:
 | `notify_teams.sh` | Plugin cache | Microsoft Teams webhook notifications |
 | `log_agent_activity.sh` | Plugin cache | Agent lifecycle event logging |
 | `log_debate_completion.sh` | Plugin cache | Debate completion event logging |
+| `handle_stop_failure.sh` | Plugin cache | API failure logging (v1.4.0) |
+| `handle_post_compact.sh` | Plugin cache | Compaction state checkpointing (v1.4.0) |
+| `handle_instructions_loaded.sh` | Plugin cache | Rules reload logging (v1.4.0) |
+
+---
+
+## v1.4.0 Hook Events
+
+### StopFailure
+
+Fires when a Parliament session is interrupted by an API error (rate limit or authentication failure).
+
+**Handler**: `handle_stop_failure.sh` — Logs the failure with stop reason to `activity.jsonl`. Notification is delegated to `notify_teams.sh`.
+
+**Payload fields**:
+- `hook_event_name`: "StopFailure"
+- `stop_reason`: The reason for the failure (e.g., "rate_limit", "auth_error")
+- `session_id`, `cwd`: Standard fields
+
+### PostCompact
+
+Fires after context window compaction completes during a long Parliament session.
+
+**Handler**: `handle_post_compact.sh` — Logs compaction events for monitoring context usage patterns.
+
+**Use cases**:
+- Track how often compaction occurs during council sessions
+- Checkpoint state after compaction for recovery
+- Monitor context pressure in long-running deliberations
+
+### InstructionsLoaded
+
+Fires when CLAUDE.md or `.claude/rules/*.md` files are loaded or reloaded during a session.
+
+**Handler**: `handle_instructions_loaded.sh` — Logs rule reload events.
+
+**Use cases**:
+- Detect stale rules in long-running Parliament sessions
+- Audit which rules files are active
+- Track rule changes during a session
+
+### Webhook Configuration
+
+Use `/parliament-webhook` to configure webhook notifications for all hook events. The command supports Teams, Slack, Discord, and custom HTTP endpoints. Webhook URLs are stored in `src/hooks/.env` (gitignored).
 
 ---
 

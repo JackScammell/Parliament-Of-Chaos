@@ -6,6 +6,9 @@ description: >-
 model: inherit
 color: purple
 permissionMode: default
+memory: project
+effort: medium
+maxTurns: 15
 isolation: worktree
 ---
 

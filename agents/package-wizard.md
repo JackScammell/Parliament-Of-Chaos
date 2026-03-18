@@ -6,6 +6,10 @@ description: >-
 model: inherit
 color: orange
 permissionMode: default
+memory: project
+effort: medium
+maxTurns: 15
+isolation: worktree
 ---
 
 # Package Wizard

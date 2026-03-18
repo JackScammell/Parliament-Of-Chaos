@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Log debate completion events for /debate-analytics
-# Writes JSONL entries to .project-files/debate-logs/completions.jsonl
+# Checkpoint state after context compaction
+# Logs compaction events for monitoring context usage patterns
 
 PAYLOAD="$(cat)"
 
@@ -23,10 +23,10 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$CWD}"
 case "$PROJECT_DIR" in *..* ) exit 1 ;; esac
 [[ "$PROJECT_DIR" != /* ]] && exit 1
 
-LOG_DIR="$PROJECT_DIR/.project-files/debate-logs"
+LOG_DIR="$PROJECT_DIR/.project-files/agent-logs"
 mkdir -p "$LOG_DIR"
 
 jq -n --arg event "$EVENT" --arg session "$SESSION" --arg ts "$TIMESTAMP" \
-  '{"event":$event,"session":$session,"timestamp":$ts,"type":"debate_completion"}' >> "$LOG_DIR/completions.jsonl"
+  '{"event":$event,"session":$session,"timestamp":$ts,"type":"compaction"}' >> "$LOG_DIR/activity.jsonl"
 
 exit 0
