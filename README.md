@@ -12,7 +12,7 @@ Parliament of Chaos transforms Claude Code into a multi-agent development team. 
 
 - **30 Agents** including specialists, planners, reviewers, and orchestrators
 - **9 Grumpy Reviewers** who find flaws others miss
-- **13 Slash Commands** for project planning, scoping, implementation, code review, and structured deliberation
+- **14 Slash Commands** for project planning, scoping, implementation, code review, onboarding, and structured deliberation
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
@@ -32,6 +32,12 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 
 ```
 /summon-council Design an authentication system with JWT and RBAC
+```
+
+**For onboarding to an undocumented codebase:**
+
+```
+/onboard-codebase
 ```
 
 **For planning a new project:**
@@ -71,6 +77,12 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 | `/roadmap-add-item <name> --phase <n>` | Add a new item to an existing roadmap |
 | `/roadmap-item-scope <item>` | Create detailed Spec.md and tasks.md for a roadmap item |
 | `/implement-task-list [item]` | Execute tasks with full council review (specialists + grumpy approval) |
+
+### Codebase Analysis Commands
+
+| Command | Description |
+|---------|-------------|
+| `/onboard-codebase` | Analyse an undocumented codebase in parallel and generate comprehensive `docs/getting_started/` documentation |
 
 ### Analytics & Plugin Commands
 
@@ -154,6 +166,16 @@ When you invoke `/summon-council`:
 3. **Review** - All outputs pass through the grumpy reviewer panel
 4. **Iterate** - Feedback routes back to specialists until all reviewers approve. Conflicts resolved via priority (security > correctness > maintainability > performance)
 5. **Synthesise** - Final solution is delivered with documented trade-offs
+
+### The Onboarding Workflow
+
+When you invoke `/onboard-codebase`:
+
+1. **Parallel Analysis** - 11 specialists fan out simultaneously, each analysing the codebase through their lens (architecture, APIs, database, config, tests, security, etc.)
+2. **Documentation Generation** - The Doc Bard compiles all specialist reports into up to 17 comprehensive getting-started guides
+3. **Quality Review** - The Grumpy Documentation Pedant reviews every file for accuracy, completeness, and fabrication
+4. **Iteration** - Issues are fixed and re-reviewed until approved
+5. **Delivery** - Complete `docs/getting_started/` directory ready for new developers
 
 ### The Planning Workflow
 

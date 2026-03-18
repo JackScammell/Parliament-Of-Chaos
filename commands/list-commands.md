@@ -13,6 +13,7 @@ Display all Parliament of Chaos slash commands grouped by category.
 3. Group by category:
    - **Project Planning**: plan-project, project-status, roadmap-add-item, roadmap-item-scope, implement-task-list
    - **Agent Invocation**: summon-council, summon-specialist, summon-grumpy-reviewer, parliament-review
+   - **Codebase Analysis**: onboard-codebase
    - **Discovery**: list-agents, explain-agent, list-commands
 
 ## Output
@@ -22,6 +23,9 @@ Display all Parliament of Chaos slash commands grouped by category.
 | Command | Description |
 
 ## Agent Invocation (4)
+| Command | Description |
+
+## Codebase Analysis (1)
 | Command | Description |
 
 ## Discovery (3)
