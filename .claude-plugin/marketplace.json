@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "A Claude Code plugin that summons a council of opinionated AI specialists to plan, build, review, and refine your projects through structured debate and iteration.",
-    "version": "1.4.0"
+    "version": "1.5.0"
   },
   "plugins": [
     {
       "name": "parliament-of-chaos",
       "source": "./",
       "description": "Specialist agents, grumpy reviewers, and slash commands for project planning, scoping, implementation, and code review. Transforms Claude Code into a multi-agent development team.",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "author": {
         "name": "Jack Scammell",
         "url": "https://github.com/JackScammell"

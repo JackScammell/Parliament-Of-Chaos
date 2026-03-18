@@ -17,7 +17,7 @@ claude plugin install parliament-of-chaos@parliament-of-chaos
 ```
 
 These commands install:
-- 21 slash commands for orchestration, reviews, project planning, operations, and analytics
+- 30 slash commands for orchestration, reviews, project planning, developer workflow, operations, and analytics
 - 30 agents (specialists, reviewers, planners, and orchestrators)
 
 ### Verify Installation
@@ -144,6 +144,17 @@ requirements.txt          # Python dependencies for the deliberation system
       parliament-loop.md         # Recurring command execution
       parliament-monitor.md      # Background monitoring agents
 
+      # Developer Workflow Commands (v1.5.0)
+      pre-commit-check.md        # Run all CI checks locally
+      format-code.md             # Auto-detect and run formatter
+      lint-fix.md                # Auto-detect and run linter with fix
+      run-tests.md               # Auto-detect and run test suite
+      security-scan.md           # Unified security scanning
+      clean-imports.md           # Remove unused imports
+      update-dependencies.md     # Interactive dependency updates
+      dead-code-sweep.md         # Find dead code and orphaned files
+      update-docs.md             # Update docs after code changes
+
       # Analytics & Plugin Commands
       debate-analytics.md        # Generate analytics dashboard
       debate-topic.md            # Run structured deliberation
@@ -189,6 +200,20 @@ requirements.txt          # Python dependencies for the deliberation system
 | `/parliament-webhook` | Configure webhook notification endpoints (Teams, Slack, Discord) |
 | `/parliament-loop` | Set up recurring Parliament commands via `/loop` integration |
 | `/parliament-monitor` | Manage background monitoring agents for continuous oversight |
+
+### Developer Workflow Commands
+
+| Command | Description |
+|---------|-------------|
+| `/pre-commit-check` | Auto-detect and run all CI checks locally before committing |
+| `/format-code` | Auto-detect and run the project's code formatter |
+| `/lint-fix` | Auto-detect and run linter(s) with auto-fix |
+| `/run-tests` | Auto-detect and run the test suite with intelligent options |
+| `/security-scan` | Unified security check: dependencies, secrets, vulnerability patterns |
+| `/clean-imports` | Remove unused imports and organise import ordering |
+| `/update-dependencies` | Interactive dependency update with changelog review and test verification |
+| `/dead-code-sweep` | Find unreachable code, unused exports, and orphaned files |
+| `/update-docs` | Detect and update documentation affected by recent code changes |
 
 ### Analytics & Plugin Commands
 

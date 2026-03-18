@@ -5,6 +5,27 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-03-18
+
+### Added
+
+#### New Commands (30 total, up from 21)
+
+##### Developer Workflow Commands (9 new)
+- `/pre-commit-check`: Auto-detect CI pipeline, linters, formatters, type checkers, and test suites — run them all locally before committing. Includes secret scanning. Supports `--fix` for auto-remediation and `--skip` to bypass specific steps
+- `/format-code`: Detect the project's formatter (Prettier, Black, gofmt, rustfmt, etc.) and run on changed files. Supports `--all`, `--check`, and explicit file targets. Offers setup if no formatter configured
+- `/lint-fix`: Detect linter(s) (ESLint, Ruff, RuboCop, golangci-lint, etc.) and run with auto-fix on changed files. Handles multiple linters per project. Parses remaining errors with explanations
+- `/run-tests`: Detect test framework and run suite with `--changed` (only tests affected by git changes via import graph analysis), `--coverage` (highlight untested critical paths), and `--explain` (diagnose failures and suggest fixes)
+- `/security-scan`: Unified security check — dependency vulnerability audit, secret/credential detection, and OWASP Top 10 pattern scanning. Supports `--secrets`, `--deps`, `--patterns` focused modes
+- `/clean-imports`: Remove unused imports, sort/organise imports per project conventions, convert to type imports (TypeScript). Works across JS/TS, Python, Go, Java, Rust
+- `/update-dependencies`: Interactive dependency update — show outdated packages, review changelogs for breaking changes, update incrementally with test runs between each, auto-rollback on failure. Supports `--patch`, `--minor`, `--major`, `--security` filters
+- `/dead-code-sweep`: Find unreachable code, unused exports, orphaned files, and dead CSS. Report-only by default with confidence levels. `--apply` shows diff preview and asks for confirmation before removing
+- `/update-docs`: Detect and update project documentation affected by recent code changes. Analyses git diff, cross-references with docs, generates updates with provenance tracking. Delegates to doc-bard for writing and grumpy-documentation-pedant for validation. Preview-only by default with `--apply` for confirmed writes
+
+### Changed
+- **Command count**: 30 commands (up from 21) — added 9 developer workflow commands
+- **Command categories**: Added new "Developer Workflow" category to `/list-commands`
+
 ## [1.4.0] - 2026-03-18
 
 ### Added
@@ -117,6 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.5.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.1.0...v1.2.0

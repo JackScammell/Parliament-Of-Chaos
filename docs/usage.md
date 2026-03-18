@@ -27,6 +27,15 @@ This guide explains how to use Parliament of Chaos commands effectively.
 | `/debate-analytics` | Analytics dashboard | Tracking deliberation patterns |
 | `/plugin-install <name>` | Install community plugins | Adding new agent capabilities |
 | `/plugin-list` | List installed plugins | Viewing available plugins |
+| `/pre-commit-check` | Run all CI checks locally | Ensuring CI passes before pushing |
+| `/format-code` | Auto-detect and run formatter | Formatting code before commit |
+| `/lint-fix` | Auto-detect and run linter with fix | Fixing lint errors across changed files |
+| `/run-tests` | Auto-detect and run test suite | Running tests with smart options |
+| `/security-scan` | Unified security scanning | Checking for secrets, vulnerabilities, patterns |
+| `/clean-imports` | Remove unused imports | Cleaning up import statements |
+| `/update-dependencies` | Interactive dependency updates | Updating packages safely with testing |
+| `/dead-code-sweep` | Find unreachable/unused code | Identifying dead code for removal |
+| `/update-docs` | Update docs after code changes | Keeping documentation in sync with code |
 
 ---
 
@@ -693,6 +702,221 @@ All monitoring agents are read-only and use `effort: low` with `maxTurns: 5` for
 
 ---
 
+## Developer Workflow Commands (v1.5.0)
+
+These commands automate repetitive software development tasks. They auto-detect your project's toolchain and run the right tools with zero configuration.
+
+### /pre-commit-check
+
+Run all CI checks locally before committing to guarantee your push will pass.
+
+#### When to Use
+
+- Before committing or pushing code
+- As a final check after making changes
+- When you want a single command to run everything
+
+#### How It Works
+
+1. **Detect Toolchain** — Reads CI config, package manager files, and tool configs to identify formatters, linters, type checkers, and test runners
+2. **Run Checks** — Executes detected tools in order: secrets scan, format check, lint, type check, tests
+3. **Report Results** — Pass/fail for each step with fix suggestions
+
+#### Example Usage
+
+```
+/pre-commit-check                    # Run all detected checks
+/pre-commit-check --fix              # Auto-fix what can be fixed
+/pre-commit-check --skip tests       # Skip test execution
+```
+
+---
+
+### /format-code
+
+Detect and run the project's code formatter on changed files.
+
+#### When to Use
+
+- After writing code, before committing
+- When the formatter wasn't run automatically
+- To format specific files or the entire project
+
+#### Example Usage
+
+```
+/format-code                         # Format changed files
+/format-code --all                   # Format entire project
+/format-code --check                 # Check only, don't modify
+```
+
+Supports: Prettier, Black, gofmt, rustfmt, clang-format, php-cs-fixer, and more.
+
+---
+
+### /lint-fix
+
+Detect and run the project's linter(s) with auto-fix on changed files.
+
+#### When to Use
+
+- After writing code to catch and fix lint errors
+- Before committing to ensure compliance
+- To understand remaining lint issues that need manual fixes
+
+#### Example Usage
+
+```
+/lint-fix                            # Lint and fix changed files
+/lint-fix --all                      # Lint entire project
+/lint-fix --no-fix                   # Report only, no auto-fix
+```
+
+Supports: ESLint, Ruff, Pylint, RuboCop, golangci-lint, Clippy, stylelint, and more. Handles multiple linters per project.
+
+---
+
+### /run-tests
+
+Detect the test framework and run the suite with intelligent options.
+
+#### When to Use
+
+- After making changes to verify nothing broke
+- Running only tests affected by your changes (with `--changed`)
+- Understanding test failures (with `--explain`)
+- Checking test coverage (with `--coverage`)
+
+#### Example Usage
+
+```
+/run-tests                           # Run full test suite
+/run-tests --changed                 # Only tests affected by git changes
+/run-tests --changed --explain       # Changed tests with failure diagnosis
+/run-tests --coverage                # Include coverage report
+```
+
+The `--explain` flag reads the failing test and source code to diagnose the issue and suggest a fix — far more useful than a raw stack trace.
+
+---
+
+### /security-scan
+
+Unified security check combining dependency audit, secret detection, and vulnerability pattern scanning.
+
+#### When to Use
+
+- Before committing to check for accidentally committed secrets
+- Periodically to audit dependency vulnerabilities
+- After adding new dependencies
+- Before releases for a comprehensive security check
+
+#### Example Usage
+
+```
+/security-scan                       # Full scan (all checks)
+/security-scan --secrets             # Secret detection only
+/security-scan --deps                # Dependency audit only
+/security-scan --changed             # Scan only changed files
+```
+
+Checks for: hardcoded API keys, tokens, passwords, private keys, dependency CVEs, SQL injection, XSS, command injection, and more.
+
+---
+
+### /clean-imports
+
+Remove unused imports and organise import ordering across changed files.
+
+#### When to Use
+
+- After refactoring when imports become stale
+- Before committing to clean up import statements
+- To enforce consistent import ordering
+
+#### Example Usage
+
+```
+/clean-imports                       # Clean imports in changed files
+/clean-imports --all                 # Clean entire project
+/clean-imports --check               # Report without modifying
+```
+
+Works across: JavaScript/TypeScript, Python, Go, Java, Rust. Respects project conventions (ESLint import/order, isort, goimports).
+
+---
+
+### /update-dependencies
+
+Interactive dependency update with changelog review and test verification between each update.
+
+#### When to Use
+
+- Regular dependency maintenance
+- Addressing known vulnerabilities
+- Major version upgrades with breaking change review
+
+#### Example Usage
+
+```
+/update-dependencies                 # Show outdated and update interactively
+/update-dependencies --patch         # Auto-apply all patch updates
+/update-dependencies --security      # Only security-related updates
+/update-dependencies --major         # Walk through major updates with changelogs
+```
+
+Updates are applied one-by-one with tests run between each. Failed updates are automatically rolled back.
+
+---
+
+### /dead-code-sweep
+
+Find unreachable code, unused exports, orphaned files, and dead CSS selectors.
+
+#### When to Use
+
+- After major refactors to find leftover code
+- Periodic codebase hygiene
+- Before releases to reduce bundle size
+- When onboarding to understand what code is actually used
+
+#### Example Usage
+
+```
+/dead-code-sweep                     # Report dead code (read-only)
+/dead-code-sweep --apply             # Remove with diff preview and confirmation
+/dead-code-sweep --scope src/utils/  # Scan specific directory
+/dead-code-sweep --type exports      # Only unused exports
+```
+
+Report-only by default. The `--apply` flag shows a full diff and requires confirmation before removing anything.
+
+---
+
+### /update-docs
+
+After completing work on an issue or feature, detect and update project documentation that has become stale.
+
+#### When to Use
+
+- After finishing a feature or bug fix
+- Before creating a pull request
+- When you've changed APIs, config, or CLI flags
+
+#### Example Usage
+
+```
+/update-docs                         # Preview updates for current branch
+/update-docs --apply                 # Apply updates after confirmation
+/update-docs --scope commit          # Only most recent commit
+/update-docs --create                # Also create docs for undocumented features
+/update-docs --dry-run               # Report what's stale without generating updates
+```
+
+Delegates writing to doc-bard and validation to grumpy-documentation-pedant. Preview-only by default — no files modified without `--apply` and explicit confirmation.
+
+---
+
 ## Tips for Best Results
 
 ### Be Specific About Context
@@ -739,6 +963,15 @@ Review for security issues only.
 | Recurring monitoring | `/parliament-loop` |
 | Background code oversight | `/parliament-monitor` |
 | Onboarding to a codebase | `/onboard-codebase` |
+| Ensure CI passes before push | `/pre-commit-check` |
+| Format code | `/format-code` |
+| Fix lint errors | `/lint-fix` |
+| Run tests smartly | `/run-tests --changed` |
+| Security check | `/security-scan` |
+| Clean up imports | `/clean-imports` |
+| Update packages safely | `/update-dependencies` |
+| Find dead code | `/dead-code-sweep` |
+| Update docs after changes | `/update-docs` |
 
 ### Iterate on Feedback
 

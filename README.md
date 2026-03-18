@@ -12,7 +12,7 @@ Parliament of Chaos transforms Claude Code into a multi-agent development team. 
 
 - **30 Agents** including specialists, planners, reviewers, and orchestrators
 - **9 Grumpy Reviewers** who find flaws others miss
-- **22 Slash Commands** for project planning, code review, deliberation, monitoring, and operations
+- **30 Slash Commands** for project planning, code review, deliberation, developer workflow, monitoring, and operations
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
@@ -94,6 +94,20 @@ claude plugin install parliament-of-chaos@parliament-of-chaos
 | `/parliament-loop` | Set up recurring Parliament commands via `/loop` integration |
 | `/parliament-monitor` | Manage background monitoring agents for continuous oversight |
 | `/changelog-review` | Review Claude Code changelog and propose new features |
+
+### Developer Workflow Commands
+
+| Command | Description |
+|---------|-------------|
+| `/pre-commit-check` | Auto-detect and run all CI checks locally before committing |
+| `/format-code` | Auto-detect and run the project's code formatter |
+| `/lint-fix` | Auto-detect and run linter(s) with auto-fix |
+| `/run-tests [--changed] [--explain]` | Auto-detect and run the test suite with intelligent options |
+| `/security-scan` | Unified security check: dependencies, secrets, vulnerability patterns |
+| `/clean-imports` | Remove unused imports and organise import ordering |
+| `/update-dependencies` | Interactive dependency update with changelog review and test verification |
+| `/dead-code-sweep` | Find unreachable code, unused exports, and orphaned files |
+| `/update-docs` | Detect and update documentation affected by recent code changes |
 
 ### Analytics & Plugin Commands
 
