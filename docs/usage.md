@@ -24,6 +24,9 @@ This guide explains how to use Parliament of Chaos commands effectively.
 | `/list-agents` | Show all agents by category | Discovering available agents |
 | `/list-commands` | Show all commands by category | Discovering available commands |
 | `/explain-agent <agent>` | Detailed agent explanation | Understanding agent capabilities |
+| `/version` | Plugin version and metadata | Checking installed version |
+| `/readme` | Display full README | Quick reference in session |
+| `/changelog` | Display version history | Reviewing past releases |
 | `/debate-analytics` | Analytics dashboard | Tracking deliberation patterns |
 | `/plugin-install <name>` | Install community plugins | Adding new agent capabilities |
 | `/plugin-list` | List installed plugins | Viewing available plugins |
@@ -531,7 +534,7 @@ scribe: on
 Refactor the payment processing module for better testability.
 ```
 
-Logs are saved to `.parliament-of-chaos/{task-name}-{timestamp}.md`.
+Logs are saved to `.chaos/{task-name}-{timestamp}.md`.
 
 ---
 

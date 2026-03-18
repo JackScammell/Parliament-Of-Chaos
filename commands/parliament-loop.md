@@ -52,7 +52,7 @@ This command wraps Claude Code's native `/loop` functionality specifically for P
 
 1. Validates the target is a Parliament command
 2. Suggests appropriate intervals based on the command type
-3. Delegates to `/loop [interval] /parliament-of-chaos:[command]`
+3. Delegates to `/loop [interval] /chaos:[command]`
 
 ## Notes
 

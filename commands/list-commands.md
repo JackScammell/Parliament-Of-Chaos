@@ -17,7 +17,7 @@ Display all Parliament of Chaos slash commands grouped by category.
    - **Developer Workflow**: pre-commit-check, format-code, lint-fix, run-tests, security-scan, clean-imports, update-dependencies, dead-code-sweep, update-docs
    - **Operations**: parliament-optimize, parliament-webhook, parliament-loop, parliament-monitor, changelog-review
    - **Codebase Analysis**: onboard-codebase
-   - **Discovery**: list-agents, explain-agent, list-commands
+   - **Discovery**: list-agents, explain-agent, list-commands, version, readme, changelog
    - **Plugins**: plugin-install, plugin-list
 
 ## Output
@@ -41,7 +41,7 @@ Display all Parliament of Chaos slash commands grouped by category.
 ## Codebase Analysis (1)
 | Command | Description |
 
-## Discovery (3)
+## Discovery (6)
 | Command | Description |
 
 ## Plugins (2)

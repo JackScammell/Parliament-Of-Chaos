@@ -112,7 +112,7 @@ Parliament of Chaos includes a ready-to-use Microsoft Teams notification hook. H
 Edit the plugin's `.env` file:
 
 ```bash
-# Location: ~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/.env
+# Location: ~/.claude/plugins/cache/chaos/chaos/*/src/hooks/.env
 TEAMS_WEBHOOK_URL="https://your-org.webhook.office.com/webhookb2/..."
 APP_NAME="My Project"
 ```
@@ -121,8 +121,8 @@ Or copy the hook to your project and configure locally:
 
 ```bash
 mkdir -p .claude/hooks
-cp ~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/notify_teams.sh .claude/hooks/
-cp ~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/.env .claude/hooks/
+cp ~/.claude/plugins/cache/chaos/chaos/*/src/hooks/notify_teams.sh .claude/hooks/
+cp ~/.claude/plugins/cache/chaos/chaos/*/src/hooks/.env .claude/hooks/
 # Edit .claude/hooks/.env with your webhook URL
 ```
 
@@ -140,7 +140,7 @@ Add to `.claude/settings.local.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/notify_teams.sh"
+            "command": "~/.claude/plugins/cache/chaos/chaos/*/src/hooks/notify_teams.sh"
           }
         ]
       }
@@ -150,7 +150,7 @@ Add to `.claude/settings.local.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/notify_teams.sh"
+            "command": "~/.claude/plugins/cache/chaos/chaos/*/src/hooks/notify_teams.sh"
           }
         ]
       }
@@ -373,7 +373,7 @@ Log all tool usage for compliance:
 When installed via the marketplace, Parliament of Chaos hook scripts are stored in the centralised plugin cache:
 
 ```
-~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/
+~/.claude/plugins/cache/chaos/chaos/*/src/hooks/
   notify_teams.sh           # Teams notification script
   log_agent_activity.sh     # Agent lifecycle logging
   log_debate_completion.sh  # Debate completion logging
@@ -402,7 +402,7 @@ When referencing the plugin's hook scripts, use the centralised path:
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/plugins/cache/parliament-of-chaos/parliament-of-chaos/*/src/hooks/notify_teams.sh"
+            "command": "~/.claude/plugins/cache/chaos/chaos/*/src/hooks/notify_teams.sh"
           }
         ]
       }

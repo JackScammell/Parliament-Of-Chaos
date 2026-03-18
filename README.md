@@ -12,7 +12,7 @@ Parliament of Chaos transforms Claude Code into a multi-agent development team. 
 
 - **30 Agents** including specialists, planners, reviewers, and orchestrators
 - **9 Grumpy Reviewers** who find flaws others miss
-- **30 Slash Commands** for project planning, code review, deliberation, developer workflow, monitoring, and operations
+- **34 Slash Commands** for project planning, code review, deliberation, developer workflow, monitoring, and operations
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
@@ -24,7 +24,7 @@ The result: thoroughly planned projects, battle-tested code, and solutions that 
 
 ```
 claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
-claude plugin install parliament-of-chaos@parliament-of-chaos
+claude plugin install chaos@chaos
 ```
 
 ### Your First Command
@@ -68,6 +68,9 @@ claude plugin install parliament-of-chaos@parliament-of-chaos
 | `/list-agents` | Display all agents grouped by category |
 | `/list-commands` | Display all commands grouped by category |
 | `/explain-agent <agent>` | Detailed explanation of what an agent does and when to use it |
+| `/version` | Display current plugin version and metadata |
+| `/readme` | Display the full README in the session |
+| `/changelog` | Display the full version history |
 
 ### Project Planning Commands
 
@@ -298,7 +301,7 @@ Parliament of Chaos creates and manages files in `.project-files/`:
 
 ```
 claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
-claude plugin install parliament-of-chaos@parliament-of-chaos
+claude plugin install chaos@chaos
 ```
 
 For detailed installation steps, verification, and troubleshooting, see the [Installation Guide](docs/installation.md).
@@ -309,7 +312,7 @@ For detailed installation steps, verification, and troubleshooting, see the [Ins
 
 To update to the latest version:
 ```
-claude plugin update parliament-of-chaos@parliament-of-chaos
+claude plugin update chaos@chaos
 ```
 
 For complete update instructions and FAQs, see the [Update Guide](docs/UPDATE.md).

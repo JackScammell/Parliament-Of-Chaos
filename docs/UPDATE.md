@@ -13,7 +13,7 @@
 ### Simple Update Command
 
 ```
-claude plugin update parliament-of-chaos@parliament-of-chaos
+claude plugin update chaos@chaos
 ```
 
 Run this command in Claude Code to update to the latest version.
@@ -31,7 +31,7 @@ Run this command in Claude Code to update to the latest version.
 
 2. **Run Update Command**
    ```
-   claude plugin update parliament-of-chaos@parliament-of-chaos
+   claude plugin update chaos@chaos
    ```
    
 3. **Verify Update**
@@ -141,7 +141,7 @@ curl -s https://raw.githubusercontent.com/JackScammell/Parliament-Of-Chaos/main/
 
 3. **Try again**
    ```
-   claude plugin update parliament-of-chaos@parliament-of-chaos
+   claude plugin update chaos@chaos
    ```
 
 4. **Manual installation**

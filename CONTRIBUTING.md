@@ -62,8 +62,8 @@ python -m pytest tests/ -v
 ```
 Parliament-Of-Chaos/
 ├── .claude/
-│   ├── agents/parliament-of-chaos/    # Agent definitions (.md files)
-│   └── commands/parliament-of-chaos/  # Command definitions (.md files)
+│   ├── agents/chaos/    # Agent definitions (.md files)
+│   └── commands/chaos/  # Command definitions (.md files)
 ├── src/
 │   └── deliberation/                  # Python deliberation system
 │       ├── core/                      # Core modules

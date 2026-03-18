@@ -54,12 +54,12 @@ All three values must match.
 Claude Code's marketplace clone does **not** auto-pull on `marketplace add` if the clone already exists. You must manually pull.
 
 ```bash
-cd ~/.claude/plugins/marketplaces/parliament-of-chaos && git pull origin main && cd -
+cd ~/.claude/plugins/marketplaces/chaos && git pull origin main && cd -
 ```
 
 **Verify the cache has the new version:**
 ```bash
-grep '"version"' ~/.claude/plugins/marketplaces/parliament-of-chaos/.claude-plugin/plugin.json
+grep '"version"' ~/.claude/plugins/marketplaces/chaos/.claude-plugin/plugin.json
 ```
 
 ## Post-Push: Verify in Claude Code
@@ -67,7 +67,7 @@ grep '"version"' ~/.claude/plugins/marketplaces/parliament-of-chaos/.claude-plug
 1. Open a fresh Claude Code session
 2. Type `/plugin`
 3. Navigate to **Discover** tab
-4. Find `parliament-of-chaos`
+4. Find `chaos`
 5. Confirm version shows `X.Y.Z` (not the old version)
 
 If it still shows the old version:
@@ -89,7 +89,7 @@ If it still shows the old version:
 On a machine that doesn't have the plugin installed:
 ```bash
 claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
-claude plugin install parliament-of-chaos@parliament-of-chaos
+claude plugin install chaos@chaos
 ```
 
 Then verify:
@@ -103,7 +103,7 @@ Then verify:
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| `/plugin` shows old version | Marketplace git clone is stale | `cd ~/.claude/plugins/marketplaces/parliament-of-chaos && git pull origin main` |
+| `/plugin` shows old version | Marketplace git clone is stale | `cd ~/.claude/plugins/marketplaces/chaos && git pull origin main` |
 | `/plugin` shows no version | `plugin.json` missing `version` field | Add `"version": "X.Y.Z"` to `.claude-plugin/plugin.json` |
 | Version mismatch | `plugin.json` and `marketplace.json` disagree | Ensure all three version locations match |
 | Hooks don't run | Hook scripts in `hooks/` instead of `src/hooks/` | Plugin cache only includes `src/` — hooks must live there |

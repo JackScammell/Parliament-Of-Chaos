@@ -13,11 +13,11 @@ This guide covers installing Parliament of Chaos as a Claude Code plugin.
 
 ```
 claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
-claude plugin install parliament-of-chaos@parliament-of-chaos
+claude plugin install chaos@chaos
 ```
 
 These commands install:
-- 30 slash commands for orchestration, reviews, project planning, developer workflow, operations, and analytics
+- 34 slash commands for orchestration, reviews, project planning, developer workflow, operations, and analytics
 - 30 agents (specialists, reviewers, planners, and orchestrators)
 
 ### Verify Installation
@@ -42,9 +42,9 @@ For Parliament of Chaos, this means:
 
 | Content | Location |
 |---------|----------|
-| Commands | `~/.claude/plugins/marketplaces/parliament-of-chaos/commands/` |
-| Agents | `~/.claude/plugins/marketplaces/parliament-of-chaos/agents/` |
-| Plugin metadata | `~/.claude/plugins/marketplaces/parliament-of-chaos/.claude-plugin/marketplace.json` |
+| Commands | `~/.claude/plugins/marketplaces/chaos/commands/` |
+| Agents | `~/.claude/plugins/marketplaces/chaos/agents/` |
+| Plugin metadata | `~/.claude/plugins/marketplaces/chaos/.claude-plugin/marketplace.json` |
 
 ### Why This Location?
 
@@ -79,7 +79,7 @@ requirements.txt          # Python dependencies for the deliberation system
 
 .claude/
   agents/
-    parliament-of-chaos/
+    chaos/
       # Planning Agents (3)
       project-oracle.md          # Project planning via Q&A
       scope-weaver.md            # Scopes roadmap items into tasks
@@ -119,7 +119,7 @@ requirements.txt          # Python dependencies for the deliberation system
       deliberation-conductor.md  # Orchestrates structured debates
 
   commands/
-    parliament-of-chaos/
+    chaos/
       # Council Commands
       summon-council.md          # Full multi-agent orchestration
       summon-grumpy-reviewer.md  # Quick code review session
@@ -155,6 +155,11 @@ requirements.txt          # Python dependencies for the deliberation system
       dead-code-sweep.md         # Find dead code and orphaned files
       update-docs.md             # Update docs after code changes
 
+      # Discovery Commands (v1.6.0)
+      version.md                 # Display plugin version
+      readme.md                  # Display README in session
+      changelog.md               # Display version history
+
       # Analytics & Plugin Commands
       debate-analytics.md        # Generate analytics dashboard
       debate-topic.md            # Run structured deliberation
@@ -181,6 +186,9 @@ requirements.txt          # Python dependencies for the deliberation system
 | `/list-agents` | Display all agents grouped by category |
 | `/list-commands` | Display all commands grouped by category |
 | `/explain-agent` | Detailed explanation of what an agent does and when to use it |
+| `/version` | Display current plugin version and metadata |
+| `/readme` | Display the full README in the session |
+| `/changelog` | Display the full version history |
 
 ### Project Planning Commands
 
@@ -242,7 +250,7 @@ Update Parliament of Chaos when:
 To update to the latest version:
 
 ```
-claude plugin update parliament-of-chaos@parliament-of-chaos
+claude plugin update chaos@chaos
 ```
 
 **What happens during update:**
@@ -267,7 +275,7 @@ Look for:
 **Step 2: Run Update Command**
 
 ```
-claude plugin update parliament-of-chaos@parliament-of-chaos
+claude plugin update chaos@chaos
 ```
 
 **Step 3: Verify Update**
@@ -308,7 +316,7 @@ This is by design to ensure:
 - Control over when changes are introduced
 - Compatibility with your existing workflows
 
-You must manually run `claude plugin update parliament-of-chaos@parliament-of-chaos` to get updates.
+You must manually run `claude plugin update chaos@chaos` to get updates.
 
 ### Checking Your Current Version
 
@@ -330,7 +338,7 @@ To see which version you have installed:
 **A:** No. Claude Code does not automatically update plugins. You must manually update:
 
 ```
-claude plugin update parliament-of-chaos@parliament-of-chaos
+claude plugin update chaos@chaos
 ```
 
 **Q: How will I know when an update is available?**
@@ -345,7 +353,7 @@ claude plugin update parliament-of-chaos@parliament-of-chaos
 **A:** No. Simply run the update command:
 
 ```
-claude plugin update parliament-of-chaos@parliament-of-chaos
+claude plugin update chaos@chaos
 ```
 
 The command will replace old files with new ones automatically.
@@ -363,14 +371,14 @@ The command will replace old files with new ones automatically.
 To remove the plugin via Claude Code:
 
 ```
-/uninstall-plugin parliament-of-chaos
+/uninstall-plugin chaos
 ```
 
 Or manually delete the plugin files:
 
 ```bash
 # Remove plugin files
-rm -rf ~/.claude/plugins/marketplaces/parliament-of-chaos
+rm -rf ~/.claude/plugins/marketplaces/chaos
 
 # Edit installed_plugins.json to remove the entry (optional - Claude Code handles this)
 ```
@@ -382,7 +390,7 @@ rm -rf ~/.claude/plugins/marketplaces/parliament-of-chaos
 If `/summon-council` is not recognised:
 
 1. Verify the plugin is registered: `cat ~/.claude/plugins/installed_plugins.json`
-2. Check the plugin files exist: `ls ~/.claude/plugins/marketplaces/parliament-of-chaos/`
+2. Check the plugin files exist: `ls ~/.claude/plugins/marketplaces/chaos/`
 3. Try restarting your Claude Code session
 4. Re-run the installation command
 
@@ -390,7 +398,7 @@ If `/summon-council` is not recognised:
 
 If the Senior Council cannot find specialist agents:
 
-1. Ensure all agent files are present in `~/.claude/plugins/marketplaces/parliament-of-chaos/agents/`
+1. Ensure all agent files are present in `~/.claude/plugins/marketplaces/chaos/agents/`
 2. Check that files have `.md` extension and correct YAML frontmatter
 
 ### Planning commands not working

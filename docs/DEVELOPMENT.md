@@ -130,8 +130,8 @@ Create `.vscode/settings.json`:
 ```
 Parliament-Of-Chaos/
 ├── .claude/                          # Claude Code plugin files
-│   ├── agents/parliament-of-chaos/   # Agent definitions (30 agents)
-│   └── commands/parliament-of-chaos/ # Command definitions (30 commands)
+│   ├── agents/chaos/   # Agent definitions (30 agents)
+│   └── commands/chaos/ # Command definitions (34 commands)
 │
 ├── src/                              # Python source code
 │   └── deliberation/                 # Deliberation system

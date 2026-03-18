@@ -5,6 +5,31 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-03-18
+
+### Breaking Changes
+
+- **Plugin renamed**: `parliament-of-chaos` → `chaos`. All slash commands now use the `chaos:` prefix (e.g. `/chaos:summon-council` instead of `/parliament-of-chaos:summon-council`). Existing users must reinstall:
+  ```
+  claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
+  claude plugin install chaos@chaos
+  ```
+
+### Added
+
+#### New Commands (34 total, up from 31)
+
+##### Discovery Commands (3 new)
+- `/version`: Display the current Parliament of Chaos version, plugin name, agent/command counts, and repository link
+- `/readme`: Display the full README directly in the session for quick reference
+- `/changelog`: Display the full version history and changelog
+
+### Changed
+- **Plugin name**: Renamed from `parliament-of-chaos` to `chaos` for shorter slash command prefixes
+- **Command count**: 34 commands (up from 31) — added 3 discovery commands
+- **Install/update commands**: Now use `chaos@chaos` format
+- **All documentation**: Updated to reflect new plugin name and commands
+
 ## [1.5.0] - 2026-03-18
 
 ### Added
@@ -138,6 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.6.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.2.0...v1.3.0
