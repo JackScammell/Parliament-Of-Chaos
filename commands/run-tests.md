@@ -1,5 +1,6 @@
 ---
 description: Auto-detect and run the project's test suite with intelligent options
+effort: low
 ---
 
 # Run Tests

@@ -1,5 +1,6 @@
 ---
 description: Audit agent definitions and recommend effort/model optimisation settings
+effort: medium
 ---
 
 # Parliament Optimize

@@ -59,6 +59,9 @@ src/hooks/.env
 .parliament-learning/
 .parliament-skills/
 
+# Plugin telemetry (fallback when CLAUDE_PLUGIN_DATA is not set)
+.project-files/.telemetry/
+
 # User-specific Claude Code settings (not part of the plugin)
 .claude/settings.local.json
 .claude/hooks/

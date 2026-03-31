@@ -60,6 +60,41 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 |-------|--------|---------|
 | `background: true` | Grumpy reviewers | Can run as background review tasks |
 
+## Initial Prompts
+
+| Field | Agents | Purpose |
+|-------|--------|---------|
+| `initialPrompt` | Planning agents (project-oracle, scope-weaver) | Auto-submit a first turn to start the interview/scoping workflow. Only for agents that drive conversation without needing input first. Not for orchestrators that react to a topic. |
+
+## Effort for Slash Commands
+
+Skills and slash commands also support `effort` frontmatter (since Claude Code v2.1.80). Assign based on command complexity:
+
+| Tier | Effort | Commands | Rationale |
+|------|--------|----------|-----------|
+| **High** | `effort: high` | summon-council, debate-topic, parliament-review, implement-task-list | Multi-agent orchestration spawning multiple specialists and reviewers |
+| **Medium** | `effort: medium` | plan-project, changelog-review, security-scan, summon-specialist, etc. (17 total) | Single-domain analysis, planning, or scoped implementation work |
+| **Low** | `effort: low` | list-agents, version, readme, format-code, run-tests, etc. (13 total) | Simple display, single-tool execution, or delegating to an external tool |
+
+## Plugin State Storage
+
+Parliament maintains two distinct storage locations:
+
+| Location | Contents | Lifecycle |
+|----------|----------|-----------|
+| `${CLAUDE_PLUGIN_DATA}/` | Plugin telemetry, logs, analytics, review state | Survives plugin updates, owned by the plugin |
+| `.project-files/` | User-facing project artifacts (roadmaps, specs, outlines) | Owned by the user, lives with the project |
+
+These are separate concerns. Never mix machine-generated telemetry with user-curated documents.
+
+Hook scripts use a shared helper (`src/hooks/_common.sh`) that resolves the data directory with a fallback for older Claude Code versions where `CLAUDE_PLUGIN_DATA` is not set:
+
+```bash
+HOOK_DATA_DIR="${CLAUDE_PLUGIN_DATA:-$HOOK_PROJECT_DIR/.project-files/.telemetry}"
+```
+
+The fallback writes to `.project-files/.telemetry/` (not the `.project-files/` root) to maintain separation from user planning data.
+
 ## Frontmatter Template
 
 ### Orchestrator

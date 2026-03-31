@@ -1,5 +1,6 @@
 ---
 description: Display all Parliament of Chaos agents grouped by category
+effort: low
 ---
 
 # List Agents

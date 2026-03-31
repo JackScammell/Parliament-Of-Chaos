@@ -1,5 +1,6 @@
 ---
 description: Directly invoke a specialist agent on the current task
+effort: medium
 context: fork
 ---
 

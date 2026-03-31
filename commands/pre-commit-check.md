@@ -1,5 +1,6 @@
 ---
 description: Auto-detect and run all CI checks locally before committing
+effort: medium
 ---
 
 # Pre-Commit Check

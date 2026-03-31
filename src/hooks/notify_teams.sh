@@ -13,6 +13,9 @@ if [ -f "$ENV_FILE" ]; then
   set +a
 fi
 
+# Note: This script sends webhooks only and does not write to CLAUDE_PLUGIN_DATA.
+# Log-writing hooks use _common.sh for shared state resolution.
+
 # Teams webhook URL must be in the environment of the Claude process
 TEAMS_WEBHOOK_URL="${TEAMS_WEBHOOK_URL:-}"
 

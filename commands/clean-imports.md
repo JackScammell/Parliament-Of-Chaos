@@ -1,5 +1,6 @@
 ---
 description: Remove unused imports and organise import ordering across changed files
+effort: low
 ---
 
 # Clean Imports

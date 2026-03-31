@@ -1,5 +1,6 @@
 ---
 description: Full review using all 9 grumpy reviewers with maximum scrutiny
+effort: high
 context: fork
 agent: senior-council
 ---

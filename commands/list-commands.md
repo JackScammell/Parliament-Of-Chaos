@@ -1,5 +1,6 @@
 ---
 description: Display all Parliament of Chaos slash commands grouped by category
+effort: low
 ---
 
 # List Commands

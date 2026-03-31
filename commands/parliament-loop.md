@@ -1,5 +1,6 @@
 ---
 description: Set up recurring Parliament monitoring using /loop integration
+effort: low
 ---
 
 # Parliament Loop

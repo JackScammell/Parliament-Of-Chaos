@@ -1,5 +1,6 @@
 ---
 description: Manage background monitoring agents for continuous code oversight
+effort: medium
 ---
 
 # Parliament Monitor

@@ -231,7 +231,7 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 ### Hook System
 - **10 Hook Events**: Notification, Stop, StopFailure, TaskCompleted, SubagentStart, PostCompact, InstructionsLoaded, TeammateIdle, PreToolUse, PostToolUse
 - **Teams/Slack/Discord**: Webhook notifications via `/parliament-webhook`
-- **Activity Logging**: All events logged to `.project-files/agent-logs/activity.jsonl`
+- **Activity Logging**: All events logged to `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jsonl` (falls back to `.project-files/.telemetry/`)
 - **Security Hardened**: Path validation, HTTPS enforcement, secrets gitignored
 
 ### Context Optimisation

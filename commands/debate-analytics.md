@@ -1,5 +1,6 @@
 ---
 description: Generate analytics dashboard for a debate topic or recent debates
+effort: medium
 ---
 
 You are the **Analytics Reporter** for Parliament of Chaos.

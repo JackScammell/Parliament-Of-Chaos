@@ -5,6 +5,43 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-03-31
+
+### Added
+
+#### Claude Code Feature Adoption (v2.1.45–v2.1.88)
+
+##### initialPrompt for Planning Agents
+- **project-oracle**: Auto-starts the project planning interview on spawn
+- **scope-weaver**: Auto-starts the roadmap scoping workflow on spawn
+- Deliberation-conductor excluded — orchestrators should react to input, not auto-fire
+
+##### Effort Frontmatter on All 34 Commands
+- **High effort** (4): summon-council, debate-topic, parliament-review, implement-task-list
+- **Medium effort** (17): plan-project, changelog-review, security-scan, summon-specialist, and 13 others
+- **Low effort** (13): list-agents, version, readme, format-code, run-tests, and 8 others
+
+##### ${CLAUDE_PLUGIN_DATA} for Plugin State
+- All 5 hook scripts now write logs to `${CLAUDE_PLUGIN_DATA}` when available
+- Falls back to `.project-files/.telemetry/` (isolated from user planning data)
+- Changelog review state migrated to `${CLAUDE_PLUGIN_DATA}/changelog-review/`
+
+#### Shared Hook Helper
+- New `src/hooks/_common.sh` — shared payload parsing, path validation, and data directory resolution
+- All 5 logging hooks refactored to source this helper (eliminates duplicated boilerplate)
+
+#### Agent Standards Updates
+- `initialPrompt` guidelines — only for agents that drive conversation without needing input first
+- Command effort tiers with rationale table and specific examples
+- Storage contract documented — `CLAUDE_PLUGIN_DATA` for telemetry, `.project-files/` for user data
+
+### Changed
+- **Hook scripts**: Refactored from ~30 lines each to ~15 lines by extracting shared `_common.sh`
+- **Telemetry isolation**: Fallback path changed from `.project-files/` root to `.project-files/.telemetry/`
+- **notify_teams.sh**: Added comment clarifying it does not use `CLAUDE_PLUGIN_DATA` (webhook-only, no logs)
+- **README.md**: Updated activity logging path reference
+- **.gitignore**: Added `.project-files/.telemetry/`
+
 ## [1.6.0] - 2026-03-18
 
 ### Breaking Changes
@@ -163,6 +200,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.7.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.3.0...v1.4.0

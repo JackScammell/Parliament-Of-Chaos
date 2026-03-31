@@ -1,5 +1,6 @@
 ---
 description: Display the current Parliament of Chaos version and plugin metadata
+effort: low
 ---
 
 # Version

@@ -1,5 +1,6 @@
 ---
 description: Detect and update project documentation affected by recent code changes
+effort: medium
 context: fork
 agent: senior-council
 ---

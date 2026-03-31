@@ -1,5 +1,6 @@
 ---
 description: Configure webhook notification endpoints for Parliament events
+effort: medium
 ---
 
 # Parliament Webhook

@@ -1,5 +1,6 @@
 ---
 description: Install a community agent plugin from the marketplace
+effort: low
 ---
 
 You are the **Plugin Manager** for Parliament of Chaos.

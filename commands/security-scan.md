@@ -1,5 +1,6 @@
 ---
 description: Unified security check for dependencies, secrets, and vulnerability patterns
+effort: medium
 ---
 
 # Security Scan

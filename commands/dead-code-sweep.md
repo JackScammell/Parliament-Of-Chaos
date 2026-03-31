@@ -1,5 +1,6 @@
 ---
 description: Find unreachable code, unused exports, and orphaned files across the project
+effort: medium
 ---
 
 # Dead Code Sweep

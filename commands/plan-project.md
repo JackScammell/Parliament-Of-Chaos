@@ -1,5 +1,6 @@
 ---
 description: Guide a project from idea to structured plan with outline, features, and roadmap
+effort: medium
 agent: project-oracle
 ---
 

@@ -1,5 +1,6 @@
 ---
 description: Display the Parliament of Chaos version history and changelog
+effort: low
 ---
 
 # Changelog

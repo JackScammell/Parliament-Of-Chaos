@@ -1,5 +1,6 @@
 ---
 description: Display a dashboard showing the current state of the project
+effort: medium
 ---
 
 # Project Status

@@ -1,5 +1,6 @@
 ---
 description: Create a detailed specification and task breakdown for a roadmap item
+effort: medium
 agent: scope-weaver
 ---
 

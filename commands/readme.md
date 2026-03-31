@@ -1,5 +1,6 @@
 ---
 description: Display the Parliament of Chaos README with project overview, commands, agents, and installation
+effort: low
 ---
 
 # Readme

@@ -1,5 +1,6 @@
 ---
 description: Auto-detect and run the project's code formatter
+effort: low
 ---
 
 # Format Code

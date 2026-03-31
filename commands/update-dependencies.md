@@ -1,5 +1,6 @@
 ---
 description: Interactive dependency update with changelog review and test verification
+effort: medium
 ---
 
 # Update Dependencies

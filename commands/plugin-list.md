@@ -1,5 +1,6 @@
 ---
 description: List all installed agent plugins from the marketplace
+effort: low
 ---
 
 You are the **Plugin Marketplace Browser** for Parliament of Chaos.

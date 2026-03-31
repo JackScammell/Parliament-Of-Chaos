@@ -1,5 +1,6 @@
 ---
 description: Review new Claude Code changelog entries since last review and propose Parliament features
+effort: medium
 context: fork
 agent: deliberation-conductor
 ---
@@ -41,7 +42,7 @@ Fetch the Claude Code changelog, identify **only new entries since the last revi
 
 ## State Tracking
 
-The command maintains a state file at `.project-files/changelog-review/last-reviewed.json`:
+The command maintains a state file at `${CLAUDE_PLUGIN_DATA}/changelog-review/last-reviewed.json`:
 
 ```json
 {
@@ -59,7 +60,7 @@ This file is updated after each review so that subsequent runs only process **ne
 ## Process
 
 1. **Load Review State**
-   - Read `.project-files/changelog-review/last-reviewed.json`
+   - Read `${CLAUDE_PLUGIN_DATA}/changelog-review/last-reviewed.json`
    - If file does not exist or `--full` is passed, treat as first run (review everything)
    - Extract `last_reviewed_version` to determine the cutoff point
 
@@ -95,7 +96,7 @@ This file is updated after each review so that subsequent runs only process **ne
 
 6. **Update State and Produce Plan**
    - Write updated `last-reviewed.json` with the newest version reviewed
-   - Save review results to `.project-files/changelog-review/reviews/YYYY-MM-DD.md`
+   - Save review results to `${CLAUDE_PLUGIN_DATA}/changelog-review/reviews/YYYY-MM-DD.md`
    - Generate implementation proposal
 
 ## Output
@@ -146,12 +147,12 @@ This file is updated after each review so that subsequent runs only process **ne
 
 ## Review State Updated
 - Last reviewed version: v2.1.82
-- Review saved to: .project-files/changelog-review/reviews/2026-03-25.md
+- Review saved to: ${CLAUDE_PLUGIN_DATA}/changelog-review/reviews/2026-03-25.md
 ```
 
 ## Review History
 
-Past reviews are saved to `.project-files/changelog-review/reviews/` with one file per review date. This provides:
+Past reviews are saved to `${CLAUDE_PLUGIN_DATA}/changelog-review/reviews/` with one file per review date. This provides:
 
 - **Audit trail**: What was reviewed and when
 - **Decision history**: Why features were accepted, deferred, or rejected
@@ -172,6 +173,6 @@ This command is designed to be run regularly to keep Parliament of Chaos aligned
 - First run (or `--full`) reviews the entire changelog and establishes the baseline
 - Subsequent runs only process new entries — fast and focused
 - The deliberation is skipped entirely if no relevant new features are found
-- State file lives in `.project-files/` which is project-specific and gitignored
+- State file lives in `${CLAUDE_PLUGIN_DATA}/` which persists across plugin updates
 - Run `/parliament-loop 1w /changelog-review --mode fast` for weekly automated checks
 - Use `--full` to reset and re-evaluate everything (e.g., after a major Parliament release)

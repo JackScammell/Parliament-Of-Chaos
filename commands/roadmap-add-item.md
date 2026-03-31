@@ -1,5 +1,6 @@
 ---
 description: Add a new item to an existing phase in the project roadmap
+effort: medium
 agent: scope-weaver
 ---
 

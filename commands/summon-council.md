@@ -1,5 +1,6 @@
 ---
 description: Orchestrate specialists and grumpy reviewers for complex tasks
+effort: high
 context: fork
 agent: senior-council
 ---

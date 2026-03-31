@@ -1,5 +1,6 @@
 ---
 description: Analyse an undocumented codebase and generate comprehensive getting-started documentation
+effort: medium
 context: fork
 agent: senior-council
 ---
