@@ -32,6 +32,9 @@ tools:
   - Task(refactor-ranger)
   - Task(config-curator)
   - Task(observability-oracle)
+  - Task(grumpy-privacy-paranoid)
+  - Task(grumpy-i18n-nitpicker)
+  - Task(grumpy-budget-hawk)
 ---
 
 # Deliberation Conductor

@@ -5,6 +5,44 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-03-31
+
+### Added
+
+#### New Agents (33 total, up from 30)
+
+##### Grumpy Reviewers (12 total, up from 9)
+- **grumpy-privacy-paranoid**: PII exposure, GDPR/CCPA compliance, consent handling, data retention — fills the gap between security (auth/vulns) and privacy (data governance)
+- **grumpy-i18n-nitpicker**: Hardcoded strings, missing translations, broken pluralisation, locale-aware formatting — for any project with multi-language support
+- **grumpy-budget-hawk**: Cloud cost impact of PRs, over-provisioned resources, unbounded queries, missing auto-scaling bounds — performance-troll covers speed, this covers spend
+
+#### New Commands (46 total, up from 34)
+
+##### Phase 1 — High frequency, high impact (4 new)
+- `/cut-release`: Automate version bumping, changelog generation, git tagging, and release notes across all version-bearing files
+- `/scaffold`: Generate convention-compliant boilerplate by reading existing project patterns — models, endpoints, services, tests, full features
+- `/generate-tests`: Write tests for existing code following project conventions — delegates to test-prophet with worktree isolation
+- `/track-debt`: Scan TODO/FIXME/HACK, complexity hotspots, coverage gaps — maintain a living debt ledger with trend tracking
+
+##### Phase 2 — Strong value, moderate effort (4 new)
+- `/incident`: Structured incident triage, hotfix coordination, runbook generation, and postmortem templates
+- `/analyse-queries`: SQL/ORM analysis for missing indexes, N+1 patterns, full table scans, with specific CREATE INDEX recommendations
+- `/git-workflow`: Complex git operations — merge conflict resolution with context, cherry-pick strategy, branch cleanup, bisect-based debugging
+- `/coverage-audit`: Risk-prioritised test coverage analysis — classifies uncovered code by risk, chains into `/generate-tests`
+
+##### Phase 3 — Rounding out the team (4 new)
+- `/retro`: Structured retrospective from git history — identifies hotspots, revert frequency, churn patterns, produces action items
+- `/infra-review`: Dockerfile, Kubernetes manifest, docker-compose, and CI/CD config best-practice audit
+- `/mutation-test`: Evaluate test quality by introducing code mutations and checking if tests catch them — runs in worktree isolation
+- `/test-health`: Detect flaky tests, stale assertions, non-deterministic patterns, and test coupling issues
+
+### Changed
+- **senior-council**: Added Task() references for 3 new grumpy reviewers (privacy-paranoid, i18n-nitpicker, budget-hawk)
+- **deliberation-conductor**: Added Task() references for 3 new grumpy reviewers
+- **Agent count**: 33 agents (up from 30) — 3 new grumpy reviewers
+- **Command count**: 46 commands (up from 34) — 12 new commands across 3 phases
+- **Grumpy reviewer count**: 12 (up from 9) — now covers privacy, i18n, and cloud cost
+
 ## [1.7.0] - 2026-03-31
 
 ### Added
@@ -200,6 +238,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.8.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.4.0...v1.5.0

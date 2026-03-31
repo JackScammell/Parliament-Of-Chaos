@@ -35,6 +35,9 @@ tools:
   - Task(grumpy-accessibility-auditor)
   - Task(grumpy-documentation-pedant)
   - Task(grumpy-testing-tyrant)
+  - Task(grumpy-privacy-paranoid)
+  - Task(grumpy-i18n-nitpicker)
+  - Task(grumpy-budget-hawk)
   - Task(task-executor)
 ---
 
