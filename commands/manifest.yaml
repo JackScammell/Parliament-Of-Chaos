@@ -51,6 +51,8 @@ categories:
     label: Decisions
   - id: observability
     label: Observability
+  - id: lifecycle
+    label: Lifecycle
 
 commands:
   # --- Project Planning ---
@@ -434,6 +436,64 @@ commands:
     effort: medium
     category: observability
     notes: Dry-run estimates + soft caps + last-N retrospective.
+
+  # --- Ops & Lifecycle additions (Tier 4 — v1.13.0) ---
+  - name: session-snapshot
+    status: active
+    owner: pipeline-engineer
+    skill_surface: true
+    effort: medium
+    category: lifecycle
+    notes: Checkpoint/resume primitive; required by /debate-replay.
+  - name: docs-audit
+    status: active
+    owner: doc-bard
+    skill_surface: true
+    effort: medium
+    category: lifecycle
+    notes: Symmetric opposite of /onboard-codebase — detects doc drift.
+  - name: settings-audit
+    status: active
+    owner: security-knight
+    skill_surface: true
+    effort: medium
+    category: lifecycle
+    notes: Merged /settings-diff + /permission-audit + /secrets-rotate + /feature-flag-list.
+  - name: env-doctor
+    status: active
+    owner: config-curator
+    skill_surface: true
+    effort: low
+    category: lifecycle
+    notes: Runtime env validation; closes feedback_hooks_location footgun.
+  - name: fast-track
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: medium
+    category: lifecycle
+    notes: Minimum-review-floor bypass; replaces rejected /hotfix.
+  - name: release-notes-draft
+    status: active
+    owner: doc-bard
+    skill_surface: true
+    effort: medium
+    category: release
+    notes: Drafts CHANGELOG entry from git log since last tag.
+  - name: ci-watch
+    status: active
+    owner: pipeline-engineer
+    skill_surface: true
+    effort: low
+    category: lifecycle
+    notes: Polls CI status for current branch — supports watch mode.
+  - name: plugin-upgrade
+    status: active
+    owner: config-curator
+    skill_surface: true
+    effort: medium
+    category: release
+    notes: Version-sync helper; enforces feedback_release_process rule.
 
 # Explicit record of agents that require a driving command. If a grumpy reviewer
 # or specialist has no command that invokes it, it is a "driverless agent" and

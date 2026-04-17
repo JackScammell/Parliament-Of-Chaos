@@ -5,6 +5,35 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2026-04-17
+
+### Added — Tier 4: Ops & Lifecycle (from toolset-gaps-debate.md)
+
+Final tier of the toolset-gaps plan. Tools the three user-memory footguns (release sync, hook location, session crash) and the release / CI / env lifecycle. Completes the 10/10-APPROVE proposal from debate session `fc777472`.
+
+- **`/session-snapshot`** — Checkpoint/resume primitive. `create`, `list`, `resume`, `show`, `prune` sub-commands. Captures conversation transcript, active council/debate state, open task lists, environment, and RNG seed. Atomic writes, schema v1. Primary consumer: `/debate-replay` (Tier 2) — this closes the dependency flagged in v1.11.0.
+- **`/docs-audit`** — Symmetric opposite of `/onboard-codebase`. Detects stale references, fabricated claims, drift without breakage, and completeness gaps. Delegates to `doc-bard` for judgement and `grumpy-documentation-pedant` for verdict.
+- **`/settings-audit`** — Merged the four original proposals (`/settings-diff`, `/permission-audit`, `/secrets-rotate`, `/feature-flag-list`) into one. Five pillars: permissions, secrets, feature flags, hooks, scope diff. `--fix` proposes diffs without applying.
+- **`/env-doctor`** — Runtime environment validator. Checks plugin data directory, hook script locations/permissions/shebangs, external tool availability, and directory-separation conventions. Addresses `feedback_hooks_location.md` by making hook-location drift loud. `--strict` for CI.
+- **`/fast-track`** — Replacement for the rejected `/hotfix`. Minimum-review-floor bypass that runs `grumpy-security-nag` and `grumpy-code-reviewer` (plus `grumpy-privacy-paranoid` if personal data detected) and NEVER below. Every use is logged as review debt with a mandatory 7-day follow-up `/parliament-review`. Hard limits on auth/migration changes and large diffs.
+- **`/release-notes-draft`** — Drafts CHANGELOG entries from git log and merged PRs since the last tag. Classifies commits via conventional-commit heuristics, deduplicates by PR, cross-checks new commands against `commands/manifest.yaml`. `--apply` inserts at top of CHANGELOG with diff preview.
+- **`/ci-watch`** — Polls CI for the current branch/PR. Supports GitHub Actions, GitLab CI, and CircleCI via `gh`/`glab`/API. `--watch` mode polls until terminal. Emits state-change deltas rather than repeated snapshots.
+- **`/plugin-upgrade`** — Version-sync helper encoding the `feedback_release_process.md` rule. Bumps `plugin.json`, both slots in `marketplace.json`, and inserts a CHANGELOG stub in one atomic operation. Pre-flight drift check, post-condition verification. `--check` for dry-run.
+
+### Changed
+
+- **`commands/manifest.yaml`** — New `lifecycle` category; 8 new command entries. Tier 4 is the largest of the four tiers.
+
+### Notes — Deferred / Skipped
+
+- **`/i18n-audit`** was originally scheduled for Tier 4 item 4.9 but was shipped in Tier 1 (v1.10.0) alongside the `grumpy-i18n-nitpicker` retention decision. No separate Tier 4 item.
+- **`/hotfix`** remains rejected per governance (security > convenience). `/fast-track` is the safety-floor replacement.
+- **`/bisect`** and **`/sbom-generate`** remain deferred from the original debate — out of scope for this sweep.
+
+### Toolset-gaps deliberation complete
+
+All four tiers from `toolset-gaps-debate.md` are now shipped. Tier 1 (v1.10.0) was the blocking gate; Tiers 2 (v1.11.0), 3 (v1.12.0), and 4 (v1.13.0) could then land in parallel. Total: 18 new commands plus `commands/manifest.yaml` as the source-of-truth registry. Parliament now has: hygiene tooling, a feedback loop, observability and cost controls, and lifecycle automation for the known footguns.
+
 ## [1.12.0] - 2026-04-17
 
 ### Added — Tier 3: Observability & Cost (from toolset-gaps-debate.md)
