@@ -2,11 +2,11 @@
 
 ## Current Status
 
-**Last Updated**: 2025-12-04
+**Last Updated**: 2026-04-17
 
-**Current Phase**: v1.1 Development
+**Current Phase**: v1.9.0 released — Claude Code v2.1.91–v2.1.112 adoption
 
-**Overall Progress**: 18 of 21 items complete
+**Overall Progress**: 18 of 21 v1.1 items complete; Priority 1 items from 2026-04-17 changelog review shipped in v1.9.0
 
 ---
 
@@ -141,6 +141,7 @@ standards-enforcement ◄─── (affects all specialists)
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-04-17 | Shipped v1.9.0 Priority 1 changelog adoption (5 items) | `keep-coding-instructions`, plugin `dependencies`, `xhigh` tier doc, subagent MCP inheritance doc, default-effort note |
 | 2025-12-04 | Completed conflict-resolution | Priority-based conflict handling for reviewer disagreements |
 | 2025-12-04 | Added cmd-list-commands | Command discoverability - lists all 12 commands by category |
 | 2025-12-04 | Completed Phase 3 (new commands + optimization) | 4 new commands, 2 optimized (147→54 lines, 63% reduction) |

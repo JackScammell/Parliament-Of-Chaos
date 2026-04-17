@@ -65,3 +65,7 @@ src/hooks/.env
 # User-specific Claude Code settings (not part of the plugin)
 .claude/settings.local.json
 .claude/hooks/
+.claude/worktrees/
+
+# Changelog review local state (user-specific, not shipped with plugin)
+.project-files/changelog-review/

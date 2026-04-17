@@ -5,6 +5,44 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-04-17
+
+### Added
+
+#### Claude Code Feature Adoption (v2.1.89–v2.1.112)
+
+##### New Hooks
+- **PermissionDenied**: Fires when auto mode denies a Parliament agent's tool call — logs denied tool name and reason for diagnosing silent agent failures in automated workflows. Wired to `notify_teams.sh` for optional team notification.
+- **TaskCreated**: Fires when a new task is created — completes the task lifecycle logging alongside the existing `TaskCompleted` hook.
+
+##### Hook Consolidation
+- **log_event.sh**: Unified event logging dispatcher replaces four individual scripts (`log_agent_activity.sh`, `handle_post_compact.sh`, `handle_instructions_loaded.sh`, `handle_stop_failure.sh`). Uses a `case` statement to extract event-specific fields — adding a new logged event is now a one-line case addition.
+- **Log rotation**: `_common.sh` now rotates `activity.jsonl` to `activity.jsonl.old` when it exceeds 10MB, preventing unbounded log growth.
+
+##### Plugin Manifest
+- **`keep-coding-instructions: true`** in `plugin.json` — ensures Parliament's `.claude/rules/*.md` (agent-standards, governance, output-standards) stay resident across context compactions, pairing with the existing `InstructionsLoaded` hook. Prevents reviewers from losing the governance priority hierarchy mid-deliberation.
+- **`dependencies: []`** field in `plugin.json` — declares zero external-plugin dependencies. v2.1.110 makes this install-enforced; an explicit empty array signals intent and future-proofs additions.
+
+##### Standards Documentation
+- **`xhigh` effort tier** documented in `agent-standards.md` — Opus 4.7's new tier (Claude Code v2.1.111) between `high` and `max` is listed as *Reserved* in the effort-tiers table. No agents adopt it yet; reserved for future deliberation-conductor deep-mode runs pending benchmark evidence.
+- **Subagent MCP inheritance** documented in `agent-standards.md` — v2.1.101 made MCP tools flow automatically from parent sessions to spawned subagents. Note added to the Tool Restrictions section so contributors don't re-declare MCP servers per agent.
+- **Default `effort: high`** informational note in `agent-standards.md` — Claude Code v2.1.94 raised the global default from `medium` to `high`. Parliament sets `effort` explicitly per agent so behaviour is unchanged, but the note flags the upstream default for new contributors.
+
+### Changed
+- **_common.sh**: Added `HOOK_LOG_DIR`, `HOOK_LOG_FILE`, automatic `mkdir -p`, and 10MB log rotation guard.
+- **notify_teams.sh**: Added `PermissionDenied` event case, hardened `.env` sourcing with ownership/permission checks, replaced wildcard `*)` fallback with safe `exit 0` to reject unknown events.
+- **settings.json**: All logging hooks now point to unified `log_event.sh`; added `PermissionDenied` and `TaskCreated` hook configurations.
+- **Hook count**: 9 hook event handlers (up from 7), served by 3 scripts (down from 5).
+- **plugin.json / marketplace.json**: Version bumped to 1.9.0 across both files.
+
+### Removed
+- `log_agent_activity.sh`, `handle_post_compact.sh`, `handle_instructions_loaded.sh`, `handle_stop_failure.sh` — replaced by `log_event.sh`.
+
+### Deferred (Priority 2 — tracked for v1.10.0)
+- `PreCompact` hook `block` decision (v2.1.105) — needs scope-weaver design pass with hard attempt counter to avoid infinite-block footgun.
+- Plugin `monitors` manifest key (v2.1.105) — prototype candidate for always-on log tailing / roadmap drift alerts; waiting one release for community examples.
+- Skill-tool slash-command references in specialist prompts (v2.1.108) — consistency audit across test-prophet, backend-goblin, pipeline-engineer.
+
 ## [1.8.0] - 2026-03-31
 
 ### Added
@@ -238,6 +276,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.9.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.8.1...v1.9.0
+[1.8.1]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.5.0...v1.6.0

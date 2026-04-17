@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_agent_activity.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_event.sh"
           }
         ]
       }
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/handle_stop_failure.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_event.sh"
           },
           {
             "type": "command",
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/handle_post_compact.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_event.sh"
           }
         ]
       }
@@ -70,7 +70,31 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/handle_instructions_loaded.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_event.sh"
+          }
+        ]
+      }
+    ],
+    "PermissionDenied": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_event.sh"
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/notify_teams.sh"
+          }
+        ]
+      }
+    ],
+    "TaskCreated": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_event.sh"
           }
         ]
       }

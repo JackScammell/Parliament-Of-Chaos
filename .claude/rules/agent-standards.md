@@ -19,9 +19,12 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 
 | Tier | Effort | Agents | Rationale |
 |------|--------|--------|-----------|
+| **Reserved** | `effort: xhigh` | _(none currently)_ | Opus 4.7 tier sitting between `high` and `max` (Claude Code v2.1.111). Reserved for future deliberation-conductor deep-mode runs if measurements justify the extra cost. Do not adopt without before/after benchmarks. |
 | **High** | `effort: high` | Orchestrators (senior-council, deliberation-conductor) | Complex multi-agent coordination requiring deep reasoning |
 | **Medium** | `effort: medium` | Specialists (16) and Planning agents (3) | Domain analysis, implementation, and scoping work |
 | **Low** | `effort: low` | Grumpy reviewers (9) | Read-only critique with focused, concise output |
+
+> **Note**: As of Claude Code v2.1.94 the global default `effort` is `high` (previously `medium`). Parliament sets `effort` explicitly on every agent, so this default never applies — but new contributors reading upstream docs should be aware the implicit fallback changed.
 
 ## maxTurns Guidelines
 
@@ -46,6 +49,8 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 | Grumpy reviewers | `[Edit, Write, NotebookEdit, Bash]` | Read-only: critique only, never modify code |
 | system-architect | `[Edit, Write, NotebookEdit, Bash]` | Advisory: designs architecture, does not implement |
 | All other specialists | None | Full tool access for implementation work |
+
+> **MCP inheritance (v2.1.101)**: Subagents now inherit MCP tools from the parent session automatically. Parliament specialists no longer need to re-declare MCP servers; any MCP tool available to the user is available to spawned agents unless explicitly listed in `disallowedTools`. Sandboxed subagents also now resolve worktree paths correctly.
 
 ## Isolation
 

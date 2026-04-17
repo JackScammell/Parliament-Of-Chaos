@@ -6,11 +6,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
 
 if [ -f "$ENV_FILE" ]; then
-  # Export all variables defined in .env
-  set -a
-  # shellcheck disable=SC1090
-  . "$ENV_FILE"
-  set +a
+  # Only source .env if owned by the current user and not group- or world-writable.
+  # Sourcing a .env is inherently trust-based — these guards prevent accidental exposure only.
+  if [ "$(stat -f %u "$ENV_FILE" 2>/dev/null || stat -c %u "$ENV_FILE" 2>/dev/null)" = "$(id -u)" ] \
+     && ! stat -f %Sp "$ENV_FILE" 2>/dev/null | grep -q '..w$' \
+     && ! stat -c %a "$ENV_FILE" 2>/dev/null | grep -q '[2367]$'; then
+    set -a
+    # shellcheck disable=SC1090
+    . "$ENV_FILE"
+    set +a
+  fi
 fi
 
 # Note: This script sends webhooks only and does not write to CLAUDE_PLUGIN_DATA.
@@ -72,9 +77,13 @@ case "$HOOK_EVENT_NAME" in
     TITLE="Claude Code: rules reloaded"
     BASE_TEXT="CLAUDE.md or rules files were reloaded during session."
     ;;
+  PermissionDenied)
+    TITLE="Claude Code: tool call denied"
+    BASE_TEXT="Auto mode denied a tool call during a Parliament session."
+    ;;
   *)
-    TITLE="Claude Code: $HOOK_EVENT_NAME"
-    BASE_TEXT="Event: $HOOK_EVENT_NAME"
+    # Reject unknown events — only allowlisted events produce webhook payloads
+    exit 0
     ;;
 esac
 
