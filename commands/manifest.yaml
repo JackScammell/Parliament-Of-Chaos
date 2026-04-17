@@ -1,0 +1,381 @@
+# Parliament of Chaos — Command Manifest
+#
+# Declarative registry of every slash command shipped by the plugin. This is the
+# source of truth that `/parliament-doctor` reconciles against `commands/*.md`
+# files and the live skill registry. If a command file exists but is not listed
+# here, it is a "ghost". If it is listed here but no file exists, it is missing.
+#
+# Fields per entry:
+#   name           — slash command name (no leading slash, must match filename)
+#   status         — active | deprecated | experimental | orphaned
+#   owner          — primary agent or subsystem responsible
+#   skill_surface  — true if the command should appear in the `/chaos:` skill list
+#   effort         — must match the effort declared in the command's frontmatter
+#   category       — grouping used by /list-commands
+#   notes          — optional free-text annotations
+#
+# Maintenance:
+#   • Update this file whenever a command is added, renamed, retired, or its
+#     surface visibility changes.
+#   • Run `/parliament-doctor` before cutting a release to confirm zero drift.
+#   • Orphan entries should be resolved (exposed or retired) during Tier 1 of
+#     the toolset-gaps plan — see .project-files/toolset-gaps-debate.md.
+
+version: 1
+updated: 2026-04-17
+
+categories:
+  - id: project-planning
+    label: Project Planning
+  - id: agent-invocation
+    label: Agent Invocation
+  - id: deliberation
+    label: Deliberation
+  - id: developer-workflow
+    label: Developer Workflow
+  - id: operations
+    label: Operations
+  - id: codebase-analysis
+    label: Codebase Analysis
+  - id: discovery
+    label: Discovery
+  - id: plugins
+    label: Plugins
+  - id: hygiene
+    label: Hygiene
+  - id: quality
+    label: Quality
+  - id: release
+    label: Release
+
+commands:
+  # --- Project Planning ---
+  - name: plan-project
+    status: active
+    owner: project-oracle
+    skill_surface: true
+    effort: medium
+    category: project-planning
+  - name: project-status
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: low
+    category: project-planning
+  - name: roadmap-add-item
+    status: active
+    owner: scope-weaver
+    skill_surface: true
+    effort: medium
+    category: project-planning
+  - name: roadmap-item-scope
+    status: active
+    owner: scope-weaver
+    skill_surface: true
+    effort: medium
+    category: project-planning
+  - name: implement-task-list
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: high
+    category: project-planning
+
+  # --- Agent Invocation ---
+  - name: summon-council
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: high
+    category: agent-invocation
+  - name: summon-specialist
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: medium
+    category: agent-invocation
+  - name: summon-grumpy-reviewer
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: medium
+    category: agent-invocation
+  - name: parliament-review
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: high
+    category: agent-invocation
+
+  # --- Deliberation ---
+  - name: debate-topic
+    status: active
+    owner: deliberation-conductor
+    skill_surface: true
+    effort: high
+    category: deliberation
+  - name: debate-analytics
+    status: active
+    owner: observability-oracle
+    skill_surface: true
+    effort: medium
+    category: deliberation
+
+  # --- Developer Workflow ---
+  - name: pre-commit-check
+    status: active
+    owner: pipeline-engineer
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+  - name: format-code
+    status: active
+    owner: refactor-ranger
+    skill_surface: true
+    effort: low
+    category: developer-workflow
+  - name: lint-fix
+    status: active
+    owner: refactor-ranger
+    skill_surface: true
+    effort: low
+    category: developer-workflow
+  - name: run-tests
+    status: active
+    owner: test-prophet
+    skill_surface: true
+    effort: low
+    category: developer-workflow
+  - name: security-scan
+    status: active
+    owner: security-knight
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+  - name: clean-imports
+    status: active
+    owner: refactor-ranger
+    skill_surface: true
+    effort: low
+    category: developer-workflow
+  - name: update-dependencies
+    status: active
+    owner: dependency-detective
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+  - name: dead-code-sweep
+    status: active
+    owner: refactor-ranger
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+  - name: update-docs
+    status: active
+    owner: doc-bard
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+
+  # --- Operations ---
+  - name: parliament-optimize
+    status: active
+    owner: config-curator
+    skill_surface: true
+    effort: medium
+    category: operations
+  - name: parliament-webhook
+    status: active
+    owner: observability-oracle
+    skill_surface: true
+    effort: medium
+    category: operations
+  - name: parliament-loop
+    status: active
+    owner: pipeline-engineer
+    skill_surface: true
+    effort: medium
+    category: operations
+  - name: parliament-monitor
+    status: active
+    owner: observability-oracle
+    skill_surface: true
+    effort: medium
+    category: operations
+  - name: changelog-review
+    status: active
+    owner: deliberation-conductor
+    skill_surface: true
+    effort: medium
+    category: operations
+
+  # --- Codebase Analysis ---
+  - name: onboard-codebase
+    status: active
+    owner: doc-bard
+    skill_surface: true
+    effort: medium
+    category: codebase-analysis
+
+  # --- Discovery ---
+  - name: list-agents
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: low
+    category: discovery
+  - name: explain-agent
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: low
+    category: discovery
+  - name: list-commands
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: low
+    category: discovery
+  - name: version
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: low
+    category: discovery
+  - name: readme
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: low
+    category: discovery
+  - name: changelog
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: low
+    category: discovery
+
+  # --- Plugins ---
+  - name: plugin-install
+    status: active
+    owner: package-wizard
+    skill_surface: true
+    effort: low
+    category: plugins
+  - name: plugin-list
+    status: active
+    owner: package-wizard
+    skill_surface: true
+    effort: low
+    category: plugins
+
+  # --- Previously orphaned (12) — reconciled to active in Tier 1 ---
+  - name: analyse-queries
+    status: active
+    owner: data-warlock
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: coverage-audit
+    status: active
+    owner: test-prophet
+    skill_surface: true
+    effort: medium
+    category: quality
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: cut-release
+    status: active
+    owner: pipeline-engineer
+    skill_surface: true
+    effort: medium
+    category: release
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: generate-tests
+    status: active
+    owner: test-prophet
+    skill_surface: true
+    effort: medium
+    category: quality
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: git-workflow
+    status: active
+    owner: pipeline-engineer
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: incident
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: high
+    category: operations
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: infra-review
+    status: active
+    owner: pipeline-engineer
+    skill_surface: true
+    effort: medium
+    category: operations
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: mutation-test
+    status: active
+    owner: test-prophet
+    skill_surface: true
+    effort: high
+    category: quality
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: retro
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: medium
+    category: operations
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: scaffold
+    status: active
+    owner: backend-goblin
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: test-health
+    status: active
+    owner: test-prophet
+    skill_surface: true
+    effort: medium
+    category: quality
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+  - name: track-debt
+    status: active
+    owner: refactor-ranger
+    skill_surface: true
+    effort: medium
+    category: quality
+    notes: Exposed via Tier 1 orphan triage (v1.10.0).
+
+  # --- Hygiene additions (Tier 1 — v1.10.0) ---
+  - name: parliament-doctor
+    status: active
+    owner: config-curator
+    skill_surface: true
+    effort: medium
+    category: hygiene
+    notes: Reconciles this manifest against commands/*.md and the skill registry.
+  - name: i18n-audit
+    status: active
+    owner: grumpy-i18n-nitpicker
+    skill_surface: true
+    effort: medium
+    category: quality
+    notes: Tier 1 decision — retained grumpy-i18n-nitpicker and added this driver.
+
+# Explicit record of agents that require a driving command. If a grumpy reviewer
+# or specialist has no command that invokes it, it is a "driverless agent" and
+# /parliament-doctor will surface it.
+agents_requiring_driver:
+  - agent: grumpy-i18n-nitpicker
+    driver: i18n-audit
+    status: resolved
+    notes: Driver added in Tier 1 (v1.10.0).

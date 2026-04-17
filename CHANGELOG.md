@@ -5,6 +5,34 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-04-17
+
+### Added — Tier 1: Toolset Hygiene (from toolset-gaps-debate.md)
+
+Tier 1 is the blocking gate from the toolset-gaps deliberation (10/10 APPROVE, round-3 convergence 0.88). Reconciles existing surface before any new feature work lands.
+
+- **`commands/manifest.yaml`** — Declarative registry of every slash command. Tracks name, status (active/deprecated/experimental/orphaned), owner agent, `skill_surface` flag, effort, and category. Source of truth for `/list-commands`, `/version`, and the new `/parliament-doctor`.
+- **`/parliament-doctor`** — Reconciles the manifest against `commands/*.md` and the registered skill surface. Reports orphans (file with no manifest entry), ghosts (manifest entry with no file), hidden skills, leaked skills, effort mismatches, and driverless agents. `--strict` mode for release gating; `--fix-manifest` proposes diffs before applying.
+- **`/i18n-audit`** — Driver command for `grumpy-i18n-nitpicker` (previously a driverless agent). Scans user-facing strings, verifies framework coverage, checks pluralisation and locale-aware formatting, then delegates to the reviewer for verdict.
+
+### Changed — Orphan Triage (12 commands reconciled)
+
+The following commands existed as markdown files but were not exposed as `/chaos:` skills. Tier 1 triage decided to **expose** all of them (none are retired). They are now registered in `commands/manifest.yaml` with `status: active` and `skill_surface: true`:
+
+- `analyse-queries`, `coverage-audit`, `cut-release`, `generate-tests`, `git-workflow`, `incident`, `infra-review`, `mutation-test`, `retro`, `scaffold`, `test-health`, `track-debt`
+
+### Changed — list-commands
+
+- **`/list-commands`** now reads `commands/manifest.yaml` as the source of truth for command grouping, with a fallback to scanning `commands/*.md` for older installations. Three new categories added: **Hygiene**, **Quality**, **Release**.
+
+### Changed — grumpy-i18n-nitpicker decision
+
+- Retained rather than retired. Tier 1 decision was resolved by adding `/i18n-audit` as its driver command. Manifest records the agent-driver pairing under `agents_requiring_driver` for future `/parliament-doctor` checks.
+
+### Deferred — Tier 2, 3, 4
+
+Subsequent tiers from the toolset-gaps plan land in v1.11.0 (Learning Loop), v1.12.0 (Observability & Cost), and v1.13.0 (Ops & Lifecycle). Tier 1 is the gate — no Tier 2+ work ships until drift is at zero.
+
 ## [1.9.0] - 2026-04-17
 
 ### Added
