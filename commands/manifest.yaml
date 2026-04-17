@@ -49,6 +49,8 @@ categories:
     label: Release
   - id: decisions
     label: Decisions
+  - id: observability
+    label: Observability
 
 commands:
   # --- Project Planning ---
@@ -409,6 +411,29 @@ commands:
     effort: medium
     category: operations
     notes: Aggregates activity.jsonl into per-agent frequency and effectiveness.
+
+  # --- Observability & Cost additions (Tier 3 — v1.12.0) ---
+  - name: telemetry-query
+    status: active
+    owner: observability-oracle
+    skill_surface: true
+    effort: medium
+    category: observability
+    notes: Ad-hoc read path over activity.jsonl and plugin data directory.
+  - name: parliament-metrics
+    status: active
+    owner: observability-oracle
+    skill_surface: true
+    effort: medium
+    category: observability
+    notes: Cost / latency / SLO / trend dashboard. Consumes /telemetry-query.
+  - name: cost-report
+    status: active
+    owner: observability-oracle
+    skill_surface: true
+    effort: medium
+    category: observability
+    notes: Dry-run estimates + soft caps + last-N retrospective.
 
 # Explicit record of agents that require a driving command. If a grumpy reviewer
 # or specialist has no command that invokes it, it is a "driverless agent" and

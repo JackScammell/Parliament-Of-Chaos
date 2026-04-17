@@ -5,6 +5,25 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-04-17
+
+### Added — Tier 3: Observability & Cost (from toolset-gaps-debate.md)
+
+Depends on Tier 1. Turns write-only telemetry into a queryable, budget-aware signal. Closes the observability gap identified by `observability-oracle` and the cost gap flagged by `grumpy-budget-hawk`.
+
+- **`/telemetry-query`** — Ad-hoc read path over `activity.jsonl` (including rotated `.old`) and the plugin data directory. Filters by event, agent, time window, and whitelisted `--where` expressions. Supports `--group-by` aggregations and `--json` output for downstream consumers. Falls back to `.project-files/.telemetry/` on installations without `CLAUDE_PLUGIN_DATA`.
+- **`/parliament-metrics`** — Dashboard over telemetry: cost panel (token attribution + spend), latency panel (p50/p95/max per command), SLO panel (background-monitor health), trend panel (rolling deltas). Consumes `/telemetry-query --json` as data source.
+- **`/cost-report`** — Dry-run estimates, post-flight retrospectives, and soft-cap budget management. `estimate <command>` walks the target command's Process block to project token usage with historical p50/p95 bounds. Expensive-command registry warns on `/summon-council`, `/parliament-review`, `/debate-topic --mode deep`, `/implement-task-list`, and `/changelog-review --full`. Soft caps only — hard stops were rejected in the debate because they would violate governance (convenience cannot override security or correctness).
+
+### Changed
+
+- **`commands/manifest.yaml`** — New `observability` category; 3 new command entries.
+
+### Notes
+
+- Cost figures require a `${CLAUDE_PLUGIN_DATA}/cost-rates.json` price table; if absent, token usage is shown but USD is rendered as `n/a`.
+- `/parliament-webhook` can subscribe to `/parliament-metrics --json` on a schedule for external dashboards.
+
 ## [1.11.0] - 2026-04-17
 
 ### Added — Tier 2: Learning Loop (from toolset-gaps-debate.md)
