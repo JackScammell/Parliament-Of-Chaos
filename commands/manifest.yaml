@@ -47,6 +47,8 @@ categories:
     label: Quality
   - id: release
     label: Release
+  - id: decisions
+    label: Decisions
 
 commands:
   # --- Project Planning ---
@@ -370,6 +372,43 @@ commands:
     effort: medium
     category: quality
     notes: Tier 1 decision — retained grumpy-i18n-nitpicker and added this driver.
+
+  # --- Learning Loop additions (Tier 2 — v1.11.0) ---
+  - name: adr-new
+    status: active
+    owner: doc-bard
+    skill_surface: true
+    effort: medium
+    category: decisions
+    notes: Scaffolds new ADRs under .project-files/adrs/.
+  - name: adr-supersede
+    status: active
+    owner: doc-bard
+    skill_surface: true
+    effort: low
+    category: decisions
+    notes: Closes an ADR and links its replacement.
+  - name: decision-review
+    status: active
+    owner: deliberation-conductor
+    skill_surface: true
+    effort: medium
+    category: decisions
+    notes: Re-evaluates past ADRs, debates, or council rulings.
+  - name: debate-replay
+    status: active
+    owner: deliberation-conductor
+    skill_surface: true
+    effort: medium
+    category: deliberation
+    notes: Deterministic replay — depends on /session-snapshot (Tier 4).
+  - name: agent-usage-stats
+    status: active
+    owner: observability-oracle
+    skill_surface: true
+    effort: medium
+    category: operations
+    notes: Aggregates activity.jsonl into per-agent frequency and effectiveness.
 
 # Explicit record of agents that require a driving command. If a grumpy reviewer
 # or specialist has no command that invokes it, it is a "driverless agent" and

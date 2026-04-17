@@ -5,6 +5,27 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-04-17
+
+### Added — Tier 2: Learning Loop (from toolset-gaps-debate.md)
+
+Depends on Tier 1. Gives Parliament a feedback loop so past decisions can be revisited, replayed, and measured.
+
+- **`/adr-new`** — Scaffold new Architectural Decision Records under `.project-files/adrs/`. Supports `--from-session` to import context from a prior debate, and `--supersedes` to chain replacements.
+- **`/adr-supersede`** — Mark an ADR superseded and forward-link it to its replacement. Never deletes — preserves the historical record.
+- **`/decision-review`** — Re-evaluate a prior ADR, debate, or council ruling when context shifts. Produces a verdict of `hold`, `amend`, or `supersede` via a delegated debate.
+- **`/debate-replay`** — Deterministic replay of a past debate from a session snapshot. Regression-tests the deliberation engine. `--strict` mode for release gating. Depends on `/session-snapshot` landing in Tier 4.
+- **`/agent-usage-stats`** — Per-agent frequency, duration, token cost, and approval-rate statistics aggregated from `activity.jsonl`. Identifies workhorses and retirement candidates.
+
+### Changed
+
+- **`commands/manifest.yaml`** — New `decisions` category; 5 new command entries; driverless-agent tracking extended.
+
+### Notes
+
+- `/debate-replay` will report a clear error about missing snapshot infrastructure until Tier 4 ships. The command is registered now so the surface area is visible, consistent with the "no orphans" rule established in Tier 1.
+- ADRs live in `.project-files/adrs/` (user-owned content), not under `${CLAUDE_PLUGIN_DATA}/` (plugin state).
+
 ## [1.10.0] - 2026-04-17
 
 ### Added — Tier 1: Toolset Hygiene (from toolset-gaps-debate.md)
