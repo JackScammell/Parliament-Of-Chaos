@@ -1,8 +1,10 @@
 # Usage Guide
 
-This guide explains how to use Parliament of Chaos commands effectively.
+This guide explains how to use Parliament of Chaos commands effectively. Parliament ships 64 slash commands across 15 categories; the authoritative registry is [`commands/manifest.yaml`](../commands/manifest.yaml). For the full command table with one-line descriptions, see the [README](../README.md#commands).
 
 ## Commands Overview
+
+### Core workflow
 
 | Command | Purpose | Best For |
 |---------|---------|----------|
@@ -13,32 +15,78 @@ This guide explains how to use Parliament of Chaos commands effectively.
 | `/implement-task-list` | Execute tasks systematically | Safe, tracked implementation |
 | `/summon-council` | Full multi-agent orchestration | Complex tasks, architectural decisions |
 | `/summon-grumpy-reviewer` | Quick critical code review | Code review, PR feedback, refactoring |
-| `/parliament-review` | Full review with all 9 reviewers | Maximum scrutiny on critical code |
+| `/parliament-review` | Full review with all 12 grumpy reviewers | Maximum scrutiny on critical code |
 | `/summon-specialist <agent>` | Invoke a specific specialist | Focused domain analysis |
 | `/debate-topic [topic]` | Structured multi-agent deliberation | Technical decisions, architecture debates |
-| `/parliament-optimize` | Audit agent configurations | Verify effort/model settings compliance |
-| `/parliament-webhook` | Configure webhook notifications | Teams, Slack, Discord integrations |
-| `/parliament-loop` | Recurring command execution | Continuous monitoring during development |
-| `/parliament-monitor` | Background monitoring agents | Persistent code oversight |
-| `/onboard-codebase` | Parallel codebase analysis | Onboarding to undocumented codebases |
-| `/list-agents` | Show all agents by category | Discovering available agents |
-| `/list-commands` | Show all commands by category | Discovering available commands |
-| `/explain-agent <agent>` | Detailed agent explanation | Understanding agent capabilities |
-| `/version` | Plugin version and metadata | Checking installed version |
-| `/readme` | Display full README | Quick reference in session |
-| `/changelog` | Display version history | Reviewing past releases |
+| `/debate-replay <session>` | Deterministic replay of a past debate | Regression-testing the deliberation engine |
 | `/debate-analytics` | Analytics dashboard | Tracking deliberation patterns |
-| `/plugin-install <name>` | Install community plugins | Adding new agent capabilities |
-| `/plugin-list` | List installed plugins | Viewing available plugins |
+| `/onboard-codebase` | Parallel codebase analysis | Onboarding to undocumented codebases |
+
+### Developer workflow, quality, and release
+
+| Command | Purpose | Best For |
+|---------|---------|----------|
 | `/pre-commit-check` | Run all CI checks locally | Ensuring CI passes before pushing |
 | `/format-code` | Auto-detect and run formatter | Formatting code before commit |
 | `/lint-fix` | Auto-detect and run linter with fix | Fixing lint errors across changed files |
 | `/run-tests` | Auto-detect and run test suite | Running tests with smart options |
-| `/security-scan` | Unified security scanning | Checking for secrets, vulnerabilities, patterns |
+| `/security-scan` | Unified security scanning | Checking secrets, vulnerabilities, patterns |
 | `/clean-imports` | Remove unused imports | Cleaning up import statements |
 | `/update-dependencies` | Interactive dependency updates | Updating packages safely with testing |
 | `/dead-code-sweep` | Find unreachable/unused code | Identifying dead code for removal |
 | `/update-docs` | Update docs after code changes | Keeping documentation in sync with code |
+| `/analyse-queries` | SQL/ORM audit | Missing indexes, N+1 patterns, full scans |
+| `/git-workflow` | Git helper | Merge conflict resolution, cherry-pick, bisect |
+| `/scaffold` | Convention-compliant boilerplate | Models, endpoints, services, tests |
+| `/coverage-audit` | Risk-prioritised coverage analysis | Finding uncovered high-risk code |
+| `/generate-tests` | Write tests following conventions | Adding tests to untested code |
+| `/mutation-test` | Test-quality evaluation | Catching weak assertions |
+| `/test-health` | Flaky/stale test detection | Stabilising a flaky suite |
+| `/track-debt` | Technical debt ledger | TODO/FIXME scan with trend tracking |
+| `/i18n-audit` | Internationalisation audit | Hardcoded strings, pluralisation, locale formatting |
+| `/cut-release` | Automated release | Version bump + tag + notes in one command |
+| `/release-notes-draft` | Draft CHANGELOG entry | From git log since last tag |
+| `/plugin-upgrade` | Version-sync helper | Keeps plugin.json + marketplace.json + CHANGELOG in sync |
+
+### Decisions, observability, and lifecycle
+
+| Command | Purpose | Best For |
+|---------|---------|----------|
+| `/adr-new` | Scaffold new ADR | Capturing an architectural decision |
+| `/adr-supersede` | Chain ADR replacements | Evolving architecture without losing history |
+| `/decision-review` | Re-evaluate past decision | When context shifts after an ADR/debate |
+| `/telemetry-query` | Ad-hoc telemetry reads | Filtering `activity.jsonl` by event/agent/time |
+| `/parliament-metrics` | Metrics dashboard | Cost, latency, SLO, trend panels |
+| `/cost-report` | Cost estimate or retrospective | Soft-cap budget management |
+| `/session-snapshot` | Checkpoint/resume primitive | Creating snapshots for `/debate-replay` |
+| `/docs-audit` | Doc drift detector | Finding stale references, fabricated claims |
+| `/settings-audit` | Permissions/secrets/flags audit | Reviewing `.claude/settings.json` hygiene |
+| `/env-doctor` | Runtime env validator | Diagnosing hook location / data dir issues |
+| `/fast-track` | Minimum-review-floor bypass | Genuine hotfixes with logged review debt |
+| `/ci-watch` | CI status poller | Watching current branch until CI is terminal |
+
+### Operations, hygiene, discovery, and plugins
+
+| Command | Purpose | Best For |
+|---------|---------|----------|
+| `/parliament-optimize` | Audit agent configurations | Verifying effort/model settings compliance |
+| `/parliament-webhook` | Configure webhook notifications | Teams, Slack, Discord integrations |
+| `/parliament-loop` | Recurring command execution | Continuous monitoring during development |
+| `/parliament-monitor` | Background monitoring agents | Persistent code oversight |
+| `/changelog-review` | Review Claude Code changelog | Proposing new Parliament features |
+| `/incident` | Incident triage + postmortem | Coordinating a hotfix with a runbook |
+| `/infra-review` | IaC/Docker/K8s audit | Best-practice review of infra configs |
+| `/retro` | Retrospective from git history | Finding hotspots, churn, revert patterns |
+| `/agent-usage-stats` | Per-agent usage dashboard | Identifying workhorses and retirement candidates |
+| `/parliament-doctor` | Manifest reconciliation | Detecting orphans, ghosts, hidden skills, driverless agents |
+| `/list-agents` | Show all 33 agents by category | Discovering available agents |
+| `/list-commands` | Show all 64 commands by category | Discovering available commands |
+| `/explain-agent <agent>` | Detailed agent explanation | Understanding agent capabilities |
+| `/version` | Plugin version and metadata | Checking installed version |
+| `/readme` | Display full README | Quick reference in session |
+| `/changelog` | Display version history | Reviewing past releases |
+| `/plugin-install <name>` | Install community plugins | Adding new agent capabilities |
+| `/plugin-list` | List installed plugins | Viewing available plugins |
 
 ---
 
@@ -409,13 +457,19 @@ For each task:
 | Resilience | resilience-tamer |
 | CI/CD | pipeline-engineer |
 
-3. **Grumpy Review** - ALL reviewers scrutinise the output:
+3. **Grumpy Review** - reviewers relevant to the task scrutinise the output (up to all 12):
    - grumpy-code-reviewer
    - grumpy-standards-enforcer
    - grumpy-architecture-skeptic
    - grumpy-maintainability-curmudgeon
    - grumpy-security-nag
    - grumpy-performance-troll
+   - grumpy-accessibility-auditor
+   - grumpy-documentation-pedant
+   - grumpy-testing-tyrant
+   - grumpy-privacy-paranoid
+   - grumpy-i18n-nitpicker
+   - grumpy-budget-hawk
 
 4. **Iterate** - Address objections, re-route to specialists until approved
 5. **Mark Complete** - Update tasks.md after grumpy approval
@@ -613,7 +667,7 @@ class OrderService
 
 ### /parliament-optimize
 
-Audit all 30 agent definitions and recommend effort/model settings based on role. Advisory only — reads but never modifies files.
+Audit all 33 agent definitions and recommend effort/model settings based on role. Advisory only — reads but never modifies files.
 
 #### When to Use
 
@@ -699,7 +753,7 @@ Manage background monitoring agents for continuous code oversight.
 ```
 
 **Default monitors**: grumpy-code-reviewer, grumpy-security-nag, grumpy-testing-tyrant.
-**Full set**: All 9 grumpy reviewers.
+**Full set**: All 12 grumpy reviewers.
 
 All monitoring agents are read-only and use `effort: low` with `maxTurns: 5` for minimal overhead.
 
@@ -1038,6 +1092,9 @@ You can reference these directly when asking the council to focus on specific ar
 | grumpy-accessibility-auditor | WCAG compliance, inclusive design |
 | grumpy-documentation-pedant | Documentation completeness |
 | grumpy-testing-tyrant | Test coverage and quality |
+| grumpy-privacy-paranoid | PII exposure, GDPR/CCPA, consent, data retention |
+| grumpy-i18n-nitpicker | Hardcoded strings, translations, pluralisation, locale formatting |
+| grumpy-budget-hawk | Cloud cost impact, over-provisioned resources, unbounded queries |
 
 ---
 

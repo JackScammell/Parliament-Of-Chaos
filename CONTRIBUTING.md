@@ -62,17 +62,32 @@ python -m pytest tests/ -v
 ```
 Parliament-Of-Chaos/
 ├── .claude/
-│   ├── agents/chaos/    # Agent definitions (.md files)
-│   └── commands/chaos/  # Command definitions (.md files)
+│   └── rules/                         # Project rules (agent-standards, governance, output-standards)
+├── .claude-plugin/
+│   ├── plugin.json                    # Plugin manifest (version, description, dependencies)
+│   └── marketplace.json               # Marketplace metadata (version must match plugin.json)
+├── agents/                            # 33 agent definitions (.md files)
+├── commands/
+│   ├── manifest.yaml                  # Source-of-truth registry for every slash command
+│   └── <64 command .md files>         # Command definitions across 15 categories
 ├── src/
-│   └── deliberation/                  # Python deliberation system
-│       ├── core/                      # Core modules
-│       ├── agents/                    # Agent implementations
-│       └── schemas/                   # Data schemas
+│   ├── deliberation/                  # Python deliberation system
+│   │   ├── core/                      # Core modules
+│   │   ├── agents/                    # Agent implementations
+│   │   └── schemas/                   # Data schemas
+│   └── hooks/                         # Hook scripts (_common.sh, log_event.sh, notify_teams.sh)
 ├── tests/                             # Test files
 ├── docs/                              # Documentation
 └── examples/                          # Example scripts
 ```
+
+### Source-of-truth Files
+
+When adding or renaming commands/agents, several files must stay in sync. Use the helper commands to guarantee this:
+
+- `/parliament-doctor` — reconciles `commands/manifest.yaml` against `commands/*.md` and the skill registry
+- `/plugin-upgrade` — atomically bumps `plugin.json`, `marketplace.json` (both slots), and inserts a CHANGELOG stub
+- `/env-doctor` — validates hook-script location, shebangs, and plugin data directory resolution
 
 ---
 
@@ -176,7 +191,7 @@ Command files in `commands/` should follow this structure:
 ---
 name: command-name
 description: Brief one-line description
-category: council|discovery|planning|analytics
+effort: low|medium|high
 ---
 
 # /command-name
@@ -318,42 +333,50 @@ When making changes that affect documentation:
 
 ### Agent Types
 
-1. **Specialist Agents**: Domain experts (e.g., backend, security, testing)
-2. **Grumpy Reviewers**: Critical reviewers focused on quality
-3. **Planning Agents**: Project planning and scoping
-4. **Orchestrators**: Coordinate other agents
+1. **Specialist Agents** (16): Domain experts (e.g., backend, security, testing)
+2. **Grumpy Reviewers** (12): Critical reviewers focused on a single quality dimension
+3. **Planning Agents** (3): Project planning and scoping
+4. **Orchestrators** (2): Coordinate other agents
+
+All frontmatter conventions — including effort tiers, maxTurns, memory scope, isolation, and tool restrictions — are specified in [`.claude/rules/agent-standards.md`](.claude/rules/agent-standards.md). New agents must match the template for their role.
 
 ### Steps to Create a New Agent
 
 1. **Define the agent's role** and expertise area
-2. **Create agent file** in `agents/`
-3. **Follow the agent template** (see Code Style Guidelines)
-4. **Update README.md** to include the new agent
-5. **Add tests** if the agent has Python implementation
-6. **Submit PR** with agent definition and documentation
+2. **Create agent file** in `agents/` using the correct frontmatter template from `.claude/rules/agent-standards.md`
+3. **Update README.md** agent tables (orchestrators / planning / specialists / grumpy reviewers) and any counts
+4. **If the agent is a grumpy reviewer**, ensure a driving command exists — otherwise `/parliament-doctor` will flag it as driverless. Register the pairing under `agents_requiring_driver` in `commands/manifest.yaml`.
+5. **If the agent is referenced by an orchestrator**, add the `Task(<agent>)` reference to `senior-council` and/or `deliberation-conductor`.
+6. **Run** `/parliament-doctor` and `/parliament-optimize` to verify no drift.
+7. **Submit PR** with agent definition and documentation.
 
 ---
 
 ## Creating New Commands
 
-### Command Categories
+### Command Categories (15)
 
-1. **Council Commands**: Multi-agent orchestration
-2. **Discovery Commands**: Exploration and information
-3. **Planning Commands**: Project planning and management
-4. **Analytics Commands**: Metrics and insights
+Commands live in 15 categories declared in `commands/manifest.yaml`: `agent-invocation`, `deliberation`, `project-planning`, `developer-workflow`, `quality`, `release`, `decisions`, `observability`, `lifecycle`, `operations`, `hygiene`, `codebase-analysis`, `discovery`, `plugins`. Pick the most specific existing category before proposing a new one.
 
 ### Steps to Create a New Command
 
 1. **Define the command's purpose** and use cases
-2. **Create command file** in `commands/`
-3. **Follow the command template** (see Code Style Guidelines)
+2. **Create command file** in `commands/` with the correct `effort:` frontmatter (see effort tiers in `.claude/rules/agent-standards.md`)
+3. **Register in `commands/manifest.yaml`**: add a new entry with `name`, `status`, `owner`, `skill_surface`, `effort`, and `category`. This is the source of truth — `/parliament-doctor` gates releases on zero drift.
 4. **Update documentation**:
    - Add to README.md commands table
-   - Add to installation.md
-   - Add to usage.md with examples
-5. **Add tests** for command logic
-6. **Submit PR** with command definition and documentation
+   - Add to docs/installation.md category list if introducing a new category
+   - Add to docs/usage.md overview tables with a one-line purpose
+5. **Run** `/parliament-doctor` to confirm the command is not orphaned, ghost, hidden, or leaked.
+6. **Submit PR** with command definition, manifest entry, and documentation.
+
+### Release Hygiene
+
+When cutting a release that includes new commands or agents:
+
+- Use `/plugin-upgrade` to bump version atomically across `plugin.json`, `marketplace.json` (two slots), and CHANGELOG — the rule in [`user memory: feedback_release_process.md`](https://github.com/JackScammell/Parliament-Of-Chaos) was added precisely because these slots drifted in past releases.
+- Use `/release-notes-draft` to generate CHANGELOG entries from git log since the last tag.
+- Run `/parliament-doctor --strict` as the final pre-tag check.
 
 ---
 

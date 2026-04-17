@@ -17,8 +17,9 @@ claude plugin install chaos@chaos
 ```
 
 These commands install:
-- 34 slash commands for orchestration, reviews, project planning, developer workflow, operations, and analytics
-- 30 agents (specialists, reviewers, planners, and orchestrators)
+- 64 slash commands across 15 categories (orchestration, deliberation, planning, developer workflow, hygiene, quality, release, observability, decisions, lifecycle, operations, analysis, discovery, plugins)
+- 33 agents — 2 orchestrators, 3 planning agents, 16 specialists, 12 grumpy reviewers
+- `commands/manifest.yaml` — declarative registry that `/parliament-doctor` reconciles against the filesystem and skill registry
 
 ### Verify Installation
 
@@ -75,161 +76,78 @@ While the files live in the centralised cache, Claude Code presents them as if t
 ```
 src/
   deliberation/           # Python deliberation system (analytics, plugins, core modules)
+  hooks/                  # Hook scripts (_common.sh, log_event.sh, notify_teams.sh)
 requirements.txt          # Python dependencies for the deliberation system
 
-.claude/
-  agents/
-    chaos/
-      # Planning Agents (3)
-      project-oracle.md          # Project planning via Q&A
-      scope-weaver.md            # Scopes roadmap items into tasks
-      task-executor.md           # Task tracking and documentation
+agents/                   # 33 agent definitions
+  # Orchestrators (2)
+  senior-council.md
+  deliberation-conductor.md
 
-      # Specialist Agents (16)
-      api-keeper.md              # API design and versioning
-      backend-goblin.md          # Backend performance and caching
-      config-curator.md          # Environment config and feature flags
-      data-warlock.md            # Database design and migrations
-      dependency-detective.md    # Vulnerability and license compliance
-      doc-bard.md                # Documentation and READMEs
-      migration-monk.md          # Schema migrations and rollbacks
-      observability-oracle.md    # Logging, metrics, and tracing
-      package-wizard.md          # Dependency management
-      pipeline-engineer.md       # CI/CD and deployment
-      refactor-ranger.md         # Code smells and refactoring
-      resilience-tamer.md        # Error handling and resilience
-      security-knight.md         # Security analysis and hardening
-      system-architect.md        # System design and architecture
-      test-prophet.md            # Testing strategies and TDD
-      ui-ux-guru.md              # User interface and accessibility
+  # Planning Agents (3)
+  project-oracle.md
+  scope-weaver.md
+  task-executor.md
 
-      # Grumpy Reviewers (9)
-      grumpy-accessibility-auditor.md     # WCAG compliance
-      grumpy-architecture-skeptic.md      # Architectural decisions
-      grumpy-code-reviewer.md             # General code quality
-      grumpy-documentation-pedant.md      # Documentation completeness
-      grumpy-maintainability-curmudgeon.md # Maintainability
-      grumpy-performance-troll.md         # Performance issues
-      grumpy-security-nag.md              # Security vulnerabilities
-      grumpy-standards-enforcer.md        # Standards compliance
-      grumpy-testing-tyrant.md            # Test coverage and quality
+  # Specialists (16)
+  api-keeper.md              backend-goblin.md
+  config-curator.md          data-warlock.md
+  dependency-detective.md    doc-bard.md
+  migration-monk.md          observability-oracle.md
+  package-wizard.md          pipeline-engineer.md
+  refactor-ranger.md         resilience-tamer.md
+  security-knight.md         system-architect.md
+  test-prophet.md            ui-ux-guru.md
 
-      # Orchestrators (2)
-      senior-council.md          # Coordinates multi-agent sessions
-      deliberation-conductor.md  # Orchestrates structured debates
+  # Grumpy Reviewers (12)
+  grumpy-accessibility-auditor.md       grumpy-architecture-skeptic.md
+  grumpy-budget-hawk.md                 grumpy-code-reviewer.md
+  grumpy-documentation-pedant.md        grumpy-i18n-nitpicker.md
+  grumpy-maintainability-curmudgeon.md  grumpy-performance-troll.md
+  grumpy-privacy-paranoid.md            grumpy-security-nag.md
+  grumpy-standards-enforcer.md          grumpy-testing-tyrant.md
 
-  commands/
-    chaos/
-      # Council Commands
-      summon-council.md          # Full multi-agent orchestration
-      summon-grumpy-reviewer.md  # Quick code review session
-      summon-specialist.md       # Invoke a specific specialist
-      parliament-review.md       # Full review with all 9 grumpy reviewers
-
-      # Discovery Commands
-      list-agents.md             # Display all agents by category
-      list-commands.md           # Display all commands by category
-      explain-agent.md           # Detailed agent explanation
-
-      # Planning Commands
-      plan-project.md            # Interactive project planning
-      project-status.md          # Project dashboard
-      roadmap-add-item.md        # Add items to roadmap
-      roadmap-item-scope.md      # Scope items into tasks
-      implement-task-list.md     # Execute tasks with council review
-
-      # Operations Commands (v1.4.0)
-      parliament-optimize.md     # Audit agent configurations
-      parliament-webhook.md      # Configure webhook notifications
-      parliament-loop.md         # Recurring command execution
-      parliament-monitor.md      # Background monitoring agents
-
-      # Developer Workflow Commands (v1.5.0)
-      pre-commit-check.md        # Run all CI checks locally
-      format-code.md             # Auto-detect and run formatter
-      lint-fix.md                # Auto-detect and run linter with fix
-      run-tests.md               # Auto-detect and run test suite
-      security-scan.md           # Unified security scanning
-      clean-imports.md           # Remove unused imports
-      update-dependencies.md     # Interactive dependency updates
-      dead-code-sweep.md         # Find dead code and orphaned files
-      update-docs.md             # Update docs after code changes
-
-      # Discovery Commands (v1.6.0)
-      version.md                 # Display plugin version
-      readme.md                  # Display README in session
-      changelog.md               # Display version history
-
-      # Analytics & Plugin Commands
-      debate-analytics.md        # Generate analytics dashboard
-      debate-topic.md            # Run structured deliberation
-      plugin-install.md          # Install community plugins
-      plugin-list.md             # List installed plugins
+commands/                 # 64 commands + manifest
+  manifest.yaml           # Source-of-truth registry (name, status, owner, effort, category)
+  <64 command .md files across 15 categories>
 ```
+
+The `commands/manifest.yaml` file tracks every command's status (`active`, `deprecated`, `experimental`, `orphaned`), owner agent, effort tier, and category. Run `/parliament-doctor` after any change to reconcile the manifest against the filesystem and the registered skill surface.
 
 ## Available Commands
 
-### Council Commands
+Parliament of Chaos ships 64 slash commands organised into 15 categories. The authoritative list lives in [`commands/manifest.yaml`](../commands/manifest.yaml), which tracks name, status, owner agent, effort tier, and category for every command.
 
-| Command | Description |
-|---------|-------------|
-| `/summon-council` | Full parliament orchestration with specialists and grumpy review |
-| `/summon-grumpy-reviewer` | Quick code review from grumpy perspective |
-| `/summon-specialist` | Directly invoke a specialist agent |
-| `/parliament-review` | Full review using all 9 grumpy reviewers |
-| `/debate-topic` | Run structured multi-agent deliberation with convergence detection |
+For the complete table grouped by category, see the [README](../README.md#commands). For a live view inside Claude Code, run:
 
-### Discovery Commands
+```
+/list-commands            # Grouped by category, reads commands/manifest.yaml
+/list-agents              # All 33 agents grouped by category
+/version                  # Plugin version and metadata
+```
 
-| Command | Description |
-|---------|-------------|
-| `/list-agents` | Display all agents grouped by category |
-| `/list-commands` | Display all commands grouped by category |
-| `/explain-agent` | Detailed explanation of what an agent does and when to use it |
-| `/version` | Display current plugin version and metadata |
-| `/readme` | Display the full README in the session |
-| `/changelog` | Display the full version history |
+### Command Categories (15)
 
-### Project Planning Commands
+| Category | Representative Commands |
+|----------|-------------------------|
+| Agent Invocation | `/summon-council`, `/summon-specialist`, `/summon-grumpy-reviewer`, `/parliament-review` |
+| Deliberation | `/debate-topic`, `/debate-analytics`, `/debate-replay` |
+| Project Planning | `/plan-project`, `/project-status`, `/roadmap-add-item`, `/roadmap-item-scope`, `/implement-task-list` |
+| Developer Workflow | `/pre-commit-check`, `/format-code`, `/lint-fix`, `/run-tests`, `/security-scan`, `/clean-imports`, `/update-dependencies`, `/dead-code-sweep`, `/update-docs`, `/analyse-queries`, `/git-workflow`, `/scaffold` |
+| Quality | `/coverage-audit`, `/generate-tests`, `/mutation-test`, `/test-health`, `/track-debt`, `/i18n-audit` |
+| Release | `/cut-release`, `/release-notes-draft`, `/plugin-upgrade` |
+| Decisions | `/adr-new`, `/adr-supersede`, `/decision-review` |
+| Observability | `/telemetry-query`, `/parliament-metrics`, `/cost-report` |
+| Lifecycle | `/session-snapshot`, `/docs-audit`, `/settings-audit`, `/env-doctor`, `/fast-track`, `/ci-watch` |
+| Operations | `/parliament-optimize`, `/parliament-webhook`, `/parliament-loop`, `/parliament-monitor`, `/changelog-review`, `/incident`, `/infra-review`, `/retro`, `/agent-usage-stats` |
+| Hygiene | `/parliament-doctor` |
+| Codebase Analysis | `/onboard-codebase` |
+| Discovery | `/list-agents`, `/list-commands`, `/explain-agent`, `/version`, `/readme`, `/changelog` |
+| Plugins | `/plugin-install`, `/plugin-list` |
 
-| Command | Description |
-|---------|-------------|
-| `/plan-project` | Interactive project planning with Project Oracle |
-| `/project-status` | View project progress dashboard |
-| `/roadmap-add-item` | Add new items to the roadmap |
-| `/roadmap-item-scope` | Break down items into specs and tasks |
-| `/implement-task-list` | Execute tasks with full council oversight |
+### Verifying Your Installation
 
-### Operations Commands
-
-| Command | Description |
-|---------|-------------|
-| `/parliament-optimize` | Audit agent definitions and recommend effort/model settings |
-| `/parliament-webhook` | Configure webhook notification endpoints (Teams, Slack, Discord) |
-| `/parliament-loop` | Set up recurring Parliament commands via `/loop` integration |
-| `/parliament-monitor` | Manage background monitoring agents for continuous oversight |
-
-### Developer Workflow Commands
-
-| Command | Description |
-|---------|-------------|
-| `/pre-commit-check` | Auto-detect and run all CI checks locally before committing |
-| `/format-code` | Auto-detect and run the project's code formatter |
-| `/lint-fix` | Auto-detect and run linter(s) with auto-fix |
-| `/run-tests` | Auto-detect and run the test suite with intelligent options |
-| `/security-scan` | Unified security check: dependencies, secrets, vulnerability patterns |
-| `/clean-imports` | Remove unused imports and organise import ordering |
-| `/update-dependencies` | Interactive dependency update with changelog review and test verification |
-| `/dead-code-sweep` | Find unreachable code, unused exports, and orphaned files |
-| `/update-docs` | Detect and update documentation affected by recent code changes |
-
-### Analytics & Plugin Commands
-
-| Command | Description |
-|---------|-------------|
-| `/debate-analytics` | Generate comprehensive analytics dashboard with metrics and insights |
-| `/plugin-install` | Install community agent plugins from the marketplace |
-| `/plugin-list` | List all installed plugins and marketplace summary |
+After installing, run `/parliament-doctor` to confirm there is no drift between the manifest, the command files, and the registered skill surface. `/env-doctor` validates that hook scripts and the plugin data directory are wired correctly.
 
 ## Updating the Plugin
 

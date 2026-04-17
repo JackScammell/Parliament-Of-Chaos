@@ -129,9 +129,15 @@ Create `.vscode/settings.json`:
 
 ```
 Parliament-Of-Chaos/
-├── .claude/                          # Claude Code plugin files
-│   ├── agents/chaos/   # Agent definitions (30 agents)
-│   └── commands/chaos/ # Command definitions (34 commands)
+├── .claude/                          # Project rules only (not plugin sources)
+│   └── rules/                        # agent-standards, governance, output-standards
+├── .claude-plugin/
+│   ├── plugin.json                   # Plugin manifest (version 1.13.0)
+│   └── marketplace.json              # Marketplace metadata
+├── agents/                           # 33 agent definitions (2 orchestrators, 3 planning, 16 specialists, 12 grumpy reviewers)
+├── commands/                         # 64 slash commands across 15 categories
+│   ├── manifest.yaml                 # Source-of-truth registry — reconciled by /parliament-doctor
+│   └── <64 .md files>
 │
 ├── src/                              # Python source code
 │   └── deliberation/                 # Deliberation system
@@ -170,8 +176,12 @@ Parliament-Of-Chaos/
 
 ### Key Directories
 
-- **`.claude/`**: Claude Code plugin agent and command definitions (Markdown files)
+- **`agents/`**: 33 agent definitions (Markdown with YAML frontmatter)
+- **`commands/`**: 64 command definitions plus `manifest.yaml` (the source-of-truth registry)
+- **`.claude/rules/`**: Project rules (agent-standards, governance, output-standards) — loaded via the `InstructionsLoaded` hook
+- **`.claude-plugin/`**: Plugin manifest and marketplace metadata (version must stay in sync)
 - **`src/deliberation/`**: Python implementation of the deliberation system
+- **`src/hooks/`**: Hook scripts (`_common.sh`, `log_event.sh`, `notify_teams.sh`)
 - **`tests/`**: Unit and integration tests
 - **`docs/`**: User-facing documentation
 - **`examples/`**: Executable example scripts
@@ -394,16 +404,20 @@ Press F5 to start debugging.
    touch commands/my-new-command.md
    ```
 
-2. **Add command definition** following the template in [CONTRIBUTING.md](CONTRIBUTING.md)
+2. **Add command definition** following the template in [CONTRIBUTING.md](../CONTRIBUTING.md), including the `effort:` frontmatter field.
 
-3. **Update documentation**:
-   - Add to README.md commands table
-   - Add to installation.md commands list
-   - Add to usage.md with examples
+3. **Register in `commands/manifest.yaml`** — add a new entry with `name`, `status: active`, `owner`, `skill_surface`, `effort`, and `category`. Releases are gated on `/parliament-doctor --strict`, which fails if the file and manifest disagree.
 
-4. **Add tests** if command has Python logic
+4. **Update documentation**:
+   - Add to README.md commands table (pick the correct category section)
+   - Add to docs/usage.md overview table
+   - If introducing a new category, extend `categories:` in the manifest and docs/installation.md category list
 
-5. **Create PR** with the new command
+5. **Run `/parliament-doctor`** to verify no drift (no orphans, ghosts, hidden skills, or leaked skills).
+
+6. **Add tests** if the command has Python logic.
+
+7. **Create PR** with the new command, manifest entry, and documentation.
 
 ### Adding New Python Functionality
 

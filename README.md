@@ -10,9 +10,10 @@
 
 Parliament of Chaos transforms Claude Code into a multi-agent development team. Instead of a single AI assistant, you get:
 
-- **30 Agents** including specialists, planners, reviewers, and orchestrators
-- **9 Grumpy Reviewers** who find flaws others miss
-- **34 Slash Commands** for project planning, code review, deliberation, developer workflow, monitoring, and operations
+- **33 Agents** including specialists, planners, reviewers, and orchestrators
+- **12 Grumpy Reviewers** who find flaws others miss (security, quality, privacy, i18n, cost, and more)
+- **64 Slash Commands** across 15 categories: project planning, code review, deliberation, developer workflow, hygiene, quality, release, observability, decisions, lifecycle, and operations
+- **`commands/manifest.yaml`** — declarative registry that acts as the source of truth for every command, reconciled by `/parliament-doctor`
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
 
@@ -51,28 +52,26 @@ claude plugin install chaos@chaos
 
 ## Commands
 
-### Council Commands
+All 64 commands are declared in [`commands/manifest.yaml`](commands/manifest.yaml), which acts as the source of truth for command name, status, owner agent, effort tier, and category. Run `/parliament-doctor` to reconcile the manifest against the filesystem and skill registry.
+
+### Agent Invocation
 
 | Command | Description |
 |---------|-------------|
 | `/summon-council [task]` | Orchestrate specialists + grumpy review cycle for complex tasks |
-| `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
-| `/parliament-review` | Full review using all 9 grumpy reviewers for maximum scrutiny |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
-| `/debate-topic [topic]` | Run structured multi-agent deliberation with convergence detection |
+| `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
+| `/parliament-review` | Full review using all 12 grumpy reviewers for maximum scrutiny |
 
-### Discovery Commands
+### Deliberation
 
 | Command | Description |
 |---------|-------------|
-| `/list-agents` | Display all agents grouped by category |
-| `/list-commands` | Display all commands grouped by category |
-| `/explain-agent <agent>` | Detailed explanation of what an agent does and when to use it |
-| `/version` | Display current plugin version and metadata |
-| `/readme` | Display the full README in the session |
-| `/changelog` | Display the full version history |
+| `/debate-topic [topic]` | Structured multi-agent deliberation with convergence detection |
+| `/debate-analytics [topic]` | Analytics dashboard with metrics and insights for a debate |
+| `/debate-replay <session>` | Deterministic replay of a past debate from a session snapshot |
 
-### Project Planning Commands
+### Project Planning
 
 | Command | Description |
 |---------|-------------|
@@ -82,23 +81,7 @@ claude plugin install chaos@chaos
 | `/roadmap-item-scope <item>` | Create detailed Spec.md and tasks.md for a roadmap item |
 | `/implement-task-list [item]` | Execute tasks with full council review (specialists + grumpy approval) |
 
-### Codebase Analysis Commands
-
-| Command | Description |
-|---------|-------------|
-| `/onboard-codebase` | Analyse an undocumented codebase in parallel and generate comprehensive `docs/getting_started/` documentation |
-
-### Operations Commands
-
-| Command | Description |
-|---------|-------------|
-| `/parliament-optimize` | Audit agent definitions and recommend effort/model settings |
-| `/parliament-webhook` | Configure webhook notification endpoints (Teams, Slack, Discord) |
-| `/parliament-loop` | Set up recurring Parliament commands via `/loop` integration |
-| `/parliament-monitor` | Manage background monitoring agents for continuous oversight |
-| `/changelog-review` | Review Claude Code changelog and propose new features |
-
-### Developer Workflow Commands
+### Developer Workflow
 
 | Command | Description |
 |---------|-------------|
@@ -111,12 +94,97 @@ claude plugin install chaos@chaos
 | `/update-dependencies` | Interactive dependency update with changelog review and test verification |
 | `/dead-code-sweep` | Find unreachable code, unused exports, and orphaned files |
 | `/update-docs` | Detect and update documentation affected by recent code changes |
+| `/analyse-queries` | SQL/ORM analysis for missing indexes, N+1 patterns, full table scans |
+| `/git-workflow` | Complex git operations — merge conflicts, cherry-picks, bisect |
+| `/scaffold` | Generate convention-compliant boilerplate by reading existing patterns |
 
-### Analytics & Plugin Commands
+### Quality
 
 | Command | Description |
 |---------|-------------|
-| `/debate-analytics [topic]` | Generate comprehensive analytics dashboard with metrics and insights |
+| `/coverage-audit` | Risk-prioritised test coverage analysis |
+| `/generate-tests` | Write tests for existing code following project conventions |
+| `/mutation-test` | Evaluate test quality by introducing code mutations |
+| `/test-health` | Detect flaky tests, stale assertions, non-deterministic patterns |
+| `/track-debt` | Scan TODO/FIXME/HACK, complexity hotspots, coverage gaps |
+| `/i18n-audit` | Scan user-facing strings, pluralisation, locale-aware formatting |
+
+### Release
+
+| Command | Description |
+|---------|-------------|
+| `/cut-release` | Automate version bumping, changelog generation, git tagging |
+| `/release-notes-draft` | Draft CHANGELOG entries from git log and merged PRs since last tag |
+| `/plugin-upgrade` | Version-sync helper — bumps plugin.json, marketplace.json, CHANGELOG atomically |
+
+### Decisions
+
+| Command | Description |
+|---------|-------------|
+| `/adr-new` | Scaffold new Architectural Decision Records under `.project-files/adrs/` |
+| `/adr-supersede` | Mark an ADR superseded and forward-link it to its replacement |
+| `/decision-review` | Re-evaluate a prior ADR, debate, or council ruling |
+
+### Observability
+
+| Command | Description |
+|---------|-------------|
+| `/telemetry-query` | Ad-hoc read path over `activity.jsonl` and plugin data directory |
+| `/parliament-metrics` | Cost, latency, SLO, and trend dashboard from telemetry |
+| `/cost-report` | Dry-run estimates, soft caps, and post-flight retrospectives |
+
+### Lifecycle
+
+| Command | Description |
+|---------|-------------|
+| `/session-snapshot` | Checkpoint/resume primitive — `create`, `list`, `resume`, `show`, `prune` |
+| `/docs-audit` | Symmetric opposite of `/onboard-codebase` — detects doc drift |
+| `/settings-audit` | Permissions, secrets, feature flags, hooks, and scope diff audit |
+| `/env-doctor` | Runtime environment validator — hook locations, data dirs, tool availability |
+| `/fast-track` | Minimum-review-floor bypass (never below security + code review) with logged review debt |
+| `/ci-watch` | Poll CI for the current branch — GitHub Actions, GitLab CI, CircleCI |
+
+### Operations
+
+| Command | Description |
+|---------|-------------|
+| `/parliament-optimize` | Audit agent definitions and recommend effort/model settings |
+| `/parliament-webhook` | Configure webhook notification endpoints (Teams, Slack, Discord) |
+| `/parliament-loop` | Set up recurring Parliament commands via `/loop` integration |
+| `/parliament-monitor` | Manage background monitoring agents for continuous oversight |
+| `/changelog-review` | Review Claude Code changelog and propose new features |
+| `/incident` | Structured incident triage, hotfix coordination, postmortems |
+| `/infra-review` | Dockerfile, Kubernetes, docker-compose, and CI/CD config audit |
+| `/retro` | Structured retrospective from git history — hotspots, churn, revert patterns |
+| `/agent-usage-stats` | Per-agent frequency, duration, token cost, and approval-rate stats |
+
+### Hygiene
+
+| Command | Description |
+|---------|-------------|
+| `/parliament-doctor` | Reconcile `commands/manifest.yaml` against `commands/*.md` and skill registry |
+
+### Codebase Analysis
+
+| Command | Description |
+|---------|-------------|
+| `/onboard-codebase` | Analyse an undocumented codebase in parallel and generate `docs/getting_started/` |
+
+### Discovery
+
+| Command | Description |
+|---------|-------------|
+| `/list-agents` | Display all agents grouped by category |
+| `/list-commands` | Display all commands grouped by category (reads manifest) |
+| `/explain-agent <agent>` | Detailed explanation of what an agent does and when to use it |
+| `/version` | Display current plugin version and metadata |
+| `/readme` | Display the full README in the session |
+| `/changelog` | Display the full version history |
+
+### Plugins
+
+| Command | Description |
+|---------|-------------|
 | `/plugin-install <name>` | Install community agent plugins from the marketplace |
 | `/plugin-list` | List all installed plugins and marketplace summary |
 
@@ -160,7 +228,7 @@ claude plugin install chaos@chaos
 | config-curator | Environment config, secrets, feature flags |
 | observability-oracle | Logging, metrics, tracing, alerting |
 
-### Grumpy Reviewers (9)
+### Grumpy Reviewers (12)
 
 | Agent | Focus |
 |-------|-------|
@@ -173,6 +241,9 @@ claude plugin install chaos@chaos
 | grumpy-accessibility-auditor | WCAG compliance, inclusive design |
 | grumpy-documentation-pedant | Documentation completeness |
 | grumpy-testing-tyrant | Test coverage and quality |
+| grumpy-privacy-paranoid | PII exposure, GDPR/CCPA compliance, consent, data retention |
+| grumpy-i18n-nitpicker | Hardcoded strings, missing translations, pluralisation, locale formatting |
+| grumpy-budget-hawk | Cloud cost impact, over-provisioned resources, unbounded queries |
 
 ---
 
@@ -224,7 +295,7 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 - **Automatic Cleanup**: Worktrees are cleaned up after the agent finishes
 
 ### Background Monitoring (v1.4.0)
-- **Continuous Oversight**: All 9 grumpy reviewers have `background: true` for persistent monitoring
+- **Continuous Oversight**: All 12 grumpy reviewers have `background: true` for persistent monitoring
 - **Managed via `/parliament-monitor`**: Start, stop, and check status of background agents
 - **Low Overhead**: Reviewers use `effort: low` and `maxTurns: 5` for minimal resource consumption
 
@@ -255,7 +326,8 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 ### Governance
 - **Conflict Resolution**: security > correctness > maintainability > performance > convenience
 - **Agent Standards**: `.claude/rules/agent-standards.md` enforces frontmatter consistency
-- **Read-Only Reviewers**: All 9 grumpy reviewers have `disallowedTools: [Edit, Write, NotebookEdit, Bash]`
+- **Read-Only Reviewers**: All 12 grumpy reviewers have `disallowedTools: [Edit, Write, NotebookEdit, Bash]`
+- **Command Manifest**: `commands/manifest.yaml` is the source of truth for every slash command — `/parliament-doctor` reconciles it against the filesystem and skill registry and gates releases in `--strict` mode
 
 ---
 
@@ -274,6 +346,9 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 | [Hooks Configuration](docs/hooks.md) | Set up notifications and automated actions |
 | [Safe Progress Assurance](docs/safe-progress-assurance.md) | How the system ensures reliable task completion |
 | [Example Project Files](docs/example-project-files/) | Sample outputs from the planning workflow |
+| [Command Manifest](commands/manifest.yaml) | Declarative registry of every slash command (source of truth) |
+| [Agent Standards](.claude/rules/agent-standards.md) | Frontmatter, effort tiers, maxTurns, memory, and isolation conventions |
+| [Governance Rules](.claude/rules/governance.md) | Conflict resolution priority and agent hierarchy |
 | [Contributing Guide](CONTRIBUTING.md) | **How to contribute to the project** |
 | [Changelog](CHANGELOG.md) | **Version history and release notes** |
 

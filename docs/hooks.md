@@ -415,24 +415,27 @@ When referencing the plugin's hook scripts, use the centralised path:
 
 ### Files Included with Parliament of Chaos
 
+Hook scripts live in `src/hooks/` (so they survive plugin cache refreshes). As of v1.9.0 the four per-event scripts were consolidated into a single unified dispatcher:
+
 | File | Location | Purpose |
 |------|----------|---------|
-| `notify_teams.sh` | Plugin cache | Microsoft Teams webhook notifications |
-| `log_agent_activity.sh` | Plugin cache | Agent lifecycle event logging |
-| `log_debate_completion.sh` | Plugin cache | Debate completion event logging |
-| `handle_stop_failure.sh` | Plugin cache | API failure logging (v1.4.0) |
-| `handle_post_compact.sh` | Plugin cache | Compaction state checkpointing (v1.4.0) |
-| `handle_instructions_loaded.sh` | Plugin cache | Rules reload logging (v1.4.0) |
+| `_common.sh` | `src/hooks/` | Shared helper — payload parsing, path validation, data-directory resolution, log rotation (v1.7.0) |
+| `log_event.sh` | `src/hooks/` | Unified event dispatcher — handles Stop, StopFailure, PostCompact, InstructionsLoaded, TaskCompleted, TaskCreated, SubagentStart, PermissionDenied, etc. (v1.9.0) |
+| `notify_teams.sh` | `src/hooks/` | Webhook notifications (Teams / Slack / Discord / custom HTTP endpoints) |
+
+Before v1.9.0 these were separate scripts (`log_agent_activity.sh`, `handle_stop_failure.sh`, `handle_post_compact.sh`, `handle_instructions_loaded.sh`). They have been removed; add a new logged event by adding a case to `log_event.sh`.
 
 ---
 
-## v1.4.0 Hook Events
+## Lifecycle Hook Events
+
+All lifecycle events below are dispatched by the unified `log_event.sh` (v1.9.0+). Each event becomes one `case` branch inside that script — adding a new logged event is a one-line change. Notifications (Teams / Slack / Discord) are delegated to `notify_teams.sh`.
 
 ### StopFailure
 
 Fires when a Parliament session is interrupted by an API error (rate limit or authentication failure).
 
-**Handler**: `handle_stop_failure.sh` — Logs the failure with stop reason to `activity.jsonl`. Notification is delegated to `notify_teams.sh`.
+**Dispatcher**: `log_event.sh` (case `StopFailure`) — Logs the failure with stop reason to `activity.jsonl`.
 
 **Payload fields**:
 - `hook_event_name`: "StopFailure"
@@ -443,7 +446,7 @@ Fires when a Parliament session is interrupted by an API error (rate limit or au
 
 Fires after context window compaction completes during a long Parliament session.
 
-**Handler**: `handle_post_compact.sh` — Logs compaction events for monitoring context usage patterns.
+**Dispatcher**: `log_event.sh` (case `PostCompact`) — Logs compaction events for monitoring context usage patterns.
 
 **Use cases**:
 - Track how often compaction occurs during council sessions
@@ -454,12 +457,20 @@ Fires after context window compaction completes during a long Parliament session
 
 Fires when CLAUDE.md or `.claude/rules/*.md` files are loaded or reloaded during a session.
 
-**Handler**: `handle_instructions_loaded.sh` — Logs rule reload events.
+**Dispatcher**: `log_event.sh` (case `InstructionsLoaded`) — Logs rule reload events.
 
 **Use cases**:
 - Detect stale rules in long-running Parliament sessions
 - Audit which rules files are active
 - Track rule changes during a session
+
+### PermissionDenied (v1.9.0)
+
+Fires when auto mode denies a Parliament agent's tool call. Logs the denied tool name and reason for diagnosing silent agent failures in automated workflows. Wired to `notify_teams.sh` for optional team notification.
+
+### TaskCreated / TaskCompleted (v1.9.0)
+
+Completes the task lifecycle logging alongside the existing `TaskCompleted` hook — both are dispatched by `log_event.sh`.
 
 ### Webhook Configuration
 
