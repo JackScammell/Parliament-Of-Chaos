@@ -12,7 +12,7 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 ## Usage
 
 ```
-/parliament-metrics [--window <duration>] [--focus cost|latency|slo|trend|all] [--json]
+/parliament-metrics [--window <duration>] [--focus cost|latency|slo|trend|all] [--json] [--strict-duration]
 ```
 
 **Examples**:
@@ -28,6 +28,7 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 - `--window <duration>`: Lookback window. Defaults to `7d`. Accepts `Nh`, `Nd`, `Nw`, `Nmo`.
 - `--focus <panel>`: Render only one panel. Useful in automation.
 - `--json`: Machine-readable output — consumed by `/parliament-webhook` and external dashboards.
+- `--strict-duration`: Latency panel uses only the `duration_ms` field captured by `PostToolUse` / `PostToolUseFailure` hooks. Rows without a captured value are dropped rather than inferred from event-pair timestamps. Recommended when comparing across recent windows where the hook was definitely wired.
 
 ## Panels
 
@@ -58,17 +59,25 @@ Token attribution by agent and session.
 
 ### 2. Latency
 
-Per-command p50 / p95 / max.
+Per-command p50 / p95 / max. As of Parliament v1.14.0 (Claude Code v2.1.119+), this panel
+prefers the `duration_ms` field captured on `PostToolUse` / `PostToolUseFailure` events
+when available, falling back to event-pair inference (`SubagentStart` → `Stop`) on older
+versions or for commands not surfaced through the tool-use payload.
 
 ```
 ## Latency (window: 7d)
 
-| Command              | count | p50    | p95    | max    |
-|----------------------|-------|--------|--------|--------|
-| /summon-council      | 14    | 4m12s  | 11m40s | 18m22s |
-| /parliament-review   | 22    | 2m50s  | 6m30s  | 9m04s  |
-| /format-code         | 41    | 3s     | 12s    | 28s    |
+| Command              | count | p50    | p95    | max    | source        |
+|----------------------|-------|--------|--------|--------|---------------|
+| /summon-council      | 14    | 4m12s  | 11m40s | 18m22s | duration_ms   |
+| /parliament-review   | 22    | 2m50s  | 6m30s  | 9m04s  | duration_ms   |
+| /format-code         | 41    | 3s     | 12s    | 28s    | duration_ms   |
+| /summon-specialist   | 8     | 1m05s  | 3m20s  | 4m11s  | inferred*     |
 ```
+
+`*inferred` indicates the row was computed from event-pair timestamps because no
+`duration_ms` value was logged for that invocation (Claude Code < v2.1.119 or the
+PostToolUse hook was not wired). The `--strict-duration` flag drops inferred rows.
 
 ### 3. SLO status (background monitors)
 

@@ -132,7 +132,7 @@ Parliament-Of-Chaos/
 ├── .claude/                          # Project rules only (not plugin sources)
 │   └── rules/                        # agent-standards, governance, output-standards
 ├── .claude-plugin/
-│   ├── plugin.json                   # Plugin manifest (version 1.13.0)
+│   ├── plugin.json                   # Plugin manifest (version 1.14.0)
 │   └── marketplace.json              # Marketplace metadata
 ├── agents/                           # 33 agent definitions (2 orchestrators, 3 planning, 16 specialists, 12 grumpy reviewers)
 ├── commands/                         # 64 slash commands across 15 categories

@@ -54,6 +54,35 @@ case "$HOOK_EVENT_NAME" in
     EVENT_TYPE="compaction" ;;
   InstructionsLoaded)
     EVENT_TYPE="instructions_loaded" ;;
+  PostToolUse|PostToolUseFailure)
+    # Claude Code v2.1.119+ includes duration_ms on PostToolUse and PostToolUseFailure.
+    # Capture for /parliament-metrics latency panel. Falls back to omitting the field
+    # on older versions; consumers MUST tolerate an absent duration_ms.
+    TOOL_NAME="$(printf '%s' "$HOOK_PAYLOAD" | jq -r '.tool_name // "unknown"')"
+    DURATION_MS="$(printf '%s' "$HOOK_PAYLOAD" | jq -r '.duration_ms // empty')"
+    TOOL_USE_ID="$(printf '%s' "$HOOK_PAYLOAD" | jq -r '.tool_use_id // empty')"
+    # Build EXTRA_JSON. Omit fields whose source value is empty rather than
+    # emitting empty strings — keeps the activity.jsonl schema clean.
+    if [ -n "$DURATION_MS" ]; then
+      EXTRA_JSON=$(jq -n \
+        --arg tool_name "$TOOL_NAME" \
+        --arg tool_use_id "$TOOL_USE_ID" \
+        --argjson duration_ms "$DURATION_MS" \
+        '{tool_name: $tool_name}
+         + (if $tool_use_id == "" then {} else {tool_use_id: $tool_use_id} end)
+         + {duration_ms: $duration_ms}')
+    else
+      EXTRA_JSON=$(jq -n \
+        --arg tool_name "$TOOL_NAME" \
+        --arg tool_use_id "$TOOL_USE_ID" \
+        '{tool_name: $tool_name}
+         + (if $tool_use_id == "" then {} else {tool_use_id: $tool_use_id} end)')
+    fi
+    if [ "$HOOK_EVENT_NAME" = "PostToolUseFailure" ]; then
+      EVENT_TYPE="tool_use_failure"
+    else
+      EVENT_TYPE="tool_use"
+    fi ;;
   *)
     # Reject unknown events — only allowlisted events are logged
     exit 0 ;;

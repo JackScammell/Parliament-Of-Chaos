@@ -12,7 +12,7 @@ This is a migration helper for **maintainers of the plugin**. End users do not r
 ## Usage
 
 ```
-/plugin-upgrade <next-version> [--check] [--from <current>] [--no-changelog]
+/plugin-upgrade <next-version> [--check] [--from <current>] [--no-changelog] [--tag|--no-tag]
 ```
 
 **Examples**:
@@ -21,6 +21,7 @@ This is a migration helper for **maintainers of the plugin**. End users do not r
 /plugin-upgrade 1.14.0 --check            # Dry-run: report mismatches without fixing
 /plugin-upgrade 1.14.0 --from 1.13.0      # Explicit current version
 /plugin-upgrade 1.14.0 --no-changelog     # Skip CHANGELOG.md (assume already drafted)
+/plugin-upgrade 1.14.0 --tag              # Also create a release git tag via `claude plugin tag`
 ```
 
 ## Options
@@ -29,6 +30,7 @@ This is a migration helper for **maintainers of the plugin**. End users do not r
 - `--check`: Report-only — show which files would change, never write.
 - `--from <current>`: Explicit current version for diffing. Defaults to the value in `plugin.json`.
 - `--no-changelog`: Skip CHANGELOG rewrite (use when `/release-notes-draft --apply` has already written the entry with the new version header).
+- `--tag` / `--no-tag`: Run `claude plugin tag <next-version>` after a successful version bump to create a release git tag with upstream's version-validation logic. Defaults to **off** (`--no-tag`) until proven across a few releases. Requires Claude Code v2.1.118 or newer; older versions ignore the flag with a warning.
 
 ## Version-bearing files
 
@@ -53,7 +55,8 @@ The command maintains the authoritative list in `${CLAUDE_PLUGIN_DATA}/version-s
 4. **Preview diff** — render a unified diff across all target files.
 5. **Apply** (unless `--check`) — write files atomically; stage them for the caller to commit.
 6. **Post-conditions check** — re-read all files and confirm versions agree. If any file is out of sync after the write, abort with a loud error.
-7. **Emit a next-step prompt** — suggests `/release-notes-draft --apply` (if changelog skipped) and `git commit` wording.
+7. **Tag (optional)** — if `--tag` is set, invoke `claude plugin tag <next-version>` after the post-conditions check. The upstream command performs its own version validation; failures surface verbatim and abort before the next-step prompt. Skipped on Claude Code < v2.1.118 with a warning.
+8. **Emit a next-step prompt** — suggests `/release-notes-draft --apply` (if changelog skipped) and `git commit` wording.
 
 ## Output
 
@@ -108,8 +111,17 @@ OK — No version downgrade or skip detected
 Next:
 - /release-notes-draft --apply --version 1.14.0     (if CHANGELOG was left as stub)
 - git commit -am "v1.14.0: ..."
-- git tag v1.14.0
+- git tag v1.14.0                                   (skip if --tag was used)
 - git push && git push --tags
+```
+
+When invoked with `--tag`, the post-conditions block additionally reports:
+
+```
+## Tagging
+OK — claude plugin tag 1.14.0 succeeded
+     created tag: v1.14.0
+     validated against: .claude-plugin/plugin.json (1.14.0)
 ```
 
 ## Notes

@@ -5,6 +5,33 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-04-29
+
+### Added — Claude Code Feature Adoption v2.1.113–v2.1.123 (Priority 1)
+
+Implements the four Priority 1 items from the 2026-04-29 `/changelog-review` deliberation (5/5 APPROVE, fast mode). Closes the four telemetry, permissions, resilience, and release-tagging gaps opened by upstream Claude Code v2.1.113 through v2.1.123.
+
+- **`PostToolUse` / `PostToolUseFailure` telemetry** — `src/hooks/log_event.sh` now handles both events and captures the `duration_ms` field added in Claude Code v2.1.119, plus `tool_use_id` and `tool_name`. Emitted as `tool_use` / `tool_use_failure` event types in `activity.jsonl`. settings.json wires both events through to `log_event.sh`. Schema is additive — older log entries continue to parse.
+- **`/parliament-metrics` latency panel — `duration_ms` source** — Now prefers the captured `duration_ms` field over event-pair inference. New `--strict-duration` flag drops inferred rows for windows where the hook was definitely wired. The panel marks the source per-row (`duration_ms` vs `inferred*`) so readers can see fidelity at a glance.
+- **Bash permission-rule audit (v2.1.113)** — Verified that Parliament's `settings.json` ships **no** `permissions.allow` or `permissions.deny` rules, so the v2.1.113 narrowing of `Bash(find:*)`, wrapper-bypass closure (`env`/`sudo`/`watch`/`ionice`/`setsid`), and macOS `/private/...` dangerous-removal targets requires no Parliament fix. Documented the verdict and the policy ("plugin only configures hooks; permission rules are user concern") in a new **Permissions** section of `.claude/rules/agent-standards.md`.
+- **`/env-doctor` — settings.json malformed-block resilience** — Aligned with Claude Code v2.1.121 (invalid legacy enum) and v2.1.122 (malformed `hooks` block) behaviour: a single broken hook entry now surfaces as a targeted warning naming the event and array index, never as a blanket "settings.json is invalid" fatal. Other hooks continue to be validated.
+- **`/plugin-upgrade --tag` — upstream-validated release tags** — New opt-in `--tag` / `--no-tag` switch invokes `claude plugin tag <next-version>` (Claude Code v2.1.118+) after the version-sync phase. The upstream validator confirms the tag matches `.claude-plugin/plugin.json` before writing. Defaults off until proven across a couple of releases. Ignored with a warning on older Claude Code versions.
+
+### Changed
+
+- **`.claude/rules/agent-standards.md`** — New **Permissions** section documenting the Bash permission-rule audit verdict and the no-permission-rules-by-policy stance.
+- **`.claude/projects/.../memory/feedback_release_process.md`** (user memory) — Now points at `/plugin-upgrade --tag` as the preferred path.
+- **`commands/parliament-metrics.md`** — `--strict-duration` flag and source-attribution column in the latency panel.
+- **`commands/env-doctor.md`** — New "settings.json resilience" subsection and example targeted-warning output.
+- **`commands/plugin-upgrade.md`** — `--tag` / `--no-tag` documented in usage, options, process step 7, and post-conditions.
+- **`docs/DEVELOPMENT.md`** — Plugin-manifest version reference bumped to 1.14.0.
+
+### Notes
+
+- No new commands or agents this release. Five existing surfaces extended, one rule file gains a section, one user-memory feedback file updated.
+- Priority 2 (`${CLAUDE_EFFORT}` adoption, `claude plugin prune` integration) and the deferred-docs items remain queued for v1.15.0 per the deliberation.
+- Item 2 (Bash audit) is documented as "no change required". The audit itself is the deliverable; the absence of changes is the result.
+
 ## [1.13.0] - 2026-04-17
 
 ### Added — Tier 4: Ops & Lifecycle (from toolset-gaps-debate.md)

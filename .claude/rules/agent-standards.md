@@ -81,6 +81,33 @@ Skills and slash commands also support `effort` frontmatter (since Claude Code v
 | **Medium** | `effort: medium` | plan-project, changelog-review, security-scan, summon-specialist, etc. (17 total) | Single-domain analysis, planning, or scoped implementation work |
 | **Low** | `effort: low` | list-agents, version, readme, format-code, run-tests, etc. (13 total) | Simple display, single-tool execution, or delegating to an external tool |
 
+## Permissions
+
+Parliament's `settings.json` deliberately ships **no** `permissions.allow` or `permissions.deny`
+rules. The plugin only configures hooks; permission policy is the user's responsibility, not the
+plugin's. This decision was reaffirmed in the v1.14.0 audit triggered by Claude Code v2.1.113.
+
+### Claude Code v2.1.113 hardening — verified safe
+
+Three behaviour changes in v2.1.113 narrow how Bash allow/deny rules match. Parliament's stance
+on each:
+
+| Change | Parliament impact | Verdict |
+|--------|-------------------|---------|
+| `Bash(find:*)` allow rules no longer auto-approve `find -exec` and `find -delete` | Parliament has no `Bash(find:*)` allow rule | No change required |
+| Deny rules now match commands wrapped in `env`/`sudo`/`watch`/`ionice`/`setsid` | Parliament has no `Bash(...)` deny rules | No change required (strict tightening — any user-defined deny rule is now harder to bypass, which is desired) |
+| macOS `/private/{etc,var,tmp,home}` paths treated as dangerous removal targets | Parliament hooks never write to `/private/...` | No change required |
+
+If a future Parliament release introduces permission rules, the new semantics must be assumed.
+In particular: **never** rely on the pre-v2.1.113 behaviour where a wrapper command like
+`sudo rm -rf /` could bypass a deny rule on `Bash(rm:*)`.
+
+### Hook-script invocation
+
+Hook scripts are invoked by Claude Code directly (not via `Bash(...)` permission rules), so they
+are unaffected by allow/deny narrowing. The relevant guard for hooks is `/env-doctor`, which
+verifies hook-script location, executable bit, shebang, and `${CLAUDE_PLUGIN_DATA}` fallback.
+
 ## Plugin State Storage
 
 Parliament maintains two distinct storage locations:

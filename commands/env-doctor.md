@@ -44,6 +44,23 @@ Closes the `feedback_hooks_location.md` footgun — if a hook script has drifted
 - `_common.sh` must be sourced correctly
 - `CLAUDE_PLUGIN_DATA` fallback must be present in scripts that log — check for the pattern `${CLAUDE_PLUGIN_DATA:-`
 
+### settings.json resilience (Claude Code v2.1.121 / v2.1.122)
+
+As of upstream v2.1.121 a malformed legacy enum value in `settings.json` no longer invalidates
+the entire file, and v2.1.122 extends the same defensive parsing to a malformed `hooks` block.
+`/env-doctor` mirrors this: a single broken hook entry is reported as a **targeted warning**
+that names the specific event and hook index, never as a blanket "settings.json is invalid"
+fatal. Errors elsewhere in the file are reported separately so a single bad hook does not mask
+unrelated config issues.
+
+When a hook entry fails to parse, `/env-doctor` reports:
+- the event name (e.g. `PostToolUse`)
+- the array index (e.g. `hooks[2]`)
+- the parse error (truncated to one line)
+- a remediation hint pointing at the entry
+
+Other hooks are still validated — one bad entry does not short-circuit the rest of the report.
+
 ### External tools
 
 - `git` — required for almost everything
@@ -88,6 +105,9 @@ OK   — src/hooks/log_debate_completion.sh (executable, valid shebang)
 FAIL — src/hooks/log_event.sh does not contain CLAUDE_PLUGIN_DATA fallback pattern
        expected: ${CLAUDE_PLUGIN_DATA:-...}
        (see feedback_hooks_location.md)
+WARN — settings.json: hooks.PostToolUse[2] failed to parse
+       reason: "command" key is not a string
+       remediation: edit that single entry; the rest of settings.json was loaded successfully
 
 ## External tools
 OK   — git 2.47.0
