@@ -2,11 +2,11 @@
 
 ## Current Status
 
-**Last Updated**: 2026-04-17
+**Last Updated**: 2026-04-29
 
-**Current Phase**: v1.9.0 released — Claude Code v2.1.91–v2.1.112 adoption
+**Current Phase**: v1.15.0 released — Claude Code v2.1.113–v2.1.123 Priority 2 adoption (`${CLAUDE_EFFORT}`, `claude plugin prune`)
 
-**Overall Progress**: 18 of 21 v1.1 items complete; Priority 1 items from 2026-04-17 changelog review shipped in v1.9.0
+**Overall Progress**: 18 of 21 v1.1 items complete; Priority 1 (v1.14.0) and Priority 2 (v1.15.0) from the 2026-04-29 changelog review both shipped
 
 ---
 
@@ -141,6 +141,8 @@ standards-enforcement ◄─── (affects all specialists)
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-04-29 | Shipped v1.15.0 Priority 2 changelog adoption (3 items) | `${CLAUDE_EFFORT}` adoption in `/cost-report` and `/parliament-metrics`, `claude plugin prune` integration in `/env-doctor`, `/plugin-upgrade` post-upgrade orphan-check suggestion |
+| 2026-04-29 | Shipped v1.14.0 Priority 1 changelog adoption (4 items) | `duration_ms` capture, Bash permission audit, malformed-hooks resilience, `/plugin-upgrade --tag` |
 | 2026-04-17 | Shipped v1.9.0 Priority 1 changelog adoption (5 items) | `keep-coding-instructions`, plugin `dependencies`, `xhigh` tier doc, subagent MCP inheritance doc, default-effort note |
 | 2025-12-04 | Completed conflict-resolution | Priority-based conflict handling for reviewer disagreements |
 | 2025-12-04 | Added cmd-list-commands | Command discoverability - lists all 12 commands by category |

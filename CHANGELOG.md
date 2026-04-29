@@ -5,6 +5,30 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2026-04-29
+
+### Added — Claude Code Feature Adoption v2.1.113–v2.1.123 (Priority 2)
+
+Implements the two Priority 2 items deferred from the v1.14.0 deliberation (5/5 APPROVE, fast mode). Closes the effort-attribution and orphan-plugin-cleanup gaps that the v1.14.0 release explicitly queued for v1.15.0.
+
+- **`${CLAUDE_EFFORT}` adoption in cost-aware skills (v2.1.120)** — `/cost-report estimate` now resolves the effort baseline through a four-step priority chain: explicit `--effort` flag → target command's `effort:` frontmatter → `${CLAUDE_EFFORT}` env var → `medium` fallback. The chosen tier and its source are surfaced in the estimate output (`**Effort baseline**: high (source: ${CLAUDE_EFFORT})`). Effort multipliers (low 0.55×, medium 1.00×, high 1.55×, xhigh 2.10×) apply to the historical p50/p95 token bounds. Multipliers are overridable via `${CLAUDE_PLUGIN_DATA}/cost-rates.json` under `effort_multipliers`. Removes the need for parallel `--mode` plumbing on cost-projection skills.
+- **`/parliament-metrics --by-effort` partition (v2.1.117 + v2.1.119 + v2.1.120)** — Cost and latency panels can now be split by effort tier. Attribution sources, in priority order: OTel `effort` attribute on `cost.usage` / `token.usage` / `api_request` / `api_error` spans (v2.1.117), status-line `effort.level` field (v2.1.119), `${CLAUDE_EFFORT}` env at emit time (v2.1.120). Older events without effort data fall under `unknown` and are reported separately so partial historical data does not skew the breakdown.
+- **`claude plugin prune` integration in `/env-doctor` (v2.1.121)** — New `--check-orphans` flag lists auto-installed plugin dependencies that no longer have a dependent (calls `claude plugin list --orphaned`). New `--prune` flag invokes `claude plugin prune` after explicit confirmation. Both flags are no-ops with a one-line note on Claude Code < v2.1.121. `--strict` never auto-invokes pruning. `/plugin-upgrade` post-conditions now suggest running `/env-doctor --check-orphans` after a successful version bump.
+
+### Changed
+
+- **`commands/cost-report.md`** — New "Effort awareness" section, `--effort` flag on `estimate`, multiplier table, updated process and example output.
+- **`commands/parliament-metrics.md`** — New `--by-effort` flag, "Effort attribution" section, updated process step 2.
+- **`commands/env-doctor.md`** — New `--check-orphans` and `--prune` flags, "Plugin orphans" section under External tools, updated process steps.
+- **`commands/plugin-upgrade.md`** — Notes reference the new `/env-doctor --check-orphans` post-upgrade suggestion.
+- **`.claude/rules/agent-standards.md`** — New "Reading session effort at runtime (`${CLAUDE_EFFORT}`)" subsection clarifying the relationship between `${CLAUDE_EFFORT}` (per-turn reasoning effort) and the `--mode` flag (deliberation depth) — they are orthogonal and both retained.
+
+### Notes
+
+- No new commands or agents this release. Three existing commands extended with effort-awareness or orphan-plugin handling, one rule file gains a subsection.
+- The deferred-docs items from the 2026-04-29 review (hooks invoking MCP tools, agent-typed hooks bug-fix) remain documentation-only and are tracked for inclusion in the next agent-standards refresh — no code change required.
+- Multipliers in `/cost-report` are heuristic. Telemetry collected after `--by-effort` ships will refine them; the `effort_multipliers` block in `cost-rates.json` is the override surface.
+
 ## [1.14.0] - 2026-04-29
 
 ### Added — Claude Code Feature Adoption v2.1.113–v2.1.123 (Priority 1)
@@ -400,6 +424,12 @@ Subsequent tiers from the toolset-gaps plan land in v1.11.0 (Learning Loop), v1.
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.15.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.14.0...v1.15.0
+[1.14.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.13.0...v1.14.0
+[1.13.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.12.0...v1.13.0
+[1.12.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.11.0...v1.12.0
+[1.11.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.10.0...v1.11.0
+[1.10.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.7.0...v1.8.0

@@ -16,7 +16,7 @@ Addresses the Tier 3 gap flagged by `grumpy-budget-hawk` in the toolset-gaps deb
 
 ```
 /cost-report
-/cost-report estimate <command-with-args>
+/cost-report estimate <command-with-args> [--effort low|medium|high|xhigh]
 /cost-report last [--n <count>]
 /cost-report budget set|show|clear [--scope session|daily|monthly] [--tokens <n>] [--usd <amount>]
 ```
@@ -26,10 +26,42 @@ Addresses the Tier 3 gap flagged by `grumpy-budget-hawk` in the toolset-gaps deb
 /cost-report                                           # Summary of last 7 days
 /cost-report estimate /parliament-review               # Dry-run: estimated tokens and $
 /cost-report estimate /debate-topic "migrate to X" --mode deep
+/cost-report estimate /parliament-review --effort high # Override session effort for the estimate
 /cost-report last --n 5                                # Last 5 runs detailed
 /cost-report budget set --scope daily --usd 10         # Set a soft cap
 /cost-report budget show
 ```
+
+## Effort awareness (Claude Code v2.1.120+)
+
+Since Claude Code v2.1.120, skills receive the current session effort via the
+`${CLAUDE_EFFORT}` environment variable. `/cost-report estimate` now reads it as the
+default effort baseline so estimates reflect the session that the user is actually in:
+
+| Resolution order | Source |
+|------------------|--------|
+| 1 | `--effort <level>` flag on the `estimate` invocation (explicit override) |
+| 2 | Target command's `effort:` frontmatter (the per-command default) |
+| 3 | `${CLAUDE_EFFORT}` from the running session (Claude Code v2.1.120+) |
+| 4 | `medium` (compatibility default for older Claude Code installations) |
+
+The chosen value is reflected in the estimate output (`**Effort baseline**: high
+(source: ${CLAUDE_EFFORT})`) so the user can see which level the projection used. No
+plumbing or `--mode` re-flag is required for the common case where the user has already
+selected an effort via `/effort` for the session.
+
+Effort multipliers applied to the historical p50/p95 token bounds:
+
+| Effort | Multiplier (vs `medium` baseline) |
+|--------|-----------------------------------|
+| `low`   | 0.55× |
+| `medium`| 1.00× (baseline) |
+| `high`  | 1.55× |
+| `xhigh` | 2.10× (reserved tier — used only when an agent or command explicitly opts in) |
+
+Multipliers are heuristic and refined as telemetry accumulates per effort level; they are
+stored in `${CLAUDE_PLUGIN_DATA}/cost-rates.json` under `effort_multipliers` and override
+the defaults above when present.
 
 ## Sub-commands
 
@@ -40,6 +72,7 @@ Dry-run a command without executing it. Walks the command's `Process` block to e
 - Expected round count (for debates)
 - Per-agent average token cost from `/agent-usage-stats --json`
 - Upper and lower bounds based on historical variance
+- The effort baseline used (see *Effort awareness* above)
 
 Output:
 
@@ -47,9 +80,10 @@ Output:
 # Cost Estimate
 
 **Command**: /parliament-review
+**Effort baseline**: high (source: ${CLAUDE_EFFORT})
 **Estimated agents invoked**: 9 (all grumpy reviewers)
-**Estimated tokens**: 380K–620K (p50: 465K)
-**Estimated cost**: $1.72–$2.81 (p50: $2.10)
+**Estimated tokens**: 590K–960K (p50: 720K)
+**Estimated cost**: $2.66–$4.36 (p50: $3.25)
 
 ## Budget check
 - Current daily budget: $10.00
@@ -126,7 +160,11 @@ The registry is editable in `${CLAUDE_PLUGIN_DATA}/cost-rates.json` under `expen
 ## Process
 
 1. Parse sub-command.
-2. For `estimate`: statically analyse the target command's `Process` block, look up historical per-agent cost, compute bounds.
+2. For `estimate`:
+   1. Resolve effort baseline using the four-step order documented under *Effort awareness*.
+   2. Statically analyse the target command's `Process` block, look up historical per-agent cost.
+   3. Apply the effort multiplier to the p50/p95 bounds.
+   4. Compute soft-cap delta and render the baseline source for transparency.
 3. For `last`: call `/telemetry-query --event TaskCompleted --since 7d --json`, sort, limit.
 4. For `budget`: read/write `${CLAUDE_PLUGIN_DATA}/budgets.json`.
 5. Render.

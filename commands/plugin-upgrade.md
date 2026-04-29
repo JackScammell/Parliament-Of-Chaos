@@ -131,3 +131,4 @@ OK — claude plugin tag 1.14.0 succeeded
 - Uses atomic writes so a crash mid-run never leaves files partially updated.
 - Encodes the project rule from `feedback_release_process.md` — this command is the automation of that feedback note.
 - `/cut-release` wraps this command plus tagging, pushing, and release-note generation. Use `/cut-release` end-to-end; use `/plugin-upgrade` for the version-bump step in isolation.
+- After a successful bump, `/plugin-upgrade` suggests `/env-doctor --check-orphans` (Claude Code v2.1.121+) so any auto-installed plugin dependencies that became orphans during the upgrade can be reviewed and pruned. The suggestion is informational; pruning is never automatic.

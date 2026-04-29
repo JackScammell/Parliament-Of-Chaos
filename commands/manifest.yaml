@@ -428,14 +428,14 @@ commands:
     skill_surface: true
     effort: medium
     category: observability
-    notes: Cost / latency / SLO / trend dashboard. Consumes /telemetry-query.
+    notes: Cost / latency / SLO / trend dashboard. Consumes /telemetry-query. v1.15.0 adds --by-effort partition.
   - name: cost-report
     status: active
     owner: observability-oracle
     skill_surface: true
     effort: medium
     category: observability
-    notes: Dry-run estimates + soft caps + last-N retrospective.
+    notes: Dry-run estimates + soft caps + last-N retrospective. v1.15.0 adopts ${CLAUDE_EFFORT} as default effort baseline.
 
   # --- Ops & Lifecycle additions (Tier 4 — v1.13.0) ---
   - name: session-snapshot
@@ -465,7 +465,7 @@ commands:
     skill_surface: true
     effort: low
     category: lifecycle
-    notes: Runtime env validation; closes feedback_hooks_location footgun.
+    notes: Runtime env validation; closes feedback_hooks_location footgun. v1.15.0 adds --check-orphans / --prune for `claude plugin prune` integration.
   - name: fast-track
     status: active
     owner: senior-council

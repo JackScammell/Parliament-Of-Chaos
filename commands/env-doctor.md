@@ -12,7 +12,7 @@ Closes the `feedback_hooks_location.md` footgun — if a hook script has drifted
 ## Usage
 
 ```
-/env-doctor [--fix-permissions] [--strict]
+/env-doctor [--fix-permissions] [--strict] [--check-orphans] [--prune]
 ```
 
 **Examples**:
@@ -20,12 +20,16 @@ Closes the `feedback_hooks_location.md` footgun — if a hook script has drifted
 /env-doctor                        # Report environment health
 /env-doctor --strict               # Exit non-zero on any warning (for CI)
 /env-doctor --fix-permissions      # chmod any hook scripts missing executable bit (with diff preview)
+/env-doctor --check-orphans        # Also list orphaned auto-installed plugin dependencies
+/env-doctor --prune                # Run `claude plugin prune` after confirmation (Claude Code v2.1.121+)
 ```
 
 ## Options
 
 - `--fix-permissions`: Apply minimal permission fixes (chmod +x on hook scripts). Shows a diff of intended changes before applying.
 - `--strict`: Exit non-zero if any check fails. Intended for release gates.
+- `--check-orphans`: Run `claude plugin list --orphaned` (Claude Code v2.1.121+) and surface auto-installed plugin dependencies that no longer have a dependent. Read-only.
+- `--prune`: After `--check-orphans`, prompt to run `claude plugin prune`. Requires explicit confirmation; never invoked under `--strict`.
 
 ## Checks
 
@@ -68,6 +72,21 @@ Other hooks are still validated — one bad entry does not short-circuit the res
 - `bash` / `zsh` — shell availability
 - Project-specific tools inferred from `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`
 
+### Plugin orphans (Claude Code v2.1.121+)
+
+When `--check-orphans` is passed, `/env-doctor` shells out to `claude plugin list
+--orphaned` to identify plugins that were auto-installed as dependencies and now have
+no dependent. v2.1.121 introduced `claude plugin prune` to remove them safely.
+
+Behaviour:
+
+- Without `--prune`: orphans are listed as `WARN — orphaned auto-installed plugin: <name>`. The check is read-only.
+- With `--prune`: `/env-doctor` prints the `claude plugin prune` plan, asks for explicit confirmation, then invokes the upstream command. The plugin's own version-sync flow is unaffected — pruning only touches auto-installed dependencies.
+- On Claude Code versions older than v2.1.121, both flags are no-ops with a one-line note explaining why.
+
+Pairs with `/plugin-upgrade`: after a major upgrade, run `/env-doctor --check-orphans`
+to see if any auto-installed companions can be removed cleanly.
+
 ### File locations per convention
 
 - Agents: `agents/*.md` (not `src/agents/`, not `.claude/agents/`)
@@ -84,9 +103,11 @@ Other hooks are still validated — one bad entry does not short-circuit the res
 ## Process
 
 1. Run each check; collect results with severity (`ok`, `warn`, `fail`).
-2. Render a single-screen report.
-3. If `--fix-permissions`, propose diffs and request confirmation.
-4. Exit 0, or non-zero if `--strict` and any `fail` present.
+2. If `--check-orphans`, query `claude plugin list --orphaned` and append warnings.
+3. Render a single-screen report.
+4. If `--fix-permissions`, propose diffs and request confirmation.
+5. If `--prune`, after the report and explicit confirmation, run `claude plugin prune`.
+6. Exit 0, or non-zero if `--strict` and any `fail` present. `--strict` never auto-invokes pruning.
 
 ## Output
 

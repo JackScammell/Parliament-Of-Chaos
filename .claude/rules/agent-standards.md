@@ -81,6 +81,21 @@ Skills and slash commands also support `effort` frontmatter (since Claude Code v
 | **Medium** | `effort: medium` | plan-project, changelog-review, security-scan, summon-specialist, etc. (17 total) | Single-domain analysis, planning, or scoped implementation work |
 | **Low** | `effort: low` | list-agents, version, readme, format-code, run-tests, etc. (13 total) | Simple display, single-tool execution, or delegating to an external tool |
 
+### Reading session effort at runtime (`${CLAUDE_EFFORT}`)
+
+As of Claude Code v2.1.120, every skill / slash command receives the *current session*
+effort tier via the `${CLAUDE_EFFORT}` environment variable. Parliament commands use it
+as the default baseline for cost projections and effort-aware reporting:
+
+- `/cost-report estimate` — uses `${CLAUDE_EFFORT}` as the third-priority source (after the explicit `--effort` flag and the target command's frontmatter `effort:`).
+- `/parliament-metrics --by-effort` — partitions cost / latency rows by effort tier; events without an attribute fall back to `${CLAUDE_EFFORT}` for newly emitted records.
+
+Authors of new commands that vary in token cost by depth should prefer reading
+`${CLAUDE_EFFORT}` directly over re-introducing `--mode fast/consensus/deep` plumbing.
+The `--mode` flag remains the right surface for *deliberation depth* (round count,
+voting rules) on `/debate-topic`, `/decision-review`, and `/changelog-review`; it is
+orthogonal to `${CLAUDE_EFFORT}`, which controls reasoning effort per turn.
+
 ## Permissions
 
 Parliament's `settings.json` deliberately ships **no** `permissions.allow` or `permissions.deny`

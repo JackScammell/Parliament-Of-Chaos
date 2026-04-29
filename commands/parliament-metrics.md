@@ -12,7 +12,7 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 ## Usage
 
 ```
-/parliament-metrics [--window <duration>] [--focus cost|latency|slo|trend|all] [--json] [--strict-duration]
+/parliament-metrics [--window <duration>] [--focus cost|latency|slo|trend|all] [--json] [--strict-duration] [--by-effort]
 ```
 
 **Examples**:
@@ -21,6 +21,7 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 /parliament-metrics --window 30d            # Month view
 /parliament-metrics --focus cost            # Cost panel only
 /parliament-metrics --focus slo --json      # Monitor health in JSON
+/parliament-metrics --focus cost --by-effort # Cost panel split by effort tier
 ```
 
 ## Options
@@ -29,6 +30,23 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 - `--focus <panel>`: Render only one panel. Useful in automation.
 - `--json`: Machine-readable output — consumed by `/parliament-webhook` and external dashboards.
 - `--strict-duration`: Latency panel uses only the `duration_ms` field captured by `PostToolUse` / `PostToolUseFailure` hooks. Rows without a captured value are dropped rather than inferred from event-pair timestamps. Recommended when comparing across recent windows where the hook was definitely wired.
+- `--by-effort`: Group cost and latency panels by effort tier (`low` / `medium` / `high` / `xhigh`). Tier is sourced from the OTel `effort` attribute on `cost.usage` / `token.usage` / `api_request` / `api_error` events (Claude Code v2.1.117+) and from the status-line `effort.level` field (v2.1.119+). When neither is present, the row is grouped under `unknown`.
+
+## Effort attribution (Claude Code v2.1.117+)
+
+Telemetry written under Claude Code v2.1.117 and later carries the effort tier of the
+session that produced each event. `/parliament-metrics` uses two sources, in order:
+
+1. The `effort` attribute on `cost.usage` / `token.usage` / `api_request` / `api_error`
+   OTel spans (v2.1.117).
+2. The `effort.level` field in the status-line JSON event (v2.1.119).
+
+When `${CLAUDE_EFFORT}` is set in the running session (v2.1.120), it is used as the
+default for any newly emitted events that do not yet carry an explicit attribute. This
+means `/parliament-metrics --by-effort` works uniformly across event ages without
+requiring users to pass `--mode` flags. Older events without effort data fall under
+`unknown` and are reported separately so partial historical data does not skew the
+breakdown.
 
 ## Panels
 
@@ -114,7 +132,7 @@ Rolling comparisons against the previous equal-length window.
 ## Process
 
 1. Call `/telemetry-query --json` with the specified window for each required event type.
-2. Aggregate per panel.
+2. Aggregate per panel. When `--by-effort` is set, partition each row by effort tier using the attribution rules above.
 3. Fetch previous-window figures for trend deltas.
 4. Render markdown tables (or JSON if `--json`).
 
