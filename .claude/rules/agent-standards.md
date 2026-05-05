@@ -136,6 +136,8 @@ Parliament maintains two distinct storage locations:
 
 These are separate concerns. Never mix machine-generated telemetry with user-curated documents.
 
+> **`claude project purge` interaction (v2.1.126+)**: `claude project purge` clears Claude-managed plugin state, which includes `${CLAUDE_PLUGIN_DATA}/chaos-parliament-of-chaos/` (telemetry — plugin-owned and disposable, safe to wipe). `.project-files/` lives in the user's project tree and is not part of Claude-managed state, so it is not touched by current `purge` behaviour. Parliament's two-location split reflects this intended separation; preservation of `.project-files/` is a property of `purge`'s scope, not a Parliament-side guarantee.
+
 Hook scripts use a shared helper (`src/hooks/_common.sh`) that resolves the data directory with a fallback for older Claude Code versions where `CLAUDE_PLUGIN_DATA` is not set:
 
 ```bash

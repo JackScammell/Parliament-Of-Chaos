@@ -30,3 +30,7 @@ Orchestrate specialists + grumpy reviewers for complex tasks. Iterate until all 
 - Areas council focused on
 - Final solution (code/recommendations)
 - Trade-offs and caveats considered
+
+## Notes
+
+- Parallel fan-out to specialists and reviewers is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers.

@@ -5,6 +5,27 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2026-05-05
+
+### Added — Claude Code Feature Adoption v2.1.124–v2.1.128 (Priority 2)
+
+Implements the two Priority 2 items from the 2026-05-05 `/changelog-review` deliberation. Closes the fan-out reliability and `claude project purge` documentation gaps queued from the Priority 1 release earlier today (v1.16.0).
+
+- **Fan-out reliability note (v2.1.128)** — New `## Notes` sections in `commands/parliament-review.md` and `commands/summon-council.md` documenting that parallel fan-out to specialists and reviewers is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers. One bullet per file, version-tagged for future correlation.
+- **`claude project purge` interaction note (v2.1.126)** — New blockquote callout in the `## Plugin State Storage` section of `.claude/rules/agent-standards.md` documenting that `claude project purge` clears Claude-managed plugin state (`${CLAUDE_PLUGIN_DATA}/chaos-parliament-of-chaos/` — telemetry, disposable) but does not touch `.project-files/` (user-curated planning artifacts, lives in the project tree outside Claude-managed state). Wording explicitly attributes preservation to `purge`'s scope rather than a Parliament-side guarantee — caught by the architecture-skeptic in Round 1 review as an overclaim that would have planted a false sense of security if `purge` scope ever expands.
+
+### Changed
+
+- **`commands/parliament-review.md`** — New `## Notes` section appended.
+- **`commands/summon-council.md`** — New `## Notes` section appended.
+- **`.claude/rules/agent-standards.md`** — New `claude project purge` interaction blockquote in the Plugin State Storage section.
+
+### Notes
+
+- Documentation-only release. No new commands, agents, hooks, or settings.json changes. Three existing surfaces extended with version-tagged notes.
+- Closes the deferred queue from the 2026-05-05 `/changelog-review`. The two deferred-docs items from the 2026-04-29 review (hooks invoking MCP tools, agent-typed hooks bug-fix) remain queued — status unchanged.
+- The Item 4 wording is intentionally cautious: "preservation of `.project-files/` is a property of `purge`'s scope, not a Parliament-side guarantee." If a future Claude Code release expands `purge` scope, this callout will need revision — flag for re-check on the next `/changelog-review` cycle.
+
 ## [1.16.0] - 2026-05-05
 
 ### Added — Claude Code Feature Adoption v2.1.124–v2.1.128 (Priority 1)

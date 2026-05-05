@@ -47,3 +47,7 @@ Notable disagreements or trade-offs between reviewers.
 
 ### Deferred
 Out-of-scope recommendations logged for future work.
+
+## Notes
+
+- Parallel fan-out across the 9 reviewers is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers.
