@@ -12,7 +12,7 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 ## Usage
 
 ```
-/parliament-metrics [--window <duration>] [--focus cost|latency|slo|trend|all] [--json] [--strict-duration] [--by-effort]
+/parliament-metrics [--window <duration>] [--focus cost|latency|slo|trend|all] [--json] [--strict-duration] [--by-effort] [--by-trigger]
 ```
 
 **Examples**:
@@ -22,6 +22,8 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 /parliament-metrics --focus cost            # Cost panel only
 /parliament-metrics --focus slo --json      # Monitor health in JSON
 /parliament-metrics --focus cost --by-effort # Cost panel split by effort tier
+/parliament-metrics --focus cost --by-trigger # Cost panel split by invocation trigger
+/parliament-metrics --by-effort --by-trigger  # Two-dimensional split (effort × trigger)
 ```
 
 ## Options
@@ -31,6 +33,7 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 - `--json`: Machine-readable output — consumed by `/parliament-webhook` and external dashboards.
 - `--strict-duration`: Latency panel uses only the `duration_ms` field captured by `PostToolUse` / `PostToolUseFailure` hooks. Rows without a captured value are dropped rather than inferred from event-pair timestamps. Recommended when comparing across recent windows where the hook was definitely wired.
 - `--by-effort`: Group cost and latency panels by effort tier (`low` / `medium` / `high` / `xhigh`). Tier is sourced from the OTel `effort` attribute on `cost.usage` / `token.usage` / `api_request` / `api_error` events (Claude Code v2.1.117+) and from the status-line `effort.level` field (v2.1.119+). When neither is present, the row is grouped under `unknown`.
+- `--by-trigger`: Group cost and latency panels by invocation trigger (`user-slash` / `claude-proactive` / `nested-skill`). Trigger is sourced from the `invocation_trigger` attribute on `claude_code.skill_activated` OTel events (Claude Code v2.1.126+); on older versions a heuristic fallback derives it from event ordering. Rows that resolve to neither source are grouped under `unknown`. Composable with `--by-effort` — passing both flags produces a two-dimensional split.
 
 ## Effort attribution (Claude Code v2.1.117+)
 
@@ -47,6 +50,29 @@ means `/parliament-metrics --by-effort` works uniformly across event ages withou
 requiring users to pass `--mode` flags. Older events without effort data fall under
 `unknown` and are reported separately so partial historical data does not skew the
 breakdown.
+
+## Trigger attribution (Claude Code v2.1.126+)
+
+Telemetry written under Claude Code v2.1.126 and later carries the invocation trigger
+of the skill or command that produced each event. `/parliament-metrics` uses two
+sources, in order:
+
+1. The `invocation_trigger` attribute on `claude_code.skill_activated` OTel events
+   (v2.1.126). Authoritative when present; values are `user-slash`,
+   `claude-proactive`, or `nested-skill`.
+2. A heuristic fallback for events emitted on Claude Code < v2.1.126, derived from
+   event ordering: a `skill_activated` event immediately following a user message is
+   attributed to `user-slash`; one emitted while another skill is already active is
+   attributed to `nested-skill`; otherwise the event is attributed to
+   `claude-proactive`.
+
+The heuristic is best-effort, not authoritative — it can misclassify cases where the
+event stream is interleaved (e.g. parallel skill activations, or a user message that
+arrives mid-skill). Rows where neither the attribute nor the heuristic resolves a
+trigger fall under `unknown` and are reported separately so partial historical data
+does not skew the breakdown. When comparing trigger mix across windows that span the
+v2.1.126 boundary, prefer windows that fall entirely on one side, or filter to the
+authoritative source by checking the `source` column where surfaced.
 
 ## Panels
 
@@ -132,7 +158,7 @@ Rolling comparisons against the previous equal-length window.
 ## Process
 
 1. Call `/telemetry-query --json` with the specified window for each required event type.
-2. Aggregate per panel. When `--by-effort` is set, partition each row by effort tier using the attribution rules above.
+2. Aggregate per panel. When `--by-effort` is set, partition each row by effort tier using the attribution rules above; when `--by-trigger` is set, partition each row by invocation trigger using the trigger-attribution rules. When both flags are set, the partitions compose into a two-dimensional split (effort tier × trigger).
 3. Fetch previous-window figures for trend deltas.
 4. Render markdown tables (or JSON if `--json`).
 

@@ -5,6 +5,26 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2026-05-05
+
+### Added — Claude Code Feature Adoption v2.1.124–v2.1.128 (Priority 1)
+
+Implements the two Priority 1 items from the 2026-05-05 `/changelog-review` deliberation (5/5 APPROVE, fast mode). Closes the trigger-attribution and worktree-isolation-baseline gaps opened by upstream Claude Code v2.1.126 and v2.1.128.
+
+- **`/parliament-metrics --by-trigger` partition (v2.1.126)** — Cost and latency panels can now be split by invocation trigger (`user-slash` / `claude-proactive` / `nested-skill`). Attribution sources, in priority order: `invocation_trigger` attribute on `claude_code.skill_activated` OTel events (authoritative, v2.1.126+); heuristic fallback derived from event ordering on older Claude Code versions (best-effort — explicitly documented as non-authoritative, with named failure modes for interleaved or parallel activations). Rows that resolve to neither source fall under `unknown` and are reported separately so partial historical data does not skew the breakdown. Composable with `--by-effort` — passing both flags produces a two-dimensional split (effort tier × trigger).
+- **`agent-standards.md` worktree branching baseline (v2.1.128)** — New blockquote callout in the Isolation section documenting the v2.1.128 silent-data-loss fix: on Claude Code < v2.1.128, `EnterWorktree` branched from the remote tracking head, so unpushed local commits on a feature branch could be silently dropped when an `isolation: worktree` specialist was spawned. v2.1.128 fixes this by branching from local HEAD. Recommends v2.1.128 as the minimum safe version for any workflow that spawns worktree-isolated specialists from a local feature branch with unpushed work — scoped to the actual risk surface, not a blanket upgrade demand.
+
+### Changed
+
+- **`commands/parliament-metrics.md`** — New `--by-trigger` flag, "Trigger attribution (Claude Code v2.1.126+)" section mirroring the existing "Effort attribution" section, updated Usage / Examples / Options / Process step 2 to cover the new flag and its composition with `--by-effort`.
+- **`.claude/rules/agent-standards.md`** — New v2.1.128 worktree branching baseline blockquote in the Isolation section, matching the v2.1.101 MCP-inheritance callout style.
+
+### Notes
+
+- Documentation-only release. No new commands, agents, hooks, or settings.json changes. Two existing surfaces extended.
+- Priority 2 items from the 2026-05-05 review (one-line reliability note in `parliament-review.md` / `summon-council.md`, and the `claude project purge` interaction note in `agent-standards.md`) are queued for v1.17.0 per the deliberation.
+- The `--by-trigger` heuristic fallback for pre-v2.1.126 telemetry is intentionally documented as best-effort with named failure modes rather than presented as authoritative — users who need authoritative trigger attribution must run on Claude Code v2.1.126+ for the windows they care about.
+
 ## [1.15.0] - 2026-04-29
 
 ### Added — Claude Code Feature Adoption v2.1.113–v2.1.123 (Priority 2)

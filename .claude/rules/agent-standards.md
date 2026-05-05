@@ -59,6 +59,8 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 | `isolation: worktree` | Present | Implementation specialists | Work in isolated git branches without conflicts |
 | Not present | — | Read-only agents, orchestrators | No isolation needed for analysis/coordination |
 
+> **Worktree branching baseline (v2.1.128)**: On Claude Code < v2.1.128, `EnterWorktree` branched from the remote tracking head, so unpushed local commits on a feature branch could be silently dropped when an `isolation: worktree` specialist was spawned. v2.1.128 fixes this by branching from local HEAD. Treat v2.1.128 as the minimum safe version for any workflow that spawns worktree-isolated specialists from a local feature branch with unpushed work.
+
 ## Background Execution
 
 | Field | Agents | Purpose |
