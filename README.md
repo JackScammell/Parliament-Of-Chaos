@@ -58,7 +58,7 @@ All 64 commands are declared in [`commands/manifest.yaml`](commands/manifest.yam
 
 | Command | Description |
 |---------|-------------|
-| `/summon-council [task]` | Orchestrate specialists + grumpy review cycle for complex tasks |
+| `/summon-council [plan\|implement] [task]` | Two-mode orchestrator — `plan` writes a spec to `.project-files/plans/`, `implement` runs full specialist + 9-grump cycle. Always opens with an `Explore` inventory pass so the council extends existing capabilities rather than creating duplicates |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
 | `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
 | `/parliament-review` | Full review using all 12 grumpy reviewers for maximum scrutiny |
@@ -251,13 +251,20 @@ All 64 commands are declared in [`commands/manifest.yaml`](commands/manifest.yam
 
 ### The Council Workflow
 
-When you invoke `/summon-council`:
+`/summon-council` runs in one of two modes:
 
-1. **Analyse** - The Senior Council identifies which domains your task requires
-2. **Dispatch** - Appropriate specialists are selected and consulted
-3. **Review** - All outputs pass through the grumpy reviewer panel
-4. **Iterate** - Feedback routes back to specialists until all reviewers approve. Conflicts resolved via priority (security > correctness > maintainability > performance)
-5. **Synthesise** - Final solution is delivered with documented trade-offs
+- **`plan` mode** — produces a written plan at `.project-files/plans/<slug>.md`. No code edits. Uses a planning-specialist subset and a plan-shaped reviewer subset (architecture, maintainability, security, performance, with budget/privacy/testing added when the topic warrants).
+- **`implement` mode** — coordinates specialists and the full 9-grump panel to ship working code.
+
+If the mode is not given and cannot be inferred from the topic, the council asks before doing any work. Pure review requests (no fix loop) are redirected to `/parliament-review`.
+
+Both modes follow the same five steps:
+
+1. **Inventory** — the council dispatches the `Explore` agent to find existing helpers, utilities, services, modules, and tests related to the topic. Default rule: **extend existing capabilities; only create new ones when a specialist gives a concrete reason.** The inventory is shared with every specialist spawned.
+2. **Analyse** — the Senior Council restates the goal and identifies which domains the task requires.
+3. **Dispatch** — appropriate specialists are selected and consulted, referencing the inventory.
+4. **Review** — outputs pass through the relevant reviewer subset (plan-shaped for `plan` mode, all 9 grumps for `implement` mode).
+5. **Iterate & synthesise** — feedback routes back to specialists until reviewers approve or trade-offs are documented. Conflicts resolved via priority (security > correctness > maintainability > performance > convenience).
 
 ### The Onboarding Workflow
 
@@ -368,6 +375,8 @@ Parliament of Chaos creates and manages files in `.project-files/`:
       Spec.md             # Detailed specification
       tasks.md            # Actionable task list
       work_complete.md    # Completion record
+  plans/
+    <slug>.md             # Ad-hoc plan written by `/summon-council plan` (created lazily)
 ```
 
 ---

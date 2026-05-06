@@ -94,6 +94,7 @@ commands:
     skill_surface: true
     effort: high
     category: agent-invocation
+    notes: Two-mode orchestrator (plan / implement). Plan mode writes to .project-files/plans/. Step 1 inventory pass via Explore prevents duplicate-helper creation. Review-only requests are redirected to /parliament-review.
   - name: summon-specialist
     status: active
     owner: senior-council

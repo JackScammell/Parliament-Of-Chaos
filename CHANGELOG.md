@@ -5,6 +5,34 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2026-05-06
+
+### Added — Two-mode `/summon-council` with mandatory inventory step
+
+Reshapes `/summon-council` into a two-mode orchestrator (`plan` / `implement`) and adds a mandatory codebase inventory step so the council never proposes a helper, module, or service the project already has.
+
+- **`/summon-council plan <topic>`** — produces a written plan artifact at `.project-files/plans/<slug>.md` without editing code. Uses a planning-specialist subset (`system-architect`, `security-knight`, `data-warlock`, `api-keeper`, plus domain agents) and a plan-shaped reviewer subset (`grumpy-architecture-skeptic`, `grumpy-maintainability-curmudgeon`, `grumpy-security-nag`, `grumpy-performance-troll`, with `grumpy-budget-hawk` / `grumpy-privacy-paranoid` / `grumpy-testing-tyrant` added when the topic warrants). Plan artifact structure: Goal, Existing Capabilities Found, Reuse Decision, Options Considered, Recommended Approach, Risks & Trade-offs, Suggested Task Breakdown, Open Questions.
+- **`/summon-council implement <topic>`** — preserves the prior full-9-grump iteration to ship working code, now with the inventory pass and extend-don't-create default applied.
+- **Mode disambiguation** — when the mode cannot be inferred unambiguously from the topic, the council asks the user before doing any work. Pure review requests (no fix loop) are redirected to `/parliament-review`.
+- **Inventory pass (Step 1, both modes)** — before any specialist work, the council dispatches the `Explore` agent to grep for related helpers, utilities, services, modules, and tests. Captures path + one-line summary + caller count for each plausible match. The inventory is shared with every specialist spawned. **Default rule: extend existing capabilities; only create new ones when the specialist provides a concrete reason** (incompatible API, separate concern, etc.). Reuse decision is documented in the output.
+- **When-NOT-to-use table** — `/summon-council` documentation now points users at `/plan-project`, `/roadmap-add-item`, `/roadmap-item-scope`, `/implement-task-list`, `/parliament-review`, `/summon-grumpy-reviewer`, and `/summon-specialist` for cases that have purpose-built commands.
+
+### Changed
+
+- **`agents/senior-council.md`** — New `## Modes` section, updated `## Responsibilities` (Discovery step, mode-partitioned Agent Selection and Review Management, plan-artifact spec, synthesis includes inventory summary), updated `## Output` (now 6 fields including Mode and Inventory Summary).
+- **`commands/summon-council.md`** — Description updated to "Orchestrate specialists and grumpy reviewers for ad-hoc planning or implementation". New "Mode selection", "When NOT to use", "Step 1 — Inventory", and mode-specific Process subsections. Output section split per mode.
+- **`commands/manifest.yaml`** — `summon-council` entry now carries a `notes:` field describing the two-mode behaviour, plan-artifact location, inventory pass, and review-redirect.
+- **`.claude-plugin/plugin.json`**, **`.claude-plugin/marketplace.json`** — version bumped to 1.18.0.
+- **`README.md`**, **`docs/usage.md`** — `/summon-council` entries updated to describe the two-mode behaviour and inventory pass.
+
+### Notes
+
+- Documentation + behaviour-spec release. No new commands, no new agents, no settings.json changes, no hook changes.
+- Inventory pass uses the existing `Explore` agent (read-only, fast, does not pollute the main context window). No new tooling required.
+- The `.project-files/plans/` directory is created lazily by `senior-council` on first plan-mode invocation. Plan files use kebab-case slugs derived from the topic.
+- Plan-mode reviewer subset is a deliberate subset of the full 9-grump panel — accessibility, code-quality, standards, documentation, and testing reviews are not meaningful before any code exists. They re-enter via `/implement-task-list` or `/summon-council implement` when the plan becomes code.
+- Mode-disambiguation behaviour is "ask, never silently default" — this is the correctness > convenience priority applied at the entry point.
+
 ## [1.17.0] - 2026-05-05
 
 ### Added — Claude Code Feature Adoption v2.1.124–v2.1.128 (Priority 2)

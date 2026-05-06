@@ -13,7 +13,7 @@ This guide explains how to use Parliament of Chaos commands effectively. Parliam
 | `/roadmap-add-item` | Add items to existing roadmap | Extending scope without re-planning |
 | `/roadmap-item-scope` | Create specs and tasks for an item | Breaking down work before implementation |
 | `/implement-task-list` | Execute tasks systematically | Safe, tracked implementation |
-| `/summon-council` | Full multi-agent orchestration | Complex tasks, architectural decisions |
+| `/summon-council [plan\|implement]` | Two-mode orchestration — plan (writes spec to `.project-files/plans/`) or implement (full 9-grump cycle) | Complex tasks, architectural decisions, ad-hoc planning |
 | `/summon-grumpy-reviewer` | Quick critical code review | Code review, PR feedback, refactoring |
 | `/parliament-review` | Full review with all 12 grumpy reviewers | Maximum scrutiny on critical code |
 | `/summon-specialist <agent>` | Invoke a specific specialist | Focused domain analysis |
@@ -517,31 +517,85 @@ Creates completion record:
 
 ### /summon-council
 
-The Senior Council orchestrates multiple specialist agents and grumpy reviewers to tackle complex tasks.
+The Senior Council orchestrates specialist agents and grumpy reviewers in one of two modes:
+
+- **`plan` mode** — produces a written plan at `.project-files/plans/<slug>.md`. No code edits.
+- **`implement` mode** — coordinates specialists and the full 9-grump panel to ship working code.
+
+#### Mode Selection
+
+- Explicit: `/summon-council plan <topic>` or `/summon-council implement <topic>`.
+- Implicit: if no mode is given, the council infers from the topic. **If inference is ambiguous, the council asks you which mode you want before doing any work.** It never silently defaults.
+- For pure review (no fix loop), use `/parliament-review` instead — the council will redirect you.
 
 #### When to Use
 
-- Designing new features or systems
-- Refactoring complex code
-- Making architectural decisions
-- Tasks spanning multiple domains (backend, security, testing, etc.)
-- When you want thorough, multi-perspective review
+- **`plan` mode**: scoping ad-hoc work that does not fit the roadmap state machine, exploring options for a design decision, producing a spec before kicking off implementation.
+- **`implement` mode**: shipping a feature that spans multiple domains, refactoring complex code, making architectural changes that need multi-perspective review.
+
+#### When NOT to Use
+
+| Situation | Use this instead |
+|---|---|
+| Greenfield project planning Q&A | `/plan-project` |
+| Adding or scoping a single roadmap item | `/roadmap-add-item`, `/roadmap-item-scope` |
+| Implementing a roadmap item with a `tasks.md` | `/implement-task-list <item>` |
+| Critique only, no fix loop | `/parliament-review` |
+| Single-domain critique or fix | `/summon-grumpy-reviewer`, `/summon-specialist` |
 
 #### How It Works
 
-1. **Task Analysis** - The council restates your goal and identifies relevant domains
-2. **Agent Selection** - Appropriate specialists are chosen based on the task
-3. **Specialist Work** - Each agent contributes from their domain expertise
-4. **Grumpy Review** - All outputs go through the panel of critical reviewers
-5. **Iteration** - Feedback is routed back to specialists until reviewers approve
-6. **Synthesis** - Final solution is presented with trade-offs documented
+Both modes follow the same five steps. Step 1 (inventory) is mandatory in both modes.
+
+1. **Inventory** — the council dispatches the `Explore` agent to grep for existing helpers, utilities, services, modules, and tests related to your topic. For each plausible match it captures path + one-line summary + caller count. **Default rule: extend existing capabilities; only create new ones when the specialist gives a concrete reason.** The inventory is shared with every specialist spawned.
+2. **Task Analysis** — the council restates your goal and identifies relevant domains.
+3. **Specialist Work** — each agent contributes from their domain expertise, referencing the inventory.
+4. **Review** — outputs go through the relevant reviewer subset:
+   - **`plan` mode**: `grumpy-architecture-skeptic`, `grumpy-maintainability-curmudgeon`, `grumpy-security-nag`, `grumpy-performance-troll`. Add `grumpy-budget-hawk` for infra-heavy plans, `grumpy-privacy-paranoid` for PII-touching plans, `grumpy-testing-tyrant` when a test strategy is part of the plan.
+   - **`implement` mode**: all 9 grumps (code-reviewer, standards-enforcer, architecture-skeptic, maintainability-curmudgeon, security-nag, performance-troll, accessibility-auditor, documentation-pedant, testing-tyrant).
+5. **Iteration & Synthesis** — feedback routes back to specialists until reviewers approve. Conflicts resolved via priority: **security > correctness > maintainability > performance > convenience**. Out-of-scope recommendations are logged to a "Deferred" section rather than blocking approval.
+
+#### Plan Artifact (plan mode only)
+
+`/summon-council plan <topic>` writes the final plan to `.project-files/plans/<slug>.md` (creating the directory if missing). The slug is a kebab-case derivation of the topic.
+
+Plan structure:
+
+```markdown
+# <Topic>
+
+## Goal
+<one paragraph>
+
+## Existing Capabilities Found
+<from Step 1 inventory>
+
+## Reuse Decision
+<from Step 1 inventory>
+
+## Options Considered
+- Option A — pros / cons
+- Option B — pros / cons
+
+## Recommended Approach
+<one paragraph + rationale>
+
+## Risks & Trade-offs
+<bulleted>
+
+## Suggested Task Breakdown
+1. …
+
+## Open Questions
+<bulleted, if any>
+```
 
 #### Example Usage
 
 ```
-/summon-council
+/summon-council implement
 
-Design an authentication system for our Laravel API. It needs to support:
+Design and build an authentication system for our Laravel API. It needs to support:
 - JWT tokens for mobile clients
 - Session-based auth for the web app
 - Role-based access control
@@ -553,16 +607,31 @@ The council will engage:
 - **backend-goblin** for performance of auth checks
 - **api-keeper** for token handling and API contracts
 - **system-architect** for overall design
-- **grumpy-security-nag** and others for critical review
+- All 9 grumpy reviewers for critical review
+
+```
+/summon-council plan
+
+Evaluate options for adding multi-tenant data isolation to the existing API.
+```
+
+Returns a plan written to `.project-files/plans/multi-tenant-data-isolation.md`. No code edits.
 
 #### Response Structure
 
-The council returns:
+**`plan` mode** returns:
+1. Path to the written plan artifact (`.project-files/plans/<slug>.md`)
+2. Inventory summary
+3. Recommended approach + key trade-offs
+4. Suggested next command (`/roadmap-add-item`, `/implement-task-list`, `/summon-council implement`, etc.)
 
-1. **Agents Consulted** - Which specialists were involved and why
-2. **Grump Review Summary** - Issues raised and fixes applied per iteration
-3. **Final Solution** - The approved code, design, or recommendation
-4. **Notes and Trade-offs** - Important context and decisions made
+**`implement` mode** returns:
+1. Mode (`implement`)
+2. Agents Consulted — which specialists were involved and why
+3. Inventory Summary — existing capabilities found + reuse decision
+4. Grump Review Summary — issues raised and fixes applied per iteration
+5. Final Solution — approved code/design
+6. Notes and Trade-offs — including a Deferred section for out-of-scope items
 
 #### Conflict Resolution
 
@@ -575,20 +644,10 @@ Example conflict:
 - **grumpy-performance-troll**: "Validation adds 5ms latency per request"
 - **Resolution**: Security wins. Validation stays. Trade-off documented.
 
-Out-of-scope recommendations (e.g., documentation requests on a hotfix) are logged to a "Deferred" section for future work rather than blocking approval.
+#### Notes
 
-#### Optional: Enable Logging
-
-Add `scribe: on` to your request to save the deliberation process:
-
-```
-/summon-council
-scribe: on
-
-Refactor the payment processing module for better testability.
-```
-
-Logs are saved to `.chaos/{task-name}-{timestamp}.md`.
+- Parallel fan-out to specialists and reviewers is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers.
+- The inventory pass uses the `Explore` agent (read-only). It is fast and does not pollute the main context window.
 
 ---
 
@@ -1011,7 +1070,8 @@ Review for security issues only.
 | Breaking down a feature | `/roadmap-item-scope` |
 | Implementing with safety | `/implement-task-list` |
 | Checking progress | `/project-status` |
-| Complex design decisions | `/summon-council` |
+| Ad-hoc planning/spec without code edits | `/summon-council plan` |
+| Complex design decisions with implementation | `/summon-council implement` |
 | Code review | `/summon-grumpy-reviewer` |
 | Maximum scrutiny | `/parliament-review` |
 | Technical debate | `/debate-topic` |
