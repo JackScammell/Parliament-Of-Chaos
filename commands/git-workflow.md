@@ -59,3 +59,4 @@ Assist with complex git operations that developers frequently struggle with: mer
 - `resolve-conflicts` reads both sides and commit history to understand intent — not just picking "ours" or "theirs"
 - `branch-cleanup` always confirms before any deletion
 - `bisect` requires a test command that exits 0 for pass and non-zero for fail
+- For preparing a commit + push (drafted message + push-safety audit + copy-paste command block, **not auto-executed**), see `/commit-and-push`.

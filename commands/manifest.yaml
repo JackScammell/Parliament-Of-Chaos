@@ -142,6 +142,13 @@ commands:
     skill_surface: true
     effort: medium
     category: developer-workflow
+  - name: commit-and-push
+    status: active
+    owner: pipeline-engineer
+    skill_surface: true
+    effort: medium
+    category: developer-workflow
+    notes: Guided commit + push helper. Drafts the message, runs pre-flight checks, audits push safety, and emits the exact git commands as a copy-paste block. NEVER executes `git commit`, `git push`, `git tag`, or any other state-changing git command — those are explicit developer actions. Refuses to render push lines for protected branches without --allow-protected and never renders force pushes.
   - name: format-code
     status: active
     owner: refactor-ranger

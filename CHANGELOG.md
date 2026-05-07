@@ -5,6 +5,30 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0] - 2026-05-07
+
+### Added — `/commit-and-push` guided commit helper (developer-executed)
+
+Adds a new advisory command that drafts the commit, runs pre-flight checks, audits push safety, and emits the exact git commands as a copy-paste block. **The command never executes `git commit`, `git push`, `git tag`, or any other state-changing git operation** — those are explicit developer actions, by design.
+
+- **`/commit-and-push`** — read-only inspection of the working tree + staged/unstaged diff, drafted Conventional-Commit-style message (overridable via `--message`/`--scope`/`--type`), pre-flight delegation to `/pre-commit-check` (skippable via `--skip-checks`) and non-skippable secret scan via `/security-scan`, push-safety audit (protected branch detection, upstream divergence, first-push detection), and a "RUN THESE YOURSELF" output block with the copy-paste-ready `git add` / `git commit` / `git push` lines. Force pushes are never rendered. Pushes to `main` / `master` / `release/*` / `production/*` require explicit `--allow-protected`.
+- **Triple-statement of the no-mutation rule** — frontmatter blockquote, top-of-process line, and output-block banner all repeat that the command does not execute git mutations. Refusal output examples cover detached-HEAD and mid-merge states.
+- **`commands/manifest.yaml`** — registered under `developer-workflow` (`owner: pipeline-engineer`, `effort: medium`, `skill_surface: true`) with a `notes:` field encoding the no-mutating-git-ops constraint.
+- **`commands/git-workflow.md`**, **`commands/pre-commit-check.md`** — cross-reference pointers to `/commit-and-push` added.
+
+### Changed
+
+- **`README.md`** — Developer Workflow table gains the `/commit-and-push` row; command count updated 64 → 66 (also resolves the prior 64/65 drift between the two count references).
+- **`docs/usage.md`** — Quick-reference Developer-workflow table gains the `/commit-and-push` row; command count updated 65 → 66.
+- **`commands/list-commands.md`** — Developer Workflow category updated (12 → 13 commands; `commit-and-push` inserted alphabetically after `pre-commit-check`).
+- **`.claude-plugin/plugin.json`**, **`.claude-plugin/marketplace.json`** — version bumped to 1.20.0.
+
+### Notes
+
+- New command, no new agents, no settings.json changes, no hook changes.
+- Hard constraint: the user explicitly required that committing and pushing remain developer-executed actions. The command is purely advisory — it draft, audits, and shows the commands; the developer runs them.
+- Deliberate non-goals: no auto-staging, no confirmation-gated commit, no `Bash(git commit:*)` invocation. A PreToolUse hook to hard-block `git commit` / `git push` from any agent (belt-and-braces defence layered on top of the textual constraint) is logged as a future improvement in the command's "Future Improvements" section.
+
 ## [1.19.0] - 2026-05-07
 
 ### Added — `/ask-council` Q&A command

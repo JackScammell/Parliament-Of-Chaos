@@ -20,7 +20,7 @@ Display all Parliament of Chaos slash commands grouped by category.
 - **Project Planning**: plan-project, project-status, roadmap-add-item, roadmap-item-scope, implement-task-list
 - **Agent Invocation**: ask-council, summon-council, summon-specialist, summon-grumpy-reviewer, parliament-review
 - **Deliberation**: debate-topic, debate-analytics
-- **Developer Workflow**: pre-commit-check, format-code, lint-fix, run-tests, security-scan, clean-imports, update-dependencies, dead-code-sweep, update-docs, analyse-queries, git-workflow, scaffold
+- **Developer Workflow**: pre-commit-check, commit-and-push, format-code, lint-fix, run-tests, security-scan, clean-imports, update-dependencies, dead-code-sweep, update-docs, analyse-queries, git-workflow, scaffold
 - **Operations**: parliament-optimize, parliament-webhook, parliament-loop, parliament-monitor, changelog-review, incident, infra-review, retro
 - **Codebase Analysis**: onboard-codebase
 - **Discovery**: list-agents, explain-agent, list-commands, version, readme, changelog
@@ -41,7 +41,7 @@ Display all Parliament of Chaos slash commands grouped by category.
 ## Deliberation (2)
 | Command | Description |
 
-## Developer Workflow (12)
+## Developer Workflow (13)
 | Command | Description |
 
 ## Operations (8)

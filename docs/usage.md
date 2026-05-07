@@ -1,6 +1,6 @@
 # Usage Guide
 
-This guide explains how to use Parliament of Chaos commands effectively. Parliament ships 65 slash commands across 15 categories; the authoritative registry is [`commands/manifest.yaml`](../commands/manifest.yaml). For the full command table with one-line descriptions, see the [README](../README.md#commands).
+This guide explains how to use Parliament of Chaos commands effectively. Parliament ships 66 slash commands across 15 categories; the authoritative registry is [`commands/manifest.yaml`](../commands/manifest.yaml). For the full command table with one-line descriptions, see the [README](../README.md#commands).
 
 ## Commands Overview
 
@@ -28,6 +28,7 @@ This guide explains how to use Parliament of Chaos commands effectively. Parliam
 | Command | Purpose | Best For |
 |---------|---------|----------|
 | `/pre-commit-check` | Run all CI checks locally | Ensuring CI passes before pushing |
+| `/commit-and-push` | Drafted commit message + push safety audit + copy-paste git block | Guided commits where the developer keeps control of `git commit`/`git push` |
 | `/format-code` | Auto-detect and run formatter | Formatting code before commit |
 | `/lint-fix` | Auto-detect and run linter with fix | Fixing lint errors across changed files |
 | `/run-tests` | Auto-detect and run test suite | Running tests with smart options |
@@ -81,7 +82,7 @@ This guide explains how to use Parliament of Chaos commands effectively. Parliam
 | `/agent-usage-stats` | Per-agent usage dashboard | Identifying workhorses and retirement candidates |
 | `/parliament-doctor` | Manifest reconciliation | Detecting orphans, ghosts, hidden skills, driverless agents |
 | `/list-agents` | Show all 33 agents by category | Discovering available agents |
-| `/list-commands` | Show all 64 commands by category | Discovering available commands |
+| `/list-commands` | Show all 66 commands by category | Discovering available commands |
 | `/explain-agent <agent>` | Detailed agent explanation | Understanding agent capabilities |
 | `/version` | Plugin version and metadata | Checking installed version |
 | `/readme` | Display full README | Quick reference in session |

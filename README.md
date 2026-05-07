@@ -12,7 +12,7 @@ Parliament of Chaos transforms Claude Code into a multi-agent development team. 
 
 - **33 Agents** including specialists, planners, reviewers, and orchestrators
 - **12 Grumpy Reviewers** who find flaws others miss (security, quality, privacy, i18n, cost, and more)
-- **64 Slash Commands** across 15 categories: project planning, code review, deliberation, developer workflow, hygiene, quality, release, observability, decisions, lifecycle, and operations
+- **66 Slash Commands** across 15 categories: project planning, code review, deliberation, developer workflow, hygiene, quality, release, observability, decisions, lifecycle, and operations
 - **`commands/manifest.yaml`** — declarative registry that acts as the source of truth for every command, reconciled by `/parliament-doctor`
 
 The result: thoroughly planned projects, battle-tested code, and solutions that have survived scrutiny from multiple perspectives.
@@ -52,7 +52,7 @@ claude plugin install chaos@chaos
 
 ## Commands
 
-All 65 commands are declared in [`commands/manifest.yaml`](commands/manifest.yaml), which acts as the source of truth for command name, status, owner agent, effort tier, and category. Run `/parliament-doctor` to reconcile the manifest against the filesystem and skill registry.
+All 66 commands are declared in [`commands/manifest.yaml`](commands/manifest.yaml), which acts as the source of truth for command name, status, owner agent, effort tier, and category. Run `/parliament-doctor` to reconcile the manifest against the filesystem and skill registry.
 
 ### Agent Invocation
 
@@ -87,6 +87,7 @@ All 65 commands are declared in [`commands/manifest.yaml`](commands/manifest.yam
 | Command | Description |
 |---------|-------------|
 | `/pre-commit-check` | Auto-detect and run all CI checks locally before committing |
+| `/commit-and-push` | Drafts a commit message, runs pre-flight checks, audits push safety, and emits a copy-paste git command block. **Never** executes git commit/push/tag — those are explicit developer actions |
 | `/format-code` | Auto-detect and run the project's code formatter |
 | `/lint-fix` | Auto-detect and run linter(s) with auto-fix |
 | `/run-tests [--changed] [--explain]` | Auto-detect and run the test suite with intelligent options |

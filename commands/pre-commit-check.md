@@ -80,3 +80,4 @@ Auto-detect the project's CI pipeline, linters, formatters, type checkers, and t
 - If no CI config is found, falls back to detecting tools from config files and package manager scripts
 - Secret scanning checks for common patterns: API keys, AWS credentials, private keys, connection strings, tokens
 - Use `--fix` for a one-command "make it all pass" workflow
+- Want a guided commit + push workflow on top of these checks? Run `/commit-and-push` — it invokes this command, drafts a Conventional-Commit message, audits push safety, and prints the exact git commands for the developer to run (it never executes `git commit` or `git push` itself).
