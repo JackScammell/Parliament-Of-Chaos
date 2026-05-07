@@ -113,6 +113,13 @@ commands:
     skill_surface: true
     effort: high
     category: agent-invocation
+  - name: ask-council
+    status: active
+    owner: senior-council
+    skill_surface: true
+    effort: medium
+    category: agent-invocation
+    notes: Q&A command — auto-selects 2–5 specialists, consults in parallel, synthesises a single answer surfacing consensus and disagreement. No fix loop, no artifact, no code edits. Senior Council's third operating mode beside plan/implement.
 
   # --- Deliberation ---
   - name: debate-topic

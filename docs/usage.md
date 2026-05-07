@@ -1,6 +1,6 @@
 # Usage Guide
 
-This guide explains how to use Parliament of Chaos commands effectively. Parliament ships 64 slash commands across 15 categories; the authoritative registry is [`commands/manifest.yaml`](../commands/manifest.yaml). For the full command table with one-line descriptions, see the [README](../README.md#commands).
+This guide explains how to use Parliament of Chaos commands effectively. Parliament ships 65 slash commands across 15 categories; the authoritative registry is [`commands/manifest.yaml`](../commands/manifest.yaml). For the full command table with one-line descriptions, see the [README](../README.md#commands).
 
 ## Commands Overview
 
@@ -13,6 +13,7 @@ This guide explains how to use Parliament of Chaos commands effectively. Parliam
 | `/roadmap-add-item` | Add items to existing roadmap | Extending scope without re-planning |
 | `/roadmap-item-scope` | Create specs and tasks for an item | Breaking down work before implementation |
 | `/implement-task-list` | Execute tasks systematically | Safe, tracked implementation |
+| `/ask-council <question>` | Q&A — auto-selects 2–5 specialists, consults in parallel, synthesises a single answer with consensus and disagreements surfaced | Open-ended questions, "what should we do about X", expert second opinion |
 | `/summon-council [plan\|implement]` | Two-mode orchestration — plan (writes spec to `.project-files/plans/`) or implement (full 9-grump cycle) | Complex tasks, architectural decisions, ad-hoc planning |
 | `/summon-grumpy-reviewer` | Quick critical code review | Code review, PR feedback, refactoring |
 | `/parliament-review` | Full review with all 12 grumpy reviewers | Maximum scrutiny on critical code |
@@ -514,6 +515,82 @@ Creates completion record:
 ---
 
 ## Review Commands
+
+### /ask-council
+
+Ask the Parliament a question. The Senior Council auto-selects 2–5 relevant specialists, consults them in parallel, and returns a single synthesised answer that surfaces both consensus and disagreement. There is no fix loop, no artifact, no code edits, no voting.
+
+This is the lightest of the multi-agent commands. Use it when you want expert opinions, not deliverables.
+
+#### When to Use
+
+- Open-ended technical questions ("what's the safest way to roll a JWT secret without logging users out?")
+- "What does our X do today?" questions about your own codebase
+- Cross-cutting trade-off questions where multiple domains are relevant
+- A second opinion before committing to a direction
+
+#### When NOT to Use
+
+| Situation | Use this instead |
+|---|---|
+| You want a written plan or spec produced | `/summon-council plan <topic>` |
+| You want code shipped | `/summon-council implement <topic>` |
+| You want to formally decide between options with voting | `/debate-topic <topic>` |
+| You want a single-domain expert opinion | `/summon-specialist <agent>` |
+| You want code or design critiqued | `/parliament-review` or `/summon-grumpy-reviewer` |
+| You want to know what an agent does | `/explain-agent <agent>` |
+
+If the council infers your question is really one of the above, it will redirect you rather than guess.
+
+#### How It Works
+
+1. **Classify the question** — the Senior Council decides whether this is genuinely a Q&A. Artifact, decision, critique, and single-agent requests are redirected. If ambiguous, the council asks before doing any work — it never silently defaults.
+2. **Optional inventory** — if the question references project-specific code or behaviour ("how does *our* …"), the council dispatches the `Explore` agent for a fast inventory pass and shares the relevant files with the panel. Purely conceptual questions skip the grep pass.
+3. **Panel selection** — auto-pick 2–5 specialists most relevant to the question. Default panel size is 3. Security-touching questions must include `security-knight`. Cross-cutting architecture questions should include `system-architect`. Grumpy reviewers, planning agents, and `deliberation-conductor` are not used here. If only one domain is genuinely relevant, the council redirects to `/summon-specialist` — a council of one is not a council.
+4. **Parallel consultation** — all panellists answer in parallel from their domain lens. Each returns a position, a confidence rating (H/M/L), caveats, and file pointers where useful. Single round, no rebuttals.
+5. **Synthesis** — the council leads with the consensus, surfaces genuine disagreements with attribution (not flattened into false consensus), applies the standard conflict priority (security > correctness > maintainability > performance > convenience) to break ties, and ends with a recommendation plus a suggested follow-up command if the answer implies action.
+
+#### Example Usage
+
+```
+/ask-council What's the safest way to roll a JWT secret without logging users out?
+```
+
+The council might engage `security-knight` (key rotation safety), `api-keeper` (token validation flow), and `backend-goblin` (rollout mechanics).
+
+```
+/ask-council Should we use Postgres LISTEN/NOTIFY or a dedicated queue for async jobs?
+```
+
+Likely panel: `data-warlock` (DB load characteristics), `system-architect` (coupling and durability), `resilience-tamer` (failure modes), `observability-oracle` (visibility into job state).
+
+```
+/ask-council How does our auth flow handle token refresh today?
+```
+
+Inventory pass runs because the question references the project. Likely panel: `security-knight`, `api-keeper`, plus `backend-goblin` if there is meaningful application logic.
+
+#### Response Structure
+
+1. **Question** — restated user question
+2. **Panel Consulted** — specialists chosen and a one-line justification per agent
+3. **Inventory** — files referenced, or "None — conceptual question."
+4. **Consensus** — what the panel agrees on (1–3 paragraphs)
+5. **Diverging Perspectives** — only if genuine disagreement exists; attributed by agent name with confidence (H/M/L)
+6. **Recommendation** — the council's overall steer, with the priority logic that broke any tie
+7. **Suggested Follow-up** — "no action needed" or the most relevant next command
+
+#### Cost Profile
+
+`/ask-council` runs one synthesis pass at the council's `effort: high` plus 2–5 specialists at `effort: medium`. Expect roughly 2–3× the cost of `/summon-specialist`, and well under `/summon-council implement` (which adds the full 9-grump iteration loop) or `/debate-topic` (which adds multi-round convergence and voting).
+
+#### Notes
+
+- Single pass — no rebuttals, no review loop, no artifact written to disk.
+- Parallel fan-out is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers.
+- The Senior Council's `answer` mode (this command) sits beside its `plan` and `implement` modes (`/summon-council`). It reuses the same auto-selection logic; only the output shape and process loop differ.
+
+---
 
 ### /summon-council
 

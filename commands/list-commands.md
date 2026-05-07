@@ -18,7 +18,7 @@ Display all Parliament of Chaos slash commands grouped by category.
 ## Category Reference (from manifest v1)
 
 - **Project Planning**: plan-project, project-status, roadmap-add-item, roadmap-item-scope, implement-task-list
-- **Agent Invocation**: summon-council, summon-specialist, summon-grumpy-reviewer, parliament-review
+- **Agent Invocation**: ask-council, summon-council, summon-specialist, summon-grumpy-reviewer, parliament-review
 - **Deliberation**: debate-topic, debate-analytics
 - **Developer Workflow**: pre-commit-check, format-code, lint-fix, run-tests, security-scan, clean-imports, update-dependencies, dead-code-sweep, update-docs, analyse-queries, git-workflow, scaffold
 - **Operations**: parliament-optimize, parliament-webhook, parliament-loop, parliament-monitor, changelog-review, incident, infra-review, retro
@@ -35,7 +35,7 @@ Display all Parliament of Chaos slash commands grouped by category.
 ## Project Planning (5)
 | Command | Description |
 
-## Agent Invocation (4)
+## Agent Invocation (5)
 | Command | Description |
 
 ## Deliberation (2)

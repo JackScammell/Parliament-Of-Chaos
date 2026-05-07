@@ -5,6 +5,34 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0] - 2026-05-07
+
+### Added — `/ask-council` Q&A command
+
+Adds a new entry-point command for **question-answering** against the Parliament. Sits beside `/summon-council` (artifact production) and `/debate-topic` (formal decision-making) and fills the gap for "I just want a synthesised expert answer."
+
+- **`/ask-council <question>`** — auto-selects 2–5 relevant specialists, consults them in parallel, and synthesises a single cohesive answer that surfaces both consensus and disagreement. No fix loop, no artifact, no code edits, no voting. Single-pass.
+- **Question classification (Step 1)** — before consulting any panel, the council classifies the question and redirects if it is really an artifact request (`/summon-council`), decision request (`/debate-topic`), critique request (`/parliament-review`), or single-agent request (`/summon-specialist`). Never silently defaults — asks the user when ambiguous. A council of one is not a council: questions whose only relevant domain is a single specialist are redirected.
+- **Optional inventory (Step 2)** — runs the `Explore` inventory pass only when the question references project-specific code or behaviour. Purely conceptual questions skip the grep pass to avoid paying for an unhelpful one. Always stated in the output whether inventory was run.
+- **Panel selection (Step 3)** — default size 3, expand to 4–5 only when the question genuinely spans that many domains, contract to 2 when no third domain is meaningfully relevant. Security-touching questions must include `security-knight`. Cross-cutting architecture questions should include `system-architect`. Grumpy reviewers, planning agents, and `deliberation-conductor` are excluded — they have their own driving commands.
+- **Parallel consultation (Step 4)** — single round, no rebuttals. Each specialist answers from their lens with confidence (H/M/L), caveats, and file pointers where useful.
+- **Synthesis (Step 5)** — leads with consensus, surfaces disagreements with attribution (no flattening genuine conflict into false consensus), applies the standard conflict priority (security > correctness > maintainability > performance > convenience) to break ties, and ends with a recommendation plus a suggested follow-up command if the answer implies action.
+- **`agents/senior-council.md`** — extended with a third operating mode (`answer`) beside the existing `plan` and `implement` modes. Reuses the council's existing auto-selection logic; only the output shape and process loop differ. The `## Modes`, `## Responsibilities`, and `## Output` sections all updated to partition behaviour by mode.
+
+### Changed
+
+- **`commands/manifest.yaml`** — new `ask-council` entry under the `agent-invocation` category (`effort: medium`, `owner: senior-council`, `skill_surface: true`).
+- **`agents/senior-council.md`** — `## Modes` adds the `answer` mode description; `## Responsibilities` partitions Discovery / Agent Selection / Review Management / Conflict Resolution / Synthesis by mode and clarifies that `answer` mode has no review loop and optional inventory; `## Output` now has separate sub-sections for `/summon-council` modes and `/ask-council` mode.
+- **`README.md`**, **`docs/usage.md`** — `/ask-council` documented under the Agent Invocation section with usage, when-NOT-to-use guidance, response shape, and worked examples.
+- **`.claude-plugin/plugin.json`**, **`.claude-plugin/marketplace.json`** — version bumped to 1.19.0.
+
+### Notes
+
+- New command, no new agents, no settings.json changes, no hook changes.
+- Token-cost positioning: `/ask-council` ≈ 2–3× `/summon-specialist` (one synthesis pass at council `effort: high` plus 2–5 specialists at `effort: medium`), well under `/summon-council implement` (full grump iteration loop) and `/debate-topic` (multi-round convergence).
+- The "redirect when ambiguous, never silently default" pattern from the v1.18.0 mode-disambiguation work in `/summon-council` is reused here for question-classification — same correctness > convenience priority applied at the entry point.
+- Deliberate non-goals: no rebuttal rounds (use `/debate-topic`), no critique loop (use `/parliament-review`), no artifact written to disk (use `/summon-council plan`), no code edits (use `/summon-council implement`).
+
 ## [1.18.0] - 2026-05-06
 
 ### Added — Two-mode `/summon-council` with mandatory inventory step

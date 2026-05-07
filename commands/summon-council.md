@@ -27,6 +27,7 @@ Two-mode orchestrator for ad-hoc multi-domain work that doesn't fit the roadmap 
 | Implementing a roadmap item with a `tasks.md` | `/implement-task-list <item>` |
 | Critique only, no fix loop | `/parliament-review` |
 | Single-domain critique or fix | `/summon-grumpy-reviewer`, `/summon-specialist` |
+| Open-ended question, no artifact wanted | `/ask-council <question>` |
 
 ## Process
 

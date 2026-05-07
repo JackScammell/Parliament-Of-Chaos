@@ -52,12 +52,13 @@ claude plugin install chaos@chaos
 
 ## Commands
 
-All 64 commands are declared in [`commands/manifest.yaml`](commands/manifest.yaml), which acts as the source of truth for command name, status, owner agent, effort tier, and category. Run `/parliament-doctor` to reconcile the manifest against the filesystem and skill registry.
+All 65 commands are declared in [`commands/manifest.yaml`](commands/manifest.yaml), which acts as the source of truth for command name, status, owner agent, effort tier, and category. Run `/parliament-doctor` to reconcile the manifest against the filesystem and skill registry.
 
 ### Agent Invocation
 
 | Command | Description |
 |---------|-------------|
+| `/ask-council <question>` | Ask the council a question. Auto-selects 2–5 specialists, consults them in parallel, and returns a single synthesised answer with consensus and disagreements surfaced. No fix loop, no artifact, no code edits |
 | `/summon-council [plan\|implement] [task]` | Two-mode orchestrator — `plan` writes a spec to `.project-files/plans/`, `implement` runs full specialist + 9-grump cycle. Always opens with an `Explore` inventory pass so the council extends existing capabilities rather than creating duplicates |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
 | `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
