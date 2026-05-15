@@ -176,3 +176,4 @@ The registry is editable in `${CLAUDE_PLUGIN_DATA}/cost-rates.json` under `expen
 - This command never edits the cost-rates file — use `config-curator` or hand-edit for rate changes.
 - Budget caps are per-scope soft limits. A "hard cap" variant was rejected in the toolset-gaps debate — it would break governance (convenience cannot override security or correctness work).
 - Pair with `/parliament-metrics --focus cost` for the retrospective dashboard view.
+- For the plugin's own packaged-token footprint (commands/agents/skills shipped by the plugin, distinct from per-run usage), see `claude plugin details` — Claude Code v2.1.139+ reports a token projection there. Pointer only; `/cost-report` does not read or integrate that figure.

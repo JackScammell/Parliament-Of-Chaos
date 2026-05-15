@@ -97,3 +97,4 @@ Monitors will review changes as you work. Use Ctrl+F to stop all.
 - Use `StopFailure` hook to detect and recover from API failures during monitoring
 - Ctrl+C or Ctrl+F (two-press within 3s) kills all background agents
 - Requires Claude Code v2.1.49+ for `background: true` agent support
+- **Claude Code v2.1.140+**: when a background monitor is driven on an interval via `/parliament-loop`, `/loop` no longer redundantly wakes for a self-notifying background task — the monitor's own completion signal drives cadence, not the loop tick. Size the loop interval as a staleness ceiling, not an exact polling period. See `/parliament-loop` Notes for the full behaviour.

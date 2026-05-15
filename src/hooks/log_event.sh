@@ -88,14 +88,23 @@ case "$HOOK_EVENT_NAME" in
     exit 0 ;;
 esac
 
-# Build base JSON and merge any event-specific fields
+# Build base JSON and merge any event-specific fields.
+# effort_level / agent_id are additive: omitted when their source value is
+# empty (older Claude Code, or a top-session hook for agent_id) so the
+# activity.jsonl schema stays clean. Same conditional-merge idiom as the
+# tool_use_id field above — no new control flow.
 jq -n \
   --arg event "$HOOK_EVENT_NAME" \
   --arg session "$HOOK_SESSION_ID" \
   --arg ts "$HOOK_TIMESTAMP" \
   --arg type "$EVENT_TYPE" \
+  --arg effort_level "$HOOK_EFFORT_LEVEL" \
+  --arg agent_id "$HOOK_AGENT_ID" \
   --argjson extra "$EXTRA_JSON" \
-  '{"event":$event,"session":$session,"timestamp":$ts,"type":$type} + $extra' \
+  '{"event":$event,"session":$session,"timestamp":$ts,"type":$type}
+   + (if $effort_level == "" then {} else {effort_level: $effort_level} end)
+   + (if $agent_id == "" then {} else {agent_id: $agent_id} end)
+   + $extra' \
   >> "$LOG_FILE"
 
 exit 0

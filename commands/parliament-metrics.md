@@ -32,17 +32,22 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 - `--focus <panel>`: Render only one panel. Useful in automation.
 - `--json`: Machine-readable output — consumed by `/parliament-webhook` and external dashboards.
 - `--strict-duration`: Latency panel uses only the `duration_ms` field captured by `PostToolUse` / `PostToolUseFailure` hooks. Rows without a captured value are dropped rather than inferred from event-pair timestamps. Recommended when comparing across recent windows where the hook was definitely wired.
-- `--by-effort`: Group cost and latency panels by effort tier (`low` / `medium` / `high` / `xhigh`). Tier is sourced from the OTel `effort` attribute on `cost.usage` / `token.usage` / `api_request` / `api_error` events (Claude Code v2.1.117+) and from the status-line `effort.level` field (v2.1.119+). When neither is present, the row is grouped under `unknown`.
+- `--by-effort`: Group cost and latency panels by effort tier (`low` / `medium` / `high` / `xhigh`). Tier is sourced from the OTel `effort` attribute on `cost.usage` / `token.usage` / `api_request` / `api_error` events (Claude Code v2.1.117+), the status-line `effort.level` field (v2.1.119+), and the `effort_level` field written onto hook-emitted `activity.jsonl` events by `log_event.sh` (Claude Code v2.1.133+). When none is present, the row is grouped under `unknown`.
 - `--by-trigger`: Group cost and latency panels by invocation trigger (`user-slash` / `claude-proactive` / `nested-skill`). Trigger is sourced from the `invocation_trigger` attribute on `claude_code.skill_activated` OTel events (Claude Code v2.1.126+); on older versions a heuristic fallback derives it from event ordering. Rows that resolve to neither source are grouped under `unknown`. Composable with `--by-effort` — passing both flags produces a two-dimensional split.
 
 ## Effort attribution (Claude Code v2.1.117+)
 
 Telemetry written under Claude Code v2.1.117 and later carries the effort tier of the
-session that produced each event. `/parliament-metrics` uses two sources, in order:
+session that produced each event. `/parliament-metrics` uses three sources, in order:
 
 1. The `effort` attribute on `cost.usage` / `token.usage` / `api_request` / `api_error`
    OTel spans (v2.1.117).
 2. The `effort.level` field in the status-line JSON event (v2.1.119).
+3. The `effort_level` field on hook-emitted `activity.jsonl` events. `log_event.sh`
+   reads `effort.level` from the hook payload (Claude Code v2.1.133+) and writes it
+   additively onto every event it logs, so hook-only events (e.g. `SubagentStart`,
+   `PostToolUse`) carry their own effort tier without needing a co-located OTel span
+   or status-line event. Absent on telemetry written under older Claude Code.
 
 When `${CLAUDE_EFFORT}` is set in the running session (v2.1.120), it is used as the
 default for any newly emitted events that do not yet carry an explicit attribute. This

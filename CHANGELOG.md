@@ -5,6 +5,33 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0] - 2026-05-15
+
+Changelog-review adoption for Claude Code v2.1.129–v2.1.142. Leads with one mandatory correctness fix; the remaining items are bounded, additive doc/telemetry changes. No new commands, no new agents, no `settings.json` policy change.
+
+### Fixed — data-loss documentation correction (worktree branching baseline)
+
+- **`.claude/rules/agent-standards.md`** — the "Worktree branching baseline" blockquote previously told contributors to *"treat v2.1.128 as the minimum safe version"* for workflows that spawn `isolation: worktree` specialists from a local feature branch with unpushed commits. **That guidance became unsafe on Claude Code ≥ v2.1.133**, where the worktree base is governed by the `worktree.baseRef` setting whose default is `fresh` (origin-based) — a worktree-isolated specialist spawned from a local feature branch with unpushed work branches from `origin` again and that work is silently not visible in the worktree. The note now states the safe configuration is **Claude Code ≥ v2.1.133 _with_ an explicit `worktree.baseRef: "head"` setting** (the version floor alone is insufficient), and clarifies that Parliament does **not** ship `worktree.baseRef` in `settings.json` (no-policy stance, reaffirmed v1.14.0) — it guides the user to set it, it does not prescribe it.
+
+### Added — bounded telemetry enrichment
+
+- **`src/hooks/_common.sh`**, **`src/hooks/log_event.sh`** — `activity.jsonl` events now carry two optional, additive fields: `effort_level` (read from the hook payload's `effort.level`, Claude Code v2.1.133+) and `agent_id` (present when the hook fires inside a subagent, v2.1.139+). Both are emitted only when their source value is present (`// empty` + conditional `jq` merge — same idiom as the existing `tool_use_id`/`duration_ms` fields); no new `case` branch, no new control flow on the hot path. Consumers MUST tolerate both fields being absent. Backward-compatible: telemetry under older Claude Code is byte-for-byte unchanged.
+
+### Changed — documentation accuracy
+
+- **`commands/parliament-metrics.md`** — `--by-effort` attribution now documents the hook-emitted `effort_level` field as a third additive source (after the OTel `effort` attribute and the status-line `effort.level`), so hook-only events (`SubagentStart`, `PostToolUse`) carry their own effort tier without needing a co-located OTel span.
+- **`commands/parliament-loop.md`**, **`commands/parliament-monitor.md`** — document the Claude Code v2.1.140 fix: `/loop` no longer issues a redundant wakeup for a self-notifying background task, so a looped background monitor's cadence is its own completion signal, not `min(interval, self-notify)`. Guidance: size the loop interval as a staleness ceiling, not an exact tick.
+- **`commands/cost-report.md`** — Notes block gains a one-line pointer to `claude plugin details` for the plugin's packaged-token projection (Claude Code v2.1.139+). Pointer only; `/cost-report` does not read or integrate that figure.
+- **`.project-files/changelog-review/last-reviewed.json`** — advanced to reflect this review (last reviewed `v2.1.142`, `parliament_version` `1.21.0`).
+- **`.claude-plugin/plugin.json`**, **`.claude-plugin/marketplace.json`** — version bumped to 1.21.0.
+
+### Notes
+
+- 143 of ~150 upstream changes in v2.1.129–v2.1.142 had no Parliament surface; the deliberation panel (6/6 APPROVE, 3 rounds) explicitly resisted scope creep. Scope is deliberately small.
+- Deferred (not blocking this release): hook `args: string[]` exec-form migration (v2.1.139); hook `continueOnBlock` for PostToolUse (v2.1.139, pairs with the queued v1.20.0 PreToolUse git-commit guard); hooks-invoking-MCP-tools note carried over from the 2026-04-29 review.
+- Rejected: shipping `worktree.baseRef` in `settings.json` (violates the no-policy stance); `skillOverrides` / `/goal` / `/scroll-speed` / agent-view / fast-mode Opus default (no Parliament surface — Parliament uses `model: inherit`).
+- No README/`docs/usage.md` changes: neither file embeds a hardcoded plugin version anchor (version is surfaced via `/version`), and no command/agent count changed.
+
 ## [1.20.0] - 2026-05-07
 
 ### Added — `/commit-and-push` guided commit helper (developer-executed)
