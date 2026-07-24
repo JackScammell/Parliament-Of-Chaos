@@ -2,6 +2,7 @@
 description: Review new Claude Code changelog entries since last review and propose Parliament features
 effort: medium
 context: fork
+background: false
 agent: deliberation-conductor
 ---
 

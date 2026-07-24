@@ -2,6 +2,7 @@
 description: Ask the council a question and get a synthesised answer from the appropriate panel of agents
 effort: medium
 context: fork
+background: false
 agent: senior-council
 ---
 

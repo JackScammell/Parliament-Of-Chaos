@@ -67,6 +67,15 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 |-------|--------|---------|
 | `background: true` | Grumpy reviewers | Can run as background review tasks |
 
+> **Background-by-default baseline & the `background: false` opt-out (v2.1.198 → v2.1.218)**: Upstream Claude Code moved subagents and forked skills to *background-by-default* over several releases, and this supersedes any earlier note that described subagents as running foreground or nesting "5 levels deep" by default. The relevant history:
+>
+> - **v2.1.198** — subagents run in the **background by default** (the `Task` tool's `mode` parameter is now deprecated/ignored). Claude keeps working while the subagent runs and is notified on completion.
+> - **v2.1.212** — per-session spawn cap `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` (default **200**); `/clear` resets the budget.
+> - **v2.1.217** — skills / slash commands with `context: fork` also **background by default**. The documented opt-out is `background: false` in the command's frontmatter (booleans now also accept `no`/`off`/`0`).
+> - **v2.1.218** — subagents **no longer spawn nested subagents by default** (gated behind `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, default disabled), plus a concurrency cap `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default **20**).
+>
+> **Parliament impact.** Parliament ships **twelve** `context: fork` commands and, as of v1.22.0, every one sets `background: false` to preserve the interactive contract the plugin is built on — a forked orchestrator that silently backgrounded would break the round-by-round review UX (`governance.md`: "Present genuine trade-offs to user"). The nesting block in v2.1.218 is **inert for Parliament**: `governance.md` already forbids specialists and reviewers from spawning sub-agents (only `senior-council` and `deliberation-conductor` orchestrate), and those orchestrators run **top-level** via slash commands, one spawn level deep — well inside the default concurrency cap. Consistent with the standing no-policy stance, Parliament does **not** ship any of these `CLAUDE_CODE_MAX_*` env vars in `settings.json`; the defaults are safe for the fleet as designed. A future release that fanned specialists out beyond one nesting level would need to set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` explicitly.
+
 ## Initial Prompts
 
 | Field | Agents | Purpose |

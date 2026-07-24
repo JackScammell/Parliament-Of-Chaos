@@ -2,6 +2,7 @@
 description: Ruthless senior code review focusing on quality, structure, standards, and maintainability
 effort: medium
 context: fork
+background: false
 ---
 
 # Summon Grumpy Reviewer

@@ -2,6 +2,7 @@
 description: Orchestrate specialists and grumpy reviewers for ad-hoc planning or implementation
 effort: high
 context: fork
+background: false
 agent: senior-council
 ---
 

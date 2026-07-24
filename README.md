@@ -54,6 +54,8 @@ claude plugin install chaos@chaos
 
 All 66 commands are declared in [`commands/manifest.yaml`](commands/manifest.yaml), which acts as the source of truth for command name, status, owner agent, effort tier, and category. Run `/parliament-doctor` to reconcile the manifest against the filesystem and skill registry.
 
+> **Not the same as Claude Code's built-in `/code-review`.** Parliament's review commands (`/summon-grumpy-reviewer`, `/parliament-review`) run the plugin's grumpy-reviewer fleet against your working changes and are invoked directly. Claude Code also ships a separate built-in `/code-review` (as of recent versions, manual-only and dispatched to a background subagent) that is unrelated to Parliament and applies its own review model. When you want the Parliament governance flow, use the `/chaos:` review commands; the bare `/code-review` is the upstream feature.
+
 ### Agent Invocation
 
 | Command | Description |

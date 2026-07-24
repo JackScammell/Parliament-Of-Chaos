@@ -2,6 +2,7 @@
 description: Analyse an undocumented codebase and generate comprehensive getting-started documentation
 effort: medium
 context: fork
+background: false
 agent: senior-council
 ---
 

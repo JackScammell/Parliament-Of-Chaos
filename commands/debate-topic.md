@@ -2,6 +2,7 @@
 description: Run a structured multi-agent deliberation on a specified topic
 effort: high
 context: fork
+background: false
 agent: deliberation-conductor
 ---
 

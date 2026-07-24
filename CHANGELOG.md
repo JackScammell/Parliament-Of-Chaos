@@ -5,6 +5,22 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.0] - 2026-07-24
+
+Changelog-review adoption for Claude Code v2.1.174–v2.1.218. Leads with one interactive-UX correctness fix; the rest is bounded, additive documentation. No new commands, no new agents, no `settings.json` policy change.
+
+### Fixed — interactive commands silently backgrounding (`context: fork` default flip)
+
+- **All 12 `context: fork` commands** now set `background: false` in their frontmatter: `summon-council`, `parliament-review`, `debate-topic`, `ask-council`, `summon-specialist`, `summon-grumpy-reviewer`, `incident`, `implement-task-list`, `changelog-review`, `onboard-codebase`, `mutation-test`, `update-docs`. As of Claude Code **v2.1.217**, skills / slash commands with `context: fork` run in the **background by default**; without an opt-out, every Parliament orchestration command would silently background and break the round-by-round interactive review UX the plugin is built on. `background: false` restores foreground/interactive execution. The documented opt-out is a per-command frontmatter flag (there is no `settings.json` lever), consistent with the standing no-policy stance. Recorded dissent (maintainability-curmudgeon, refactor-ranger): 12 override lines track an upstream default that may flip again; the per-command flag is the only mechanism Claude Code provides.
+
+### Added — subagent nesting & concurrency baseline (documentation)
+
+- **`.claude/rules/agent-standards.md`** — new blockquote in *Background Execution* documenting the v2.1.198 → v2.1.218 move to background-by-default subagents, the per-session spawn cap (`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`, default 200, v2.1.212), the `context: fork` background flip (v2.1.217), and the v2.1.218 nested-spawn block (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, default disabled) plus concurrency cap (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, default 20). Supersedes the earlier "subagents nest 5 levels deep" characterisation. The nesting block is **inert for Parliament**: `governance.md` already restricts sub-agent spawning to the two top-level orchestrators, which run one level deep, well inside the default caps. No `CLAUDE_CODE_MAX_*` env vars are shipped in `settings.json`.
+
+### Added — `/code-review` disambiguation (documentation)
+
+- **`README.md`** — note in *Commands* distinguishing Parliament's directly-invoked review commands (`/summon-grumpy-reviewer`, `/parliament-review`) from Claude Code's separate built-in `/code-review` (now manual-only and dispatched to a background subagent).
+
 ## [1.21.0] - 2026-05-15
 
 Changelog-review adoption for Claude Code v2.1.129–v2.1.142. Leads with one mandatory correctness fix; the remaining items are bounded, additive doc/telemetry changes. No new commands, no new agents, no `settings.json` policy change.

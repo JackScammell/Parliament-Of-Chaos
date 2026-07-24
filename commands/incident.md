@@ -2,6 +2,7 @@
 description: Structured incident triage, hotfix coordination, and postmortem generation
 effort: high
 context: fork
+background: false
 agent: senior-council
 ---
 
