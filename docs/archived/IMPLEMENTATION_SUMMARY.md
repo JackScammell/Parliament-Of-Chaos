@@ -1,5 +1,7 @@
 # Session Token Reduction Plan - Implementation Summary
 
+> 🗄️ **Archived historical snapshot.** This is a point-in-time completion memo, kept for the record. It describes the (real, shipped) Session Token Reduction work but is **not** maintained as current documentation. For the live picture see [`CHANGELOG.md`](../../CHANGELOG.md), [`docs/TOKEN_REDUCTION_GUIDE.md`](../TOKEN_REDUCTION_GUIDE.md), and [`docs/CONTEXT_OPTIMIZATION.md`](../CONTEXT_OPTIMIZATION.md).
+
 ## Overview
 
 This document summarizes the complete implementation of the Session Token Reduction Plan for the Parliament of Chaos system.

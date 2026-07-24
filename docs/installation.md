@@ -17,7 +17,7 @@ claude plugin install chaos@chaos
 ```
 
 These commands install:
-- 64 slash commands across 15 categories (orchestration, deliberation, planning, developer workflow, hygiene, quality, release, observability, decisions, lifecycle, operations, analysis, discovery, plugins)
+- 66 slash commands across 15 categories (orchestration, deliberation, planning, developer workflow, hygiene, quality, release, observability, decisions, lifecycle, operations, analysis, discovery, plugins)
 - 33 agents — 2 orchestrators, 3 planning agents, 16 specialists, 12 grumpy reviewers
 - `commands/manifest.yaml` — declarative registry that `/parliament-doctor` reconciles against the filesystem and skill registry
 
@@ -107,16 +107,16 @@ agents/                   # 33 agent definitions
   grumpy-privacy-paranoid.md            grumpy-security-nag.md
   grumpy-standards-enforcer.md          grumpy-testing-tyrant.md
 
-commands/                 # 64 commands + manifest
+commands/                 # 66 commands + manifest
   manifest.yaml           # Source-of-truth registry (name, status, owner, effort, category)
-  <64 command .md files across 15 categories>
+  <66 command .md files across 15 categories>
 ```
 
 The `commands/manifest.yaml` file tracks every command's status (`active`, `deprecated`, `experimental`, `orphaned`), owner agent, effort tier, and category. Run `/parliament-doctor` after any change to reconcile the manifest against the filesystem and the registered skill surface.
 
 ## Available Commands
 
-Parliament of Chaos ships 64 slash commands organised into 15 categories. The authoritative list lives in [`commands/manifest.yaml`](../commands/manifest.yaml), which tracks name, status, owner agent, effort tier, and category for every command.
+Parliament of Chaos ships 66 slash commands organised into 15 categories. The authoritative list lives in [`commands/manifest.yaml`](../commands/manifest.yaml), which tracks name, status, owner agent, effort tier, and category for every command.
 
 For the complete table grouped by category, see the [README](../README.md#commands). For a live view inside Claude Code, run:
 

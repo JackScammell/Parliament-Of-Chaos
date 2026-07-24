@@ -69,7 +69,7 @@ Parliament-Of-Chaos/
 ├── agents/                            # 33 agent definitions (.md files)
 ├── commands/
 │   ├── manifest.yaml                  # Source-of-truth registry for every slash command
-│   └── <64 command .md files>         # Command definitions across 15 categories
+│   └── <66 command .md files>         # Command definitions across 15 categories
 ├── src/
 │   ├── deliberation/                  # Python deliberation system
 │   │   ├── core/                      # Core modules

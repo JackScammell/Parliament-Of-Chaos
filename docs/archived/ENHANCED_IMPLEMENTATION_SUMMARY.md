@@ -1,5 +1,7 @@
 # Parliament of Chaos - Enhanced Features Implementation Summary
 
+> 🗄️ **Archived historical snapshot.** A point-in-time completion memo from the v0.2.0 enhancement wave. The features it describes are **real and shipped** (see `src/deliberation/`), but the version/date headers below are frozen at that milestone and are not current. For the maintained feature guide see [`docs/ENHANCED_FEATURES.md`](../ENHANCED_FEATURES.md).
+
 ## Overview
 
 This document summarizes the complete implementation of 12 major enhancements to the Parliament of Chaos system, transforming it from a prompt-based multi-agent system into a comprehensive platform for structured human-AI governance workflows.
@@ -280,4 +282,4 @@ The enhanced Parliament of Chaos is production-ready and extensible.
 
 ---
 
-**For detailed feature documentation, see [ENHANCED_FEATURES.md](ENHANCED_FEATURES.md)**
+**For detailed feature documentation, see [ENHANCED_FEATURES.md](../ENHANCED_FEATURES.md)**

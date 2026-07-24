@@ -132,12 +132,12 @@ Parliament-Of-Chaos/
 ├── .claude/                          # Project rules only (not plugin sources)
 │   └── rules/                        # agent-standards, governance, output-standards
 ├── .claude-plugin/
-│   ├── plugin.json                   # Plugin manifest (version 1.15.0)
+│   ├── plugin.json                   # Plugin manifest (version 1.23.0)
 │   └── marketplace.json              # Marketplace metadata
 ├── agents/                           # 33 agent definitions (2 orchestrators, 3 planning, 16 specialists, 12 grumpy reviewers)
-├── commands/                         # 64 slash commands across 15 categories
+├── commands/                         # 66 slash commands across 15 categories
 │   ├── manifest.yaml                 # Source-of-truth registry — reconciled by /parliament-doctor
-│   └── <64 .md files>
+│   └── <66 .md files>
 │
 ├── src/                              # Python source code
 │   └── deliberation/                 # Deliberation system
@@ -177,7 +177,7 @@ Parliament-Of-Chaos/
 ### Key Directories
 
 - **`agents/`**: 33 agent definitions (Markdown with YAML frontmatter)
-- **`commands/`**: 64 command definitions plus `manifest.yaml` (the source-of-truth registry)
+- **`commands/`**: 66 command definitions plus `manifest.yaml` (the source-of-truth registry)
 - **`.claude/rules/`**: Project rules (agent-standards, governance, output-standards) — loaded via the `InstructionsLoaded` hook
 - **`.claude-plugin/`**: Plugin manifest and marketplace metadata (version must stay in sync)
 - **`src/deliberation/`**: Python implementation of the deliberation system

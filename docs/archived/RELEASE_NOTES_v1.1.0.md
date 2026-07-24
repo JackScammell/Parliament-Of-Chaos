@@ -1,5 +1,7 @@
 # Release Notes for v1.1.0
 
+> 🗄️ **Archived historical release notes.** These document the v1.1.0 release only. Counts and install commands here are frozen at that version and are **now out of date** (current: v1.23.0, 66 commands, 33 agents). For the latest release see [`CHANGELOG.md`](../../CHANGELOG.md) and [`README.md`](../../README.md).
+
 ## Parliament of Chaos v1.1.0
 
 **Release Date:** 2025-12-05
@@ -83,10 +85,10 @@ To update from v1.0.0, simply re-run the installation command.
 
 ### 📖 Documentation
 
-- **[Installation Guide](docs/installation.md)** - Setup and troubleshooting
-- **[Usage Guide](docs/usage.md)** - Commands and workflows  
-- **[Hooks Configuration](docs/hooks.md)** - Notifications and automation
-- **[CHANGELOG](CHANGELOG.md)** - Complete version history
+- **[Installation Guide](../installation.md)** - Setup and troubleshooting
+- **[Usage Guide](../usage.md)** - Commands and workflows  
+- **[Hooks Configuration](../hooks.md)** - Notifications and automation
+- **[CHANGELOG](../../CHANGELOG.md)** - Complete version history
 
 ---
 
@@ -104,4 +106,4 @@ Thank you to everyone who has used Parliament of Chaos and provided feedback. Th
 
 ---
 
-**Full Changelog**: See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
+**Full Changelog**: See [CHANGELOG.md](../../CHANGELOG.md) for detailed changes.

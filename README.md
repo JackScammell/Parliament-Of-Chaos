@@ -64,7 +64,7 @@ All 66 commands are declared in [`commands/manifest.yaml`](commands/manifest.yam
 | `/summon-council [plan\|implement] [task]` | Two-mode orchestrator — `plan` writes a spec to `.project-files/plans/`, `implement` runs full specialist + 9-grump cycle. Always opens with an `Explore` inventory pass so the council extends existing capabilities rather than creating duplicates |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
 | `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
-| `/parliament-review` | Full review using all 12 grumpy reviewers for maximum scrutiny |
+| `/parliament-review` | Grumpy-reviewer review — relevance-tiered by default (only reviewers whose domain the diff touches); `--all` forces the full 9 for maximum scrutiny. The security + correctness floor (+ privacy on PII) is always present |
 
 ### Deliberation
 
@@ -346,12 +346,14 @@ Then use `/roadmap-item-scope` to expand items into specs and tasks, and `/imple
 
 | Document | Description |
 |----------|-------------|
+| [Architecture Overview](docs/ARCHITECTURE.md) | **Start here** — how the Claude Code plugin and the Python deliberation library relate |
 | [Installation Guide](docs/installation.md) | Detailed setup instructions and troubleshooting |
 | [Update Guide](docs/UPDATE.md) | **How plugin updates work - NOT automatic** |
 | [Usage Guide](docs/usage.md) | In-depth command usage with examples |
 | [API Reference](docs/API_REFERENCE.md) | Python library API documentation |
 | [Development Guide](docs/DEVELOPMENT.md) | Development environment setup and contribution workflow |
 | [Deliberation System](docs/DELIBERATION_SYSTEM.md) | Multi-agent deliberation architecture and features |
+| [Enhanced Features](docs/ENHANCED_FEATURES.md) | Persistent memory, plugin marketplace, skill trees, governance, and self-improvement modules |
 | [Context Optimization](docs/CONTEXT_OPTIMIZATION.md) | Token reduction architecture and design |
 | [Token Reduction Guide](docs/TOKEN_REDUCTION_GUIDE.md) | Complete guide to session token reduction features |
 | [Hooks Configuration](docs/hooks.md) | Set up notifications and automated actions |
