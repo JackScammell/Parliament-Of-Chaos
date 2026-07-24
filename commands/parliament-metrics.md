@@ -29,7 +29,7 @@ This is the "observability" half of Tier 3 — it answers *is Parliament healthy
 ## Options
 
 - `--window <duration>`: Lookback window. Defaults to `7d`. Accepts `Nh`, `Nd`, `Nw`, `Nmo`.
-- `--focus <panel>`: Render only one panel. Useful in automation.
+- `--focus <panel>`: Render only one panel. Useful in automation. `--focus slo` also renders the member-reliability / circuit-breaker sub-view (see panel 3).
 - `--json`: Machine-readable output — consumed by `/parliament-webhook` and external dashboards.
 - `--strict-duration`: Latency panel uses only the `duration_ms` field captured by `PostToolUse` / `PostToolUseFailure` hooks. Rows without a captured value are dropped rather than inferred from event-pair timestamps. Recommended when comparing across recent windows where the hook was definitely wired.
 - `--by-effort`: Group cost and latency panels by effort tier (`low` / `medium` / `high` / `xhigh`). Tier is sourced from the OTel `effort` attribute on `cost.usage` / `token.usage` / `api_request` / `api_error` events (Claude Code v2.1.117+), the status-line `effort.level` field (v2.1.119+), and the `effort_level` field written onto hook-emitted `activity.jsonl` events by `log_event.sh` (Claude Code v2.1.133+). When none is present, the row is grouped under `unknown`.
@@ -144,6 +144,59 @@ For monitors launched via `/parliament-monitor` or `/parliament-loop`.
 WARN detail: /track-debt — 2 failures in last 30 days, both exceeded 5-minute timeout.
 ```
 
+#### Member reliability / circuit breaker (B4 watchdog surface)
+
+Rendered as part of the SLO panel (and under `--focus slo`). This is the observability
+surface for the B4 out-of-band watchdog: it makes a chronically-failing council member
+visible so the fan-out loop can **skip** it rather than re-spawn it forever. It reconciles
+per-member outcomes from `activity.jsonl`, using the `task_completed` events `log_event.sh`
+writes as of v1.23.0 alongside the existing `SubagentStart` and `StopFailure` events. Fields are
+read best-effort: a member with no `agent_id` (older Claude Code) is grouped under `unknown`.
+
+**Detection semantics** follow `.claude/rules/fan-out-policy.md` (single-sourced there so
+this view and the orchestrator can't diverge). Per member, over the window:
+
+- **completed** — a `task_completed` event (verdict returned / Done).
+- **failed** — `SubagentStart` seen, no `task_completed`, `StopFailure` logged.
+- **non-reporting** — `SubagentStart` seen, no `task_completed`, no `StopFailure`
+  (the mid-flight-hang class the watchdog exists to catch).
+
+Members are keyed by the additive `agent_id` field on the envelope (present on
+`SubagentStart` / `task_completed` from Claude Code v2.1.139+). Events without `agent_id`
+(older Claude Code, or top-session hooks) are grouped under `unknown` and reported
+separately so partial history does not skew per-member counts.
+
+**Circuit-breaker state** is a rolling summary, not a live gate (this command is read-only —
+it reports the breaker, it does not open or trip it):
+
+- **closed** — the member is healthy under the policy threshold.
+- **open** — the member crossed the breaker threshold **defined in `fan-out-policy.md`**
+  (`Failed` or `Non-reporting` on ≥ 2 of its last 3 dispatches). Per that policy the fan-out loop
+  skips it on the next run (floor members excepted — they force `INCOMPLETE` instead). This view
+  only **reports** the state; the skip decision and its floor override are owned by the policy,
+  not by this read-only command.
+
+```
+## Member reliability (window: 30d)
+
+| Member                  | dispatched | completed | failed | non-reporting | breaker |
+|-------------------------|-----------|-----------|--------|---------------|---------|
+| grumpy-security-nag     | 42        | 42        | 0      | 0             | closed  |
+| grumpy-code-reviewer    | 42        | 41        | 1      | 0             | closed  |
+| grumpy-i18n-nitpicker   | 38        | 12        | 3      | 23            | OPEN    |
+| (unknown agent_id)      | 6         | 6         | 0      | 0             | n/a     |
+
+OPEN detail: grumpy-i18n-nitpicker — 23 non-reporting + 3 failed of 38 dispatched over 30d;
+             breaker OPEN per fan-out-policy.md (unhealthy on ≥ 2 of its last 3 dispatches).
+             Per policy the fan-out loop skips it on the next run rather than re-dispatching.
+             A floor member in this state would instead force INCOMPLETE (never a survivor-
+             synthesised APPROVE).
+```
+
+Floor members (`grumpy-security-nag`, `grumpy-code-reviewer`, and `grumpy-privacy-paranoid`
+on PII) are labelled as such in the row; an OPEN breaker on a floor member is surfaced as the
+highest-priority signal because the fan-out loop must return `INCOMPLETE` rather than skip it.
+
 ### 4. Trend
 
 Rolling comparisons against the previous equal-length window.
@@ -165,13 +218,19 @@ Rolling comparisons against the previous equal-length window.
 1. Call `/telemetry-query --json` with the specified window for each required event type.
 2. Aggregate per panel. When `--by-effort` is set, partition each row by effort tier using the attribution rules above; when `--by-trigger` is set, partition each row by invocation trigger using the trigger-attribution rules. When both flags are set, the partitions compose into a two-dimensional split (effort tier × trigger).
 3. Fetch previous-window figures for trend deltas.
-4. Render markdown tables (or JSON if `--json`).
+4. For the SLO panel's member-reliability sub-view, reconcile per-member `SubagentStart` /
+   `task_completed` / `StopFailure` events from `activity.jsonl` into completed / failed /
+   non-reporting counts (keyed on `agent_id`), then derive each member's circuit-breaker
+   state using the thresholds in `.claude/rules/fan-out-policy.md`.
+5. Render markdown tables (or JSON if `--json`).
 
 ## Data sources
 
 - `/telemetry-query` output (primary)
 - `/agent-usage-stats --json` for reviewer approval rates
 - `${CLAUDE_PLUGIN_DATA}/monitors/` state files for SLO status (optional — falls back to "no monitors configured")
+- `activity.jsonl` `SubagentStart` / `task_completed` / `StopFailure` events for the member-reliability sub-view (per-member counts + circuit-breaker state)
+- `.claude/rules/fan-out-policy.md` for the member-reliability detection semantics and circuit-breaker thresholds
 
 ## Notes
 

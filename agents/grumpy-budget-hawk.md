@@ -3,7 +3,7 @@ name: grumpy-budget-hawk
 description: >-
   Cloud cost reviewer. Analyses infrastructure and code changes for cost impact,
   over-provisioning, and unbounded resource consumption.
-model: inherit
+model: sonnet
 color: yellow
 permissionMode: default
 memory: user

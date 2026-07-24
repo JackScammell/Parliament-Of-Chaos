@@ -3,7 +3,7 @@ name: grumpy-performance-troll
 description: >-
   Performance critic. Analyses code for performance and resource efficiency,
   identifies bottlenecks and recommends optimisations.
-model: inherit
+model: sonnet
 color: red
 permissionMode: default
 memory: user

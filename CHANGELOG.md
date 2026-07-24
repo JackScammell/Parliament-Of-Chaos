@@ -5,6 +5,30 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.0] - 2026-07-24
+
+Council cost control and member fault-tolerance. Both problems live at one seam — the orchestrator's fan-out boundary (cost = admission control; reliability = completion control) — so both are governed by a single new policy file that the orchestrators reference rather than duplicate. Planned and reviewed through the council (5 planning specialists, two rounds of grumpy review); user ruled on three trade-offs. Full plan: `.project-files/plans/council-cost-and-resilience.md`.
+
+### Added — single-sourced fan-out policy
+
+- **`.claude/rules/fan-out-policy.md`** (new) — the single source for how the council dispatches and reconciles a fan-out, referenced (not copied) by `senior-council.md`, `parliament-review.md`, and `summon-council.md`. Contents: a **reconcile-after-return policy loop** (enumerate → one cost estimate → dispatch → reconcile returned-vs-expected → re-dispatch each non-reporting member once → synthesise), deliberately **not** a timer-driven state machine (an orchestrator in a blocking turn has no clock); the **liveness floor** (security + correctness reviewers can never be tiered/trimmed/timed out — a non-reporting floor member forces an `INCOMPLETE` result, never a survivor-synthesised `APPROVE`; "queued → do not re-spawn" is a security invariant); the post-return detection table; concurrency-aware batching; graceful degradation; the state-assumptions-and-proceed prompt standard; and the committed **B4 out-of-band `Monitor` watchdog** with a concrete circuit-breaker threshold (open on ≥ 2 of last 3 dispatches unhealthy) and its cross-run skip action.
+
+### Added — cost control
+
+- **Relevance-tiered `/parliament-review`** — reviewers are now selected by the domains the diff touches; `/parliament-review --all` forces the full 9 ("maximum scrutiny" is now a deliberate opt-in). The security + correctness floor (+ privacy on PII) is always present and non-waivable; skipped reviewers are logged to Deferred.
+- **Pre-flight cost gate** — `/parliament-review` and `/summon-council implement` apply the existing `/cost-report estimate` soft-cap band as a **warn/confirm** gate before fan-out (never a hard block, per governance), with a below-threshold skip so small reviews don't pay the overhead.
+- **Advisory-reviewer model downgrade** — the 5 advisory grumpy reviewers (performance, accessibility, documentation, i18n, budget) pin to `model: sonnet` instead of `inherit`; the floor reviewers (security-nag, code-reviewer) and the rest stay `inherit`. `sonnet` over `haiku` because these reviewers run `effort: low`, which errors on Haiku 4.5 but is supported on Sonnet 5. Documented as a measured, reversible deviation in `agent-standards.md`; `/parliament-optimize` now flags remaining `inherit` reviewers as downgrade candidates.
+
+### Added — member fault-tolerance
+
+- **`TaskCompleted` telemetry (P1)** — `src/hooks/log_event.sh` now writes a `task_completed` event to `activity.jsonl` (wired via `settings.json`, a hooks-only change consistent with the no-policy stance). This unblocks the detection table's Done/Failed distinction and the B4 watchdog. The base emission now uses `jq -cn` so every record is a single JSONL line — a latent bug that would have broken every line-tailing telemetry consumer.
+- **`/env-doctor` concurrency check** — reports `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, warns when the live cap is below the selected-set size a review would dispatch, and confirms the Claude Code ≥ v2.1.128 parallel-fan-out floor.
+- **`/parliament-metrics` member-reliability surface** — a read-only per-member circuit-breaker view (dispatched / completed / failed / non-reporting, breaker open/closed) folded into the SLO panel, reporting state against the threshold defined in `fan-out-policy.md`.
+
+### Notes
+
+- No hard budget cap (user ruled warn/confirm only); no `CLAUDE_CODE_MAX_*` env vars or `permissions` shipped in `settings.json` (no-policy stance intact). `active_council` member-by-member resume (B3) is deferred to a follow-up release.
+
 ## [1.22.0] - 2026-07-24
 
 Changelog-review adoption for Claude Code v2.1.174–v2.1.218. Leads with one interactive-UX correctness fix; the rest is bounded, additive documentation. No new commands, no new agents, no `settings.json` policy change.

@@ -26,6 +26,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_event.sh"
+          },
+          {
+            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/notify_teams.sh"
           }
         ]

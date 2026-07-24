@@ -108,13 +108,15 @@ Return the plan path to the user. Do **not** edit code in `plan` mode.
 
 1. **Clarify goal** — restate the task, define "good" and "done".
 2. **Select implementation specialists** from: `backend-goblin`, `ui-ux-guru`, `data-warlock`, `test-prophet`, `api-keeper`, `doc-bard`, `package-wizard`, `resilience-tamer`, `pipeline-engineer`, `migration-monk`, `dependency-detective`, `refactor-ranger`, `config-curator`, `observability-oracle`. Bring in `system-architect` / `security-knight` for advisory input as needed.
-3. **Delegate work** — specialists analyse, design, and implement, referencing inventory findings (extend-don't-create default applies).
-4. **Grumpy review** — run outputs through all 9 reviewers:
+3. **Pre-flight cost gate (A4)** — before fanning out to specialists and reviewers, apply the existing `/cost-report estimate` soft-cap band as a **WARN/CONFIRM** gate. Advisory only, **never a hard block**: over the soft cap → warn and ask to proceed; no telemetry history → degrade to "estimate unavailable — proceed?". It is a **whole-run** static estimate (not a per-subset admission controller) and is **provisional** until post-change telemetry re-accumulates. Skip below a small-run size threshold so small runs don't pay the fixed overhead.
+4. **Delegate work** — specialists analyse, design, and implement, referencing inventory findings (extend-don't-create default applies).
+5. **Grumpy review** — run outputs through all 9 reviewers, fanning out per the reconcile-after-return policy loop in `.claude/rules/fan-out-policy.md` (concurrency-aware batching B1, graceful degradation with one re-dispatch B2, and the liveness floor):
    - grumpy-code-reviewer, grumpy-standards-enforcer, grumpy-architecture-skeptic
    - grumpy-maintainability-curmudgeon, grumpy-security-nag, grumpy-performance-troll
    - grumpy-accessibility-auditor, grumpy-documentation-pedant, grumpy-testing-tyrant
-5. **Iterate** — route complaints back to specialists until grumps accept. Conflict priority: security > correctness > maintainability > performance > convenience. Defer out-of-scope items.
-6. **Synthesise** — final solution + Deferred section.
+   - The security + correctness floor (`grumpy-security-nag`, `grumpy-code-reviewer`, plus `grumpy-privacy-paranoid` on PII) is never dropped; a non-reporting floor member forces an `INCOMPLETE` result rather than a survivor-synthesised approval.
+6. **Iterate** — route complaints back to specialists until grumps accept. Conflict priority: security > correctness > maintainability > performance > convenience. Defer out-of-scope items.
+7. **Synthesise** — final solution + Deferred section.
 
 ## Output
 
@@ -133,5 +135,5 @@ Return the plan path to the user. Do **not** edit code in `plan` mode.
 
 ## Notes
 
-- Parallel fan-out to specialists and reviewers is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers.
+- Parallel fan-out to specialists and reviewers is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers. How non-reporting members are detected and recovered (batching, one re-dispatch, liveness floor, `INCOMPLETE` on floor non-report) is single-sourced in `.claude/rules/fan-out-policy.md`.
 - The inventory pass uses the `Explore` agent (read-only). It is fast and does not pollute the main context window.

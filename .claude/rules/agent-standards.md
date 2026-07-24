@@ -52,6 +52,30 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 
 > **MCP inheritance (v2.1.101)**: Subagents now inherit MCP tools from the parent session automatically. Parliament specialists no longer need to re-declare MCP servers; any MCP tool available to the user is available to spawned agents unless explicitly listed in `disallowedTools`. Sandboxed subagents also now resolve worktree paths correctly.
 
+## Model Selection
+
+The fleet default is `model: inherit` (subagents run on the parent session's model). Two
+deliberate deviations apply.
+
+| Tier | Agents | `model` | Rationale |
+|------|--------|---------|-----------|
+| **Advisory reviewers** | grumpy-performance-troll, grumpy-accessibility-auditor, grumpy-documentation-pedant, grumpy-i18n-nitpicker, grumpy-budget-hawk | `sonnet` | Measured cost deviation — see note below |
+| **Floor reviewers** | grumpy-security-nag, grumpy-code-reviewer | `inherit` | Security/correctness floor stays on the strongest available model |
+| **All other agents** | remaining reviewers, specialists, orchestrators, planning | `inherit` | Default — no deviation |
+
+> **Advisory-tier `sonnet` pin (measured cost deviation)**: The five **advisory** grumpy
+> reviewers (performance, accessibility, documentation, i18n, budget) are pinned to
+> `model: sonnet` rather than the `model: inherit` default. This is a deliberate, measured cost
+> deviation, not a standards violation. The **floor** reviewers (`grumpy-security-nag`,
+> `grumpy-code-reviewer`) and every other reviewer stay `inherit` so security and correctness
+> keep the strongest model. `sonnet` is chosen over `haiku` specifically because these reviewers
+> carry `effort: low`, and the `effort` parameter **errors on Haiku 4.5** but is fully supported
+> on **Sonnet 5** — sonnet keeps `effort` valid while still cutting per-token cost (Opus
+> $5/$25 → Sonnet $3/$15 per Mtok). The deviation is **reversible in one frontmatter line**, and
+> review quality under the downgrade is to be measured after the fact via
+> `/parliament-metrics --by-effort`. `/parliament-optimize` flags any reviewer still on
+> `inherit` as a downgrade candidate, respecting the floor exclusion.
+
 ## Isolation
 
 | Field | Value | Agents | Purpose |
@@ -75,6 +99,27 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 > - **v2.1.218** — subagents **no longer spawn nested subagents by default** (gated behind `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, default disabled), plus a concurrency cap `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default **20**).
 >
 > **Parliament impact.** Parliament ships **twelve** `context: fork` commands and, as of v1.22.0, every one sets `background: false` to preserve the interactive contract the plugin is built on — a forked orchestrator that silently backgrounded would break the round-by-round review UX (`governance.md`: "Present genuine trade-offs to user"). The nesting block in v2.1.218 is **inert for Parliament**: `governance.md` already forbids specialists and reviewers from spawning sub-agents (only `senior-council` and `deliberation-conductor` orchestrate), and those orchestrators run **top-level** via slash commands, one spawn level deep — well inside the default concurrency cap. Consistent with the standing no-policy stance, Parliament does **not** ship any of these `CLAUDE_CODE_MAX_*` env vars in `settings.json`; the defaults are safe for the fleet as designed. A future release that fanned specialists out beyond one nesting level would need to set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` explicitly.
+
+## Council Fan-Out and Hang-Recovery
+
+The full council fan-out policy — dispatch loop, the security-critical liveness floor, the
+post-return detection table, batching, and graceful degradation — lives in its single source,
+`.claude/rules/fan-out-policy.md`. Two facts about it belong in the frontmatter standards:
+
+> **No wall-clock timeout, no auto-retry primitive**: Claude Code offers **no** per-subagent
+> wall-clock timeout and **no** auto-retry primitive. There is no frontmatter field, no
+> `settings.json` knob, and no harness default that will time out or retry a hung council
+> member for you. Hang-recovery is therefore **genuine engineering**, not configuration — it is
+> the out-of-band `Monitor` watchdog (B4) documented in `.claude/rules/fan-out-policy.md`, which
+> tails `activity.jsonl` alongside the session and opens a per-member circuit breaker. Do not
+> assume a hung member will be reaped automatically; nothing reaps it.
+
+> **Prompt-standard — state assumptions, do not ask (B5)**: Council members dispatched into a
+> detached fan-out must **state their assumptions and proceed**; they must **never** ask
+> clarifying questions. In a fan-out context a member blocked waiting on input is
+> indistinguishable from a hung member and cannot be recovered by the orchestrator. This is a
+> standing prompt-authoring standard for every agent that can be fanned out under the council.
+> See `.claude/rules/fan-out-policy.md`.
 
 ## Initial Prompts
 

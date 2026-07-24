@@ -31,6 +31,19 @@ For each agent, verify:
 | disallowedTools | — | varies | required | — |
 | isolation | — | worktree (impl) | — | — |
 | background | — | — | true | — |
+| model | inherit | inherit | see below | inherit |
+
+### Model-tier check (grumpy reviewers)
+
+Per the Model Selection standard in `.claude/rules/agent-standards.md`, grumpy reviewers split
+into two model tiers:
+
+- **Floor reviewers** — `grumpy-security-nag`, `grumpy-code-reviewer` — must stay `model: inherit`
+  (security/correctness keeps the strongest model). Flag as **non-compliant** if downgraded.
+- **Advisory reviewers** — all other `grumpy-*` — are candidates for the advisory-tier
+  `model: sonnet` downgrade. Any advisory reviewer still on `model: inherit` is a **downgrade
+  candidate** (a recommendation, not a defect). `sonnet` is required over `haiku` because
+  `effort: low` errors on Haiku 4.5 but is supported on Sonnet 5.
 
 ## Output
 
@@ -62,13 +75,22 @@ For each agent, verify:
 ## Recommendations
 - [list of specific changes needed, if any]
 
+### Model downgrade candidates (advisory reviewers)
+- [any grumpy reviewer OTHER than the floor (grumpy-security-nag, grumpy-code-reviewer) still
+  on `model: inherit` → recommend downgrade to `model: sonnet`, keeping `effort: low`]
+- [note: this is a recommendation only; the floor reviewers are explicitly excluded and must
+  stay `inherit`]
+
 ## Cost Optimisation Estimate
 - Current tier distribution: N high / N medium / N low
 - Estimated token savings from effort tiers: ~40-60% on reviewer tasks
+- Advisory reviewers on `model: sonnet`: N of 5 (Opus $5/$25 → Sonnet $3/$15 per Mtok)
 ```
 
 ## Notes
 
 - This command is advisory only — it reads and reports but never modifies agent files
 - Run after adding new agents to verify they follow the standards in `.claude/rules/agent-standards.md`
+- The advisory-reviewer `model: sonnet` downgrade is surfaced as a **recommendation**, never
+  applied automatically; the floor (grumpy-security-nag, grumpy-code-reviewer) is always excluded
 - Use `/summon-specialist config-curator` if you want to apply recommended changes

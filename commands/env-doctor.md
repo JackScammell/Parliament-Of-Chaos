@@ -72,6 +72,31 @@ Other hooks are still validated — one bad entry does not short-circuit the res
 - `bash` / `zsh` — shell availability
 - Project-specific tools inferred from `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`
 
+### Concurrency (fan-out floor)
+
+Read-only. Confirms the live environment can actually run the reviewer panel in parallel
+rather than serialising it — a serialised panel starves floor members behind the concurrency
+cap, which the fan-out policy treats as a security concern (a queued floor member must be
+waited for, never dropped).
+
+- Report whether `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is set and, if so, its value.
+- **WARN if it is set below 9** — the full grumpy-reviewer panel is 9 members, so a cap under 9
+  serialises the panel and can starve floor members (security, code review). If unset, note that
+  Claude Code's default (20) is above the panel size, so no warning.
+- **Confirm Claude Code ≥ v2.1.128** — the parallel-fan-out floor (single-sourced in
+  `.claude/rules/fan-out-policy.md` → *Parallel fan-out version floor*). Older versions cannot fan
+  the panel out in parallel regardless of the env var; WARN with the detected version if below.
+- **Cross-check against the fan-out policy.** Per `.claude/rules/fan-out-policy.md`, there is **no
+  fixed batch-width constant** — batching engages only when the selected-set size would exceed the
+  live cap. So WARN when `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is **below the selected-set size
+  the review would dispatch** (up to the 9-member full panel); below that, members queue and can
+  appear hung. If the rule file is absent, skip the cross-check with a one-line note rather than
+  failing.
+
+This check never sets or mutates the env var — Parliament's no-policy stance means
+`CLAUDE_CODE_MAX_*` env vars are the user's own to set (see `/settings-audit` for a
+confirmation-gated opt-in snippet). `/env-doctor` only reports the divergence.
+
 ### Plugin orphans (Claude Code v2.1.121+)
 
 When `--check-orphans` is passed, `/env-doctor` shells out to `claude plugin list
@@ -135,13 +160,22 @@ OK   — git 2.47.0
 OK   — jq 1.7.1
 OK   — bash 5.2.32
 
+## Concurrency (fan-out floor)
+OK   — Claude Code v2.1.140 (≥ v2.1.128 parallel-fan-out floor)
+WARN — CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS = 4 (below panel size 9)
+       effect: serialises the 9-reviewer panel; can starve floor members behind the cap
+       note: unset would default to 20 (safe); set it ≥ 9 or leave it unset
+WARN — CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS (4) is below the selected-set size a --all review
+       would dispatch (up to 9); members beyond the cap queue and can appear hung
+       remediation: raise the cap to the panel size you run, or leave it unset (defaults to 20)
+
 ## Conventions
 OK   — agents/ contains 33 files, all .md
 OK   — commands/ contains 54 files, 1 manifest
-OK   — .claude/rules/ contains 3 files
+OK   — .claude/rules/ contains 4 files
 
 ## Summary
-3 warnings, 1 failure.
+5 warnings, 1 failure.
 
 ## Next steps
 - Fix log_event.sh to use ${CLAUDE_PLUGIN_DATA:-$HOOK_PROJECT_DIR/.project-files/.telemetry} fallback

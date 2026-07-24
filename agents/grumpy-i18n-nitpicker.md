@@ -3,7 +3,7 @@ name: grumpy-i18n-nitpicker
 description: >-
   Internationalisation reviewer. Catches hardcoded strings, missing translations,
   broken pluralisation, and locale-dependent formatting bugs.
-model: inherit
+model: sonnet
 color: cyan
 permissionMode: default
 memory: user

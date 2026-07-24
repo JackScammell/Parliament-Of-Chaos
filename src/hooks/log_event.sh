@@ -50,6 +50,23 @@ case "$HOOK_EVENT_NAME" in
     EVENT_TYPE="agent_start" ;;
   TaskCreated)
     EVENT_TYPE="task_created" ;;
+  TaskCompleted)
+    # Completion signal for the B4 member-reliability watchdog and the fan-out
+    # reconcile loop (.claude/rules/fan-out-policy.md): lets a consumer tell
+    # "returned a verdict / Done" from "still running" while tailing the log.
+    # The per-member identifier is already surfaced additively as agent_id by
+    # _common.sh, so it lands on the base envelope without extra work here.
+    # status is captured best-effort: no Claude Code version is documented to
+    # guarantee a .status field on the TaskCompleted payload, so we read it
+    # opportunistically and omit it when absent (the `// empty` guard). This is
+    # a shell-level guard (leave EXTRA_JSON as {} when empty), not the jq-level
+    # conditional-merge the tool_use_id/duration_ms blocks below use — same
+    # omit-when-empty outcome, simpler here since there is only one field.
+    TASK_STATUS="$(printf '%s' "$HOOK_PAYLOAD" | jq -r '.status // empty')"
+    if [ -n "$TASK_STATUS" ]; then
+      EXTRA_JSON=$(jq -n --arg status "$TASK_STATUS" '{status: $status}')
+    fi
+    EVENT_TYPE="task_completed" ;;
   PostCompact)
     EVENT_TYPE="compaction" ;;
   InstructionsLoaded)
@@ -93,7 +110,11 @@ esac
 # empty (older Claude Code, or a top-session hook for agent_id) so the
 # activity.jsonl schema stays clean. Same conditional-merge idiom as the
 # tool_use_id field above — no new control flow.
-jq -n \
+# -c (compact) is REQUIRED: this is the statement that appends to activity.jsonl,
+# and jq pretty-prints by default. Without -c each record would span multiple
+# lines and break every line-tailing consumer (the fan-out detection loop,
+# /parliament-metrics, /telemetry-query) — the file must stay true JSONL.
+jq -cn \
   --arg event "$HOOK_EVENT_NAME" \
   --arg session "$HOOK_SESSION_ID" \
   --arg ts "$HOOK_TIMESTAMP" \

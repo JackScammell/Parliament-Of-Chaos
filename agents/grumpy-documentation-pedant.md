@@ -3,7 +3,7 @@ name: grumpy-documentation-pedant
 description: >-
   Documentation quality reviewer. Scrutinises docs for completeness, accuracy
   and clarity.
-model: inherit
+model: sonnet
 color: white
 permissionMode: default
 memory: user

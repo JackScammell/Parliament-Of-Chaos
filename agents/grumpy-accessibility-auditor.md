@@ -3,7 +3,7 @@ name: grumpy-accessibility-auditor
 description: >-
   Accessibility compliance reviewer. Audits for WCAG violations, ARIA usage and
   inclusive design failures.
-model: inherit
+model: sonnet
 color: cyan
 permissionMode: default
 memory: user
