@@ -54,12 +54,12 @@ All three values must match.
 Claude Code's marketplace clone does **not** auto-pull on `marketplace add` if the clone already exists. You must manually pull.
 
 ```bash
-cd ~/.claude/plugins/marketplaces/chaos && git pull origin main && cd -
+cd ~/.claude/plugins/marketplaces/<marketplace-name> && git pull origin main && cd -   # name per `claude plugin marketplace list` (see Post-release verification note)
 ```
 
 **Verify the cache has the new version:**
 ```bash
-grep '"version"' ~/.claude/plugins/marketplaces/chaos/.claude-plugin/plugin.json
+grep '"version"' ~/.claude/plugins/marketplaces/<marketplace-name>/.claude-plugin/plugin.json
 ```
 
 ## Post-Push: Verify in Claude Code
@@ -89,7 +89,8 @@ If it still shows the old version:
 On a machine that doesn't have the plugin installed:
 ```bash
 claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chaos.git
-claude plugin install chaos@chaos
+# A GitHub-URL add registers the marketplace under the REPO name:
+claude plugin install chaos@parliament-of-chaos
 ```
 
 Then verify:
@@ -103,7 +104,7 @@ Then verify:
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| `/plugin` shows old version | Marketplace git clone is stale | `cd ~/.claude/plugins/marketplaces/chaos && git pull origin main` |
+| `/plugin` shows old version | Marketplace git clone is stale | `cd ~/.claude/plugins/marketplaces/<marketplace-name> && git pull origin main` |
 | `/plugin` shows no version | `plugin.json` missing `version` field | Add `"version": "X.Y.Z"` to `.claude-plugin/plugin.json` |
 | Version mismatch | `plugin.json` and `marketplace.json` disagree | Ensure all three version locations match |
 | Hooks don't run | Hook scripts in `hooks/` instead of `src/hooks/` | Plugin cache only includes `src/` — hooks must live there |
@@ -111,11 +112,24 @@ Then verify:
 
 ## Post-release verification (added v1.25.1 — non-negotiable)
 
-After pushing the tag, verify the release actually loads on a real install:
+After pushing the tag, verify the release actually loads on a real install. The scripted
+form (same script CI runs, plus a version assertion the manual check lacked):
 
 ```bash
-claude plugin marketplace update parliament-of-chaos
-claude plugin list   # chaos@parliament-of-chaos must show "enabled", not "failed to load"
+scripts/ci/install_smoke.sh \
+  --source https://github.com/JackScammell/Parliament-Of-Chaos.git \
+  --expected-version X.Y.Z
+```
+
+Then update your own live install. **The marketplace name depends on how it was added**
+(a GitHub-URL add registers under the repo name `parliament-of-chaos`; a local-path add
+registers under marketplace.json's `chaos`) — check yours first:
+
+```bash
+claude plugin marketplace list          # find YOUR registered marketplace name
+claude plugin marketplace update <marketplace-name>
+claude plugin update chaos@<marketplace-name>
+claude plugin list   # must show "enabled" at the new version, not "failed to load"
 ```
 
 Both hook-registration incidents (v1.9.0's ignored settings.json, v1.25.0's duplicate

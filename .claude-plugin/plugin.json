@@ -1,6 +1,6 @@
 {
   "name": "chaos",
-  "version": "1.25.1",
+  "version": "1.26.0",
   "description": "A council of opinionated AI specialists to plan, build, review, and refine your projects through structured debate and iteration.",
   "author": {
     "name": "Jack Scammell",
@@ -18,6 +18,5 @@
     "grumpy-reviewers",
     "council"
   ],
-  "keep-coding-instructions": true,
   "dependencies": []
 }

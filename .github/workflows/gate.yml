@@ -1,0 +1,102 @@
+# The Gate — Parliament of Chaos release-blocking CI (v1.26.0)
+#
+# Three independent jobs, all dependency-light, target end-to-end < 3 min:
+#   install-smoke : headless plugin install on a throwaway CLAUDE_CONFIG_DIR
+#                   (catches the v1.25.0 "failed to load" incident class; no API key needed)
+#   hook-fixture  : fires fixture payloads through src/hooks/log_event.sh (pure bash+jq)
+#   conformance   : repo-shape checks (scripts/ci/conformance.py, python3 + pyyaml only)
+#
+# What green does NOT mean: see "Not verified by this gate" in scripts/ci/install_smoke.sh
+# and the v1.26.0 design notes — session-fired hooks and prompt/agent semantics are out of scope.
+name: Gate
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+# SECURITY PRECONDITION (grumpy-security-nag, v1.26.0 review): this workflow
+# must NEVER gain secrets or write permissions while CLAUDE_CLI_VERSION floats
+# on "latest" — the unpinned-CLI trade-off is only acceptable because the worst
+# case is a corrupted gate verdict, not exfiltration. Revisit the pin first.
+permissions:
+  contents: read
+
+concurrency:
+  group: gate-${{ github.ref }}
+  # Never cancel a tag (release) run; superseded PR/branch runs are cancelled.
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+env:
+  # Upstream-version-coupling control. "latest" surfaces upstream CLI breakage early on
+  # main/PR runs; TAG (release) runs pin to the known-good version below so a release can
+  # never be blocked or greenwashed by an upstream CLI published an hour earlier
+  # (grumpy-testing-tyrant, v1.26.0 review). Bump the pin deliberately, not implicitly.
+  CLAUDE_CLI_VERSION: ${{ github.ref_type == 'tag' && '2.1.197' || 'latest' }}
+
+jobs:
+  install-smoke:
+    name: install-smoke (headless plugin load)
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2 — SHA-pinned (security review)
+
+      - name: Install Claude Code CLI
+        run: |
+          npm install -g "@anthropic-ai/claude-code@${CLAUDE_CLI_VERSION}"
+          claude --version
+
+      - name: Tag/manifest version agreement (release runs only)
+        if: github.ref_type == 'tag'
+        run: |
+          # The Gate's blind spot closed (code-review, v1.26.0): internal version
+          # sync at the WRONG version is still sync. On a tag run, the tag itself
+          # is the expected version — a forgotten bump fails here.
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          MANIFEST_VERSION="$(jq -r '.version' .claude-plugin/plugin.json)"
+          if [ "$TAG_VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "::error::tag v${TAG_VERSION} does not match plugin.json version ${MANIFEST_VERSION} — forgotten version bump"
+            exit 1
+          fi
+          echo "tag v${TAG_VERSION} == plugin.json ${MANIFEST_VERSION}"
+
+      - name: Headless install smoke test
+        run: bash scripts/ci/install_smoke.sh
+
+  hook-fixture:
+    name: hook-fixture (log_event.sh contract)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2 — SHA-pinned (security review)
+
+      - name: Fire fixture payloads through log_event.sh
+        run: bash scripts/ci/hook_fixture.sh
+
+  conformance:
+    name: conformance (repo shape)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2 — SHA-pinned (security review)
+
+      - name: Ensure PyYAML
+        run: |
+          python3 -c "import yaml" 2>/dev/null \
+            || python3 -m pip install --quiet pyyaml \
+            || python3 -m pip install --quiet --user --break-system-packages pyyaml
+          python3 -c "import yaml; print('pyyaml', yaml.__version__)"
+
+      - name: Run conformance checks
+        run: |
+          if [ ! -f scripts/ci/conformance.py ]; then
+            echo "::error::scripts/ci/conformance.py is missing — the Gate must not pass without it"
+            exit 1
+          fi
+          # --strict: WARNs fail the gate. Three reviewers independently flagged
+          # that without it the single-source lint (check 6) is structurally
+          # always-green — decorative, not enforcing.
+          python3 scripts/ci/conformance.py --strict

@@ -5,6 +5,70 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.26.0] - 2026-08-19
+
+**"The Gate"** — the first release of the three-release consolidation arc voted by the six-member
+`/debate-topic` panel ("the project's next feature is proof that it works"). Parliament now has
+release-blocking CI: the plugin's own install, hook contract, and repo invariants are
+machine-verified on every push, PR, and tag. Implemented via specialist design (pipeline-engineer,
+test-prophet, observability-oracle) and gated through a four-reviewer council (security-nag,
+code-reviewer, standards-enforcer, testing-tyrant — two rounds to unanimous approval).
+
+### Added — release-blocking CI (`.github/workflows/gate.yml`)
+
+- **install-smoke** (`scripts/ci/install_smoke.sh`) — headless plugin install in a throwaway
+  `CLAUDE_CONFIG_DIR` (no API key): marketplace-add from the checkout, install, assert
+  enabled + exact version in `claude plugin list`. Catches the v1.25.0 "failed to load" class
+  outright, plus static and dynamic duplicate-registration guards (jq errors fail the check,
+  never silently pass). Dual-use: the same script with `--source <git-url> --expected-version`
+  is now the scripted RELEASE_INSTRUCTIONS post-release verification.
+- **hook-fixture** (`scripts/ci/hook_fixture.sh`) — fires fixture payloads through the real
+  `log_event.sh` for all 10 wired events: exact envelope assertions (incl. `schema_version`,
+  exact `plugin_version`), event-count pin (two-directional double-entry bookkeeping),
+  degradation-path test (SessionStart without `source`), allowlist rejection, 700/600
+  permissions, >10MB rotation.
+- **conformance** (`scripts/ci/conformance.py --strict`) — deterministic repo-invariant lint:
+  33-agent fleet frontmatter standards (effort/maxTurns/memory/model pins/disallowedTools/
+  background), Fan-Out Contract presence on all 29 fan-out-capable agents, manifest
+  reconciliation, three-way version sync + compare link, hooks shape (incl. the v1.25.0/v1.25.1
+  regression guards), single-source lint. Reciprocal coupling declared in `agent-standards.md`
+  ("Enforced by The Gate").
+- **Tag-run hardening** — on `v*` tags: the tag must equal `plugin.json`'s version (a forgotten
+  bump can no longer tag green), and the claude CLI is pinned (floating `@latest` remains the
+  upstream-drift canary on branch/PR runs only). `actions/checkout` SHA-pinned; workflow runs
+  with `contents: read` and an explicit never-add-secrets precondition.
+
+### Added — self-observing telemetry
+
+- **SessionStart heartbeat** — every session now writes a `type: "heartbeat"` record with
+  `source` and `plugin_version`, so "zero events" is a diagnosable signal, not an ambiguity
+  (the v1.9.0–v1.24.0 dark-telemetry class can no longer hide).
+- **`schema_version: 1`** stamped on every `activity.jsonl` record; absence dates a record to
+  pre-v1.26.0. Additive under the standing consumer contract.
+- **`/env-doctor` "Hook registration liveness"** — three-way shipped/installed/firing
+  divergence check keyed off the heartbeat, with mutually exclusive WARN semantics.
+
+### Fixed
+
+- `src/hooks/log_event.sh` — stale rotation-lock recovery (a SIGKILL'd holder can no longer
+  disable rotation forever).
+- `.claude-plugin/plugin.json` — unknown `keep-coding-instructions` field removed
+  (`claude plugin validate` now passes clean).
+- RELEASE_INSTRUCTIONS — marketplace-name-agnostic install guidance (the registered name
+  depends on add-method: GitHub-URL → repo name, path-add → marketplace.json name).
+- Doc sync: docs/hooks.md event tables, docs/usage.md webhook event list (13 wired events),
+  CONTRIBUTING.md project tree + "CI — The Gate" section + planning-agent count,
+  two uncited v2.1.128 restatements de-inlined (ask-council, usage).
+
+### Deferred (tracked follow-ups from council review)
+
+- Minimal `notify_teams.sh` fixture test (currently the one unexercised wired script).
+- Committed conformance self-test fixtures (design-time mutation testing re-run as regression).
+- Secrets-gated live-session canary job (hooks *firing* in a real session — registration is
+  covered; live firing needs an API key).
+- npm retry wrapper in install-smoke; `check_hooks` guard one level deeper was done, the
+  remaining nits from security round 2 are cosmetic.
+
 ## [1.25.1] - 2026-08-19
 
 Hotfix, fast-tracked: v1.25.0's hook fix over-corrected. Claude Code **auto-loads**
@@ -696,6 +760,7 @@ Subsequent tiers from the toolset-gaps plan land in v1.11.0 (Learning Loop), v1.
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.26.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.25.1...v1.26.0
 [1.25.1]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.25.0...v1.25.1
 [1.25.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.24.0...v1.25.0
 [1.24.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.23.0...v1.24.0

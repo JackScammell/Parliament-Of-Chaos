@@ -133,6 +133,6 @@ Senior Council produces a single cohesive answer:
 ## Notes
 
 - This is a single-pass command. Token cost scales with panel size (2–5 specialists at `effort: medium`) plus one synthesis pass at the council's `effort: high`. Expect roughly 2–3× the cost of `/summon-specialist`, and well under `/summon-council implement` or `/debate-topic`.
-- Parallel fan-out to specialists is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers.
+- Parallel fan-out reliability has a Claude Code version floor (non-cascading sibling failures) — see the *Parallel fan-out version floor* section of `.claude/rules/fan-out-policy.md`.
 - The Senior Council's `answer` mode (this command) sits beside its `plan` and `implement` modes (`/summon-council`). It reuses the same auto-selection logic; only the output shape and process loop differ.
 - Inventory is intentionally optional and lightweight here. Q&A questions that *don't* reference the codebase do not benefit from a grep pass and should not pay for one.

@@ -87,8 +87,12 @@ Hooks are configured in the `hooks` section of your settings file:
 | `PostCompact` | Context window compacted | State checkpointing |
 | `InstructionsLoaded` | CLAUDE.md or rules files loaded/reloaded | Detect stale rules in long sessions |
 | `TeammateIdle` | Teammate agent is idle | Multi-agent coordination |
-| `PreToolUse` | Before a tool is executed | Validation, logging |
+| `SessionStart` | Session begins/resumes/clears/compacts | **Heartbeat telemetry (v1.26.0)** — liveness signal for /env-doctor |
+| `PermissionDenied` | Auto mode denies a tool call | Denial diagnostics |
+| `TaskCreated` | Task created | Fan-out dispatch tracking |
+| `PreToolUse` | Before a tool is executed | Validation, logging (not wired by Parliament) |
 | `PostToolUse` | After a tool completes | Auditing, notifications |
+| `PostToolUseFailure` | After a tool call fails | Failure-latency telemetry |
 
 ### Matcher Patterns
 
@@ -439,7 +443,7 @@ Hook scripts live in `src/hooks/` (so they survive plugin cache refreshes). As o
 | File | Location | Purpose |
 |------|----------|---------|
 | `_common.sh` | `src/hooks/` | Shared helper — payload parsing, path validation, data-directory resolution, log rotation (v1.7.0) |
-| `log_event.sh` | `src/hooks/` | Unified event dispatcher — handles Stop, StopFailure, PostCompact, InstructionsLoaded, TaskCompleted, TaskCreated, SubagentStart, PermissionDenied, etc. (v1.9.0) |
+| `log_event.sh` | `src/hooks/` | Unified event dispatcher — handles SessionStart (heartbeat), StopFailure, PostCompact, InstructionsLoaded, TaskCompleted, TaskCreated, SubagentStart, PermissionDenied, PostToolUse, PostToolUseFailure (10 events; `Stop`/`Notification`/`TeammateIdle` are notify-only) |
 | `notify_teams.sh` | `src/hooks/` | Webhook notifications (Teams / Slack / Discord / custom HTTP endpoints) |
 | `log_debate_completion.sh` | `src/hooks/` | Debate completion logging — wired as `deliberation-conductor`'s agent-level Stop hook |
 

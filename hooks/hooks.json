@@ -59,6 +59,16 @@
         ]
       }
     ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/log_event.sh"
+          }
+        ]
+      }
+    ],
     "PostCompact": [
       {
         "hooks": [

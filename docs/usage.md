@@ -588,7 +588,7 @@ Inventory pass runs because the question references the project. Likely panel: `
 #### Notes
 
 - Single pass — no rebuttals, no review loop, no artifact written to disk.
-- Parallel fan-out is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers.
+- Parallel fan-out reliability has a Claude Code version floor — see the *Parallel fan-out version floor* section of `.claude/rules/fan-out-policy.md`.
 - The Senior Council's `answer` mode (this command) sits beside its `plan` and `implement` modes (`/summon-council`). It reuses the same auto-selection logic; only the output shape and process loop differ.
 
 ---
@@ -724,7 +724,7 @@ Example conflict:
 
 #### Notes
 
-- Parallel fan-out to specialists and reviewers is more reliable on Claude Code v2.1.128+, where a failing sibling tool call no longer cancels its parallel peers.
+- Parallel fan-out reliability (specialists and reviewers alike) has a Claude Code version floor — see the *Parallel fan-out version floor* section of `.claude/rules/fan-out-policy.md`.
 - The inventory pass uses the `Explore` agent (read-only). It is fast and does not pollute the main context window.
 
 ---
@@ -843,7 +843,7 @@ Configure HTTP webhook endpoints for Parliament event notifications.
 
 #### Supported Events
 
-All Parliament hook events (Notification, Stop, StopFailure, TaskCompleted, SubagentStart, PostCompact, InstructionsLoaded, TeammateIdle, PreToolUse, PostToolUse) can trigger webhook notifications.
+All Parliament hook events (Notification, Stop, StopFailure, TaskCompleted, TaskCreated, SubagentStart, SessionStart, PostCompact, InstructionsLoaded, PermissionDenied, TeammateIdle, PostToolUse, PostToolUseFailure — the 13 wired in `hooks/hooks.json`) can trigger webhook notifications.
 
 ---
 

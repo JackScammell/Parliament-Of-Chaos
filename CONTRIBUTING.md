@@ -70,6 +70,10 @@ Parliament-Of-Chaos/
 ├── commands/
 │   ├── manifest.yaml                  # Source-of-truth registry for every slash command
 │   └── <66 command .md files>         # Command definitions across 15 categories
+├── .github/
+│   └── workflows/gate.yml             # "The Gate" — release-blocking CI (see below)
+├── scripts/
+│   └── ci/                            # Gate scripts: install_smoke.sh, hook_fixture.sh, conformance.py
 ├── src/
 │   └── hooks/                         # Hook scripts (_common.sh, log_event.sh, notify_teams.sh)
 ├── reference/                         # NON-EXECUTING Python reference implementation (see reference/README.md)
@@ -79,6 +83,12 @@ Parliament-Of-Chaos/
 │   └── requirements.txt               # Its Python dependencies
 └── docs/                              # Documentation
 ```
+
+### CI — The Gate
+
+Every push, PR, and tag runs `.github/workflows/gate.yml`: a headless install-smoke test,
+a hook fixture-fire contract test, and `conformance.py --strict` (repo invariants). Run all
+three locally before pushing: `bash scripts/ci/install_smoke.sh && bash scripts/ci/hook_fixture.sh && python3 scripts/ci/conformance.py --strict`.
 
 ### Source-of-truth Files
 
@@ -334,7 +344,7 @@ When making changes that affect documentation:
 
 1. **Specialist Agents** (16): Domain experts (e.g., backend, security, testing)
 2. **Grumpy Reviewers** (12): Critical reviewers focused on a single quality dimension
-3. **Planning Agents** (3): Project planning and scoping
+3. **Planning Agents** (2): Project planning and scoping (project-oracle, scope-weaver); plus task-executor, the utility agent under senior-council
 4. **Orchestrators** (2): Coordinate other agents
 
 All frontmatter conventions — including effort tiers, maxTurns, memory scope, isolation, and tool restrictions — are specified in [`.claude/rules/agent-standards.md`](.claude/rules/agent-standards.md). New agents must match the template for their role.

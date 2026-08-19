@@ -119,6 +119,51 @@ tool system, which v2.1.233 removed by default on Fable 5 / Sonnet 5 / Opus 4.8
   fan-out-policy.md (absent signals ⇒ Non-reporting ⇒ floor `INCOMPLETE` guarantee holds) and
   to `CLAUDE_CODE_ENABLE_TODO_TOOLS=1` as the user-side restore if the events prove tool-tied.
 
+### Hook registration liveness (shipped vs installed vs firing)
+
+Read-only. Three-way divergence check that makes the v1.9.0–v1.24.0 failure class —
+hooks declared but never registered, telemetry silently dark — impossible to miss
+again. Since v1.26.0 every session writes a `type: "heartbeat"` record
+(`SessionStart` → `log_event.sh`), so an empty `activity.jsonl` is now a *signal*,
+not an ambiguity: a healthy install always produces at least one record per session.
+
+Compare three sources:
+
+1. **Shipped** — the event set declared in this repo's `hooks/hooks.json`.
+2. **Installed** — the same file in the installed plugin copy, resolved via
+   `claude plugin list` (or the cache path it reports). If no installed copy can be
+   located, report INFO — running from a repo checkout, not an install — and skip the
+   shipped-vs-installed comparison rather than failing.
+3. **Firing** — evidence in `activity.jsonl`: heartbeat records whose
+   `plugin_version` matches the installed version (records lacking
+   `schema_version`/`plugin_version` predate v1.26.0 and fall outside the window),
+   plus the `type` values of the other wired events.
+
+WARN semantics:
+
+- **Shipped-but-not-installed** — an event present in the repo's `hooks/hooks.json`
+  but absent from the installed copy's: stale install.
+  Remediation: `claude plugin update`.
+- **Installed-but-never-firing** — `SessionStart` is wired in the installed copy but
+  no heartbeat appears across the last N sessions (default N=5, counted as distinct
+  `session` values in `activity.jsonl`; when the log is entirely empty, prompt the
+  user to confirm at least one session has started since install): registration
+  failure — the v1.9.0–v1.24.0 class. First check the double-registration footgun
+  (see "Hook scripts" above: `plugin.json`'s `hooks` field referencing the
+  auto-loaded file), then executable bit and shebang.
+- **Heartbeat firing but a sibling event dark** — heartbeats present in the window
+  but a wired event type (e.g. `task_completed`) never appears despite subagent
+  activity in the same window: per-event failure, not whole-file registration
+  failure. Classify via the asymmetry signature in "Task-event telemetry liveness"
+  above; for the *consequences* of dark task telemetry, defer to the fallback
+  semantics in `.claude/rules/fan-out-policy.md` (detection-table caveats) rather
+  than restating them here.
+
+The stale-install and never-firing WARNs are mutually exclusive by construction: a
+missing wiring in the installed copy is always reported as stale-install, never as a
+firing failure. This check never mutates either hooks file and never invokes
+`claude plugin update` itself — same read-only stance as the concurrency check.
+
 ### Plugin orphans (Claude Code v2.1.121+)
 
 When `--check-orphans` is passed, `/env-doctor` shells out to `claude plugin list
@@ -165,7 +210,7 @@ to see if any auto-installed companions can be removed cleanly.
 OK   — ${CLAUDE_PLUGIN_DATA} = /Users/jack/Library/Claude/plugin-data/chaos (writable)
 OK   — .project-files/.telemetry/ is gitignored
 
-## Hook scripts (4 wired in hooks/hooks.json)
+## Hook scripts (2 wired in hooks/hooks.json; _common.sh sourced, log_debate_completion.sh agent-level)
 OK   — src/hooks/log_event.sh (executable, valid shebang)
 OK   — src/hooks/notify_teams.sh (executable, valid shebang)
 OK   — src/hooks/_common.sh (not directly wired; sourced by others)
@@ -181,6 +226,10 @@ WARN — hooks/hooks.json: hooks.PostToolUse[2] failed to parse
 OK   — git 2.47.0
 OK   — jq 1.7.1
 OK   — bash 5.2.32
+
+## Hook registration liveness
+OK   — installed hooks/hooks.json matches shipped (13 events)
+OK   — heartbeat present for plugin_version 1.26.0 (4 of last 5 sessions)
 
 ## Concurrency (fan-out floor)
 OK   — Claude Code v2.1.140 (≥ v2.1.128 parallel-fan-out floor)

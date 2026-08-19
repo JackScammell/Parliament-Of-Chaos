@@ -26,6 +26,13 @@ LOG_FILE="$LOG_DIR/activity.jsonl"
 # ever corrupted or lost, merely filed in the previous window.
 if [ -f "$LOG_FILE" ]; then
   LOCK_FILE="${LOG_FILE}.lock"
+  # Stale-lock recovery (security review, v1.26.0): a SIGKILL'd holder would
+  # otherwise leave the lock forever and silently disable rotation. A lock
+  # older than 60s cannot belong to a live rotation check (which takes
+  # milliseconds) — remove it.
+  if [ -f "$LOCK_FILE" ] && [ -n "$(find "$LOCK_FILE" -mmin +1 2>/dev/null)" ]; then
+    rm -f "$LOCK_FILE"
+  fi
   if ( set -o noclobber; echo $$ > "$LOCK_FILE" ) 2>/dev/null; then
     trap 'rm -f "$LOCK_FILE"' EXIT
     LOG_SIZE=$(wc -c < "$LOG_FILE" 2>/dev/null || echo 0)
@@ -72,6 +79,35 @@ case "$HOOK_EVENT_NAME" in
       EXTRA_JSON=$(jq -n --arg status "$TASK_STATUS" '{status: $status}')
     fi
     EVENT_TYPE="task_completed" ;;
+  SessionStart)
+    # Session heartbeat (v1.26.0 "The Gate"): telemetry that observes itself.
+    # Every session writes at least one record, so "zero events in
+    # activity.jsonl" becomes distinguishable from "hooks never registered"
+    # (the v1.9.0-v1.24.0 dark-telemetry class). /env-doctor's registration-
+    # liveness check keys off this record.
+    # Volume/retention stance: one line (~150 bytes) per session start —
+    # negligible against the 10MB rotation threshold above. Heartbeats get no
+    # separate retention policy; they age out under the same rotation as every
+    # other record.
+    # source (startup|resume|clear|compact) is upstream-documented on
+    # SessionStart but captured best-effort with the same shell-level
+    # omit-when-empty guard as TaskCompleted's status above.
+    HEARTBEAT_SOURCE="$(printf '%s' "$HOOK_PAYLOAD" | jq -r '.source // empty')"
+    # plugin_version lets consumers bound "the current plugin version window"
+    # without correlating timestamps against install dates. Resolved from the
+    # copy this script actually runs from (BASH_SOURCE), so an installed-cache
+    # copy reports the installed version, not the repo checkout's.
+    PLUGIN_MANIFEST="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/.claude-plugin/plugin.json"
+    PLUGIN_VERSION=""
+    if [ -f "$PLUGIN_MANIFEST" ]; then
+      PLUGIN_VERSION="$(jq -r '.version // empty' "$PLUGIN_MANIFEST" 2>/dev/null || true)"
+    fi
+    EXTRA_JSON=$(jq -n \
+      --arg source "$HEARTBEAT_SOURCE" \
+      --arg plugin_version "$PLUGIN_VERSION" \
+      '(if $source == "" then {} else {source: $source} end)
+       + (if $plugin_version == "" then {} else {plugin_version: $plugin_version} end)')
+    EVENT_TYPE="heartbeat" ;;
   PostCompact)
     EVENT_TYPE="compaction" ;;
   InstructionsLoaded)
@@ -111,6 +147,12 @@ case "$HOOK_EVENT_NAME" in
 esac
 
 # Build base JSON and merge any event-specific fields.
+# schema_version stamps the envelope revision (1 = the v1.26.0 baseline). It
+# is additive under the standing consumer contract (_common.sh: tolerate
+# absent/unknown fields), and its ABSENCE dates a record to pre-v1.26.0 —
+# which is itself the version-window signal /env-doctor's registration-
+# liveness check uses. Bump only on a breaking envelope change, never for
+# additive fields.
 # effort_level / agent_id are additive: omitted when their source value is
 # empty (older Claude Code, or a top-session hook for agent_id) so the
 # activity.jsonl schema stays clean. Same conditional-merge idiom as the
@@ -127,7 +169,7 @@ jq -cn \
   --arg effort_level "$HOOK_EFFORT_LEVEL" \
   --arg agent_id "$HOOK_AGENT_ID" \
   --argjson extra "$EXTRA_JSON" \
-  '{"event":$event,"session":$session,"timestamp":$ts,"type":$type}
+  '{"schema_version":1,"event":$event,"session":$session,"timestamp":$ts,"type":$type}
    + (if $effort_level == "" then {} else {effort_level: $effort_level} end)
    + (if $agent_id == "" then {} else {agent_id: $agent_id} end)
    + $extra' \

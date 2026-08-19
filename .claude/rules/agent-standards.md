@@ -2,6 +2,11 @@
 
 All Parliament of Chaos agents must include standardised frontmatter fields. This ensures consistent behaviour, cost optimisation, and proper resource allocation across the 33-agent fleet (2 orchestrators, 16 specialists, 12 grumpy reviewers, 2 planning agents, 1 utility agent).
 
+> **Enforced by The Gate (v1.26.0)**: the tables in this file are machine-checked by
+> `scripts/ci/conformance.py` in CI. Any change to a table here must update that script's
+> constants in the same commit; this file remains authoritative — if the two disagree, fix
+> the script. (Mirrors the `commands/manifest.yaml` ↔ `/parliament-doctor` pattern.)
+
 ## Required Fields
 
 Every agent must include:
