@@ -15,6 +15,9 @@ disallowedTools:
   - Write
   - NotebookEdit
   - Bash
+  - Task
+  - Agent
+  - SendMessage
 ---
 
 # Grumpy I18n Nitpicker

@@ -12,6 +12,10 @@ maxTurns: 20
 initialPrompt: >-
   Welcome! I'll guide you through structured project planning. Let's start —
   what is the core idea or problem you want to solve?
+disallowedTools:
+  - Task
+  - Agent
+  - SendMessage
 ---
 
 # Project Oracle

@@ -35,3 +35,7 @@ Concrete steps with code snippets where helpful.
 Checklist of fixes required before approval.
 
 If genuinely solid, explain why it passes standards.
+
+## Notes
+
+- Not the same as Claude Code's built-in `/code-review` / `/code-review ultra` (upstream, own review model, no Parliament floor guarantees). Use this command for the Parliament review contract.

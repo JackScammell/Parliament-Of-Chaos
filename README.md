@@ -54,17 +54,17 @@ claude plugin install chaos@chaos
 
 All 66 commands are declared in [`commands/manifest.yaml`](commands/manifest.yaml), which acts as the source of truth for command name, status, owner agent, effort tier, and category. Run `/parliament-doctor` to reconcile the manifest against the filesystem and skill registry.
 
-> **Not the same as Claude Code's built-in `/code-review`.** Parliament's review commands (`/summon-grumpy-reviewer`, `/parliament-review`) run the plugin's grumpy-reviewer fleet against your working changes and are invoked directly. Claude Code also ships a separate built-in `/code-review` (as of recent versions, manual-only and dispatched to a background subagent) that is unrelated to Parliament and applies its own review model. When you want the Parliament governance flow, use the `/chaos:` review commands; the bare `/code-review` is the upstream feature.
+> **Not the same as Claude Code's built-in `/code-review`.** Parliament's review commands (`/summon-grumpy-reviewer`, `/parliament-review`) run the plugin's grumpy-reviewer fleet against your working changes and are invoked directly. Claude Code also ships a separate built-in `/code-review` that is unrelated to Parliament and applies its own review model — it runs at selectable effort levels, and `/code-review ultra` dispatches a multi-agent cloud review of the current branch (the older `/ultrareview` is now a deprecated alias for it). When you want the Parliament governance flow, use the `/chaos:` review commands; the bare `/code-review` is the upstream feature.
 
 ### Agent Invocation
 
 | Command | Description |
 |---------|-------------|
 | `/ask-council <question>` | Ask the council a question. Auto-selects 2–5 specialists, consults them in parallel, and returns a single synthesised answer with consensus and disagreements surfaced. No fix loop, no artifact, no code edits |
-| `/summon-council [plan\|implement] [task]` | Two-mode orchestrator — `plan` writes a spec to `.project-files/plans/`, `implement` runs full specialist + 9-grump cycle. Always opens with an `Explore` inventory pass so the council extends existing capabilities rather than creating duplicates |
+| `/summon-council [plan\|implement] [task]` | Two-mode orchestrator — `plan` writes a spec to `.project-files/plans/`, `implement` runs full specialist + default review panel (9 of 12 grumps) cycle. Always opens with an `Explore` inventory pass so the council extends existing capabilities rather than creating duplicates |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
 | `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
-| `/parliament-review` | Grumpy-reviewer review — relevance-tiered by default (only reviewers whose domain the diff touches); `--all` forces the full 9 for maximum scrutiny. The security + correctness floor (+ privacy on PII) is always present |
+| `/parliament-review` | Grumpy-reviewer review — relevance-tiered by default (only reviewers whose domain the diff touches); `--all` forces the full default panel (9 of 12 reviewers; privacy/i18n/budget tier in on relevance) for maximum scrutiny. The security + correctness floor (+ privacy on PII) is always present |
 
 ### Deliberation
 
@@ -258,7 +258,7 @@ All 66 commands are declared in [`commands/manifest.yaml`](commands/manifest.yam
 `/summon-council` runs in one of two modes:
 
 - **`plan` mode** — produces a written plan at `.project-files/plans/<slug>.md`. No code edits. Uses a planning-specialist subset and a plan-shaped reviewer subset (architecture, maintainability, security, performance, with budget/privacy/testing added when the topic warrants).
-- **`implement` mode** — coordinates specialists and the full 9-grump panel to ship working code.
+- **`implement` mode** — coordinates specialists and the 9-member default review panel (of 12 reviewers total) to ship working code.
 
 If the mode is not given and cannot be inferred from the topic, the council asks before doing any work. Pure review requests (no fix loop) are redirected to `/parliament-review`.
 
@@ -267,7 +267,7 @@ Both modes follow the same five steps:
 1. **Inventory** — the council dispatches the `Explore` agent to find existing helpers, utilities, services, modules, and tests related to the topic. Default rule: **extend existing capabilities; only create new ones when a specialist gives a concrete reason.** The inventory is shared with every specialist spawned.
 2. **Analyse** — the Senior Council restates the goal and identifies which domains the task requires.
 3. **Dispatch** — appropriate specialists are selected and consulted, referencing the inventory.
-4. **Review** — outputs pass through the relevant reviewer subset (plan-shaped for `plan` mode, all 9 grumps for `implement` mode).
+4. **Review** — outputs pass through the relevant reviewer subset (plan-shaped for `plan` mode, the 9-member default panel — of 12 reviewers total — for `implement` mode).
 5. **Iterate & synthesise** — feedback routes back to specialists until reviewers approve or trade-offs are documented. Conflicts resolved via priority (security > correctness > maintainability > performance > convenience).
 
 ### The Onboarding Workflow

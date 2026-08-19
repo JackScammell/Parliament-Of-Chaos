@@ -12,6 +12,10 @@ maxTurns: 20
 initialPrompt: >-
   I'll help scope this roadmap item into a detailed specification. Which roadmap
   item would you like to break down?
+disallowedTools:
+  - Task
+  - Agent
+  - SendMessage
 ---
 
 # Scope Weaver

@@ -16,7 +16,8 @@
 #
 # Maintenance:
 #   • Update this file whenever a command is added, renamed, retired, or its
-#     surface visibility changes.
+#     surface visibility changes. The `updated:` date tracks the last edit to this
+#     file itself (including effort/date reconciliation), not command-body edits.
 #   • Run `/parliament-doctor` before cutting a release to confirm zero drift.
 #   • Orphan entries should be resolved (exposed or retired) during Tier 1 of
 #     the toolset-gaps plan — see .project-files/toolset-gaps-debate.md.

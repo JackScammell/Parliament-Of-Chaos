@@ -14,7 +14,7 @@ This guide explains how to use Parliament of Chaos commands effectively. Parliam
 | `/roadmap-item-scope` | Create specs and tasks for an item | Breaking down work before implementation |
 | `/implement-task-list` | Execute tasks systematically | Safe, tracked implementation |
 | `/ask-council <question>` | Q&A — auto-selects 2–5 specialists, consults in parallel, synthesises a single answer with consensus and disagreements surfaced | Open-ended questions, "what should we do about X", expert second opinion |
-| `/summon-council [plan\|implement]` | Two-mode orchestration — plan (writes spec to `.project-files/plans/`) or implement (full 9-grump cycle) | Complex tasks, architectural decisions, ad-hoc planning |
+| `/summon-council [plan\|implement]` | Two-mode orchestration — plan (writes spec to `.project-files/plans/`) or implement (9-member default review panel, of 12 reviewers total) | Complex tasks, architectural decisions, ad-hoc planning |
 | `/summon-grumpy-reviewer` | Quick critical code review | Code review, PR feedback, refactoring |
 | `/parliament-review` | Full review with all 12 grumpy reviewers | Maximum scrutiny on critical code |
 | `/summon-specialist <agent>` | Invoke a specific specialist | Focused domain analysis |
@@ -583,7 +583,7 @@ Inventory pass runs because the question references the project. Likely panel: `
 
 #### Cost Profile
 
-`/ask-council` runs one synthesis pass at the council's `effort: high` plus 2–5 specialists at `effort: medium`. Expect roughly 2–3× the cost of `/summon-specialist`, and well under `/summon-council implement` (which adds the full 9-grump iteration loop) or `/debate-topic` (which adds multi-round convergence and voting).
+`/ask-council` runs one synthesis pass at the council's `effort: high` plus 2–5 specialists at `effort: medium`. Expect roughly 2–3× the cost of `/summon-specialist`, and well under `/summon-council implement` (which adds the full default-panel (9 of 12 grumps) iteration loop) or `/debate-topic` (which adds multi-round convergence and voting).
 
 #### Notes
 
@@ -598,7 +598,7 @@ Inventory pass runs because the question references the project. Likely panel: `
 The Senior Council orchestrates specialist agents and grumpy reviewers in one of two modes:
 
 - **`plan` mode** — produces a written plan at `.project-files/plans/<slug>.md`. No code edits.
-- **`implement` mode** — coordinates specialists and the full 9-grump panel to ship working code.
+- **`implement` mode** — coordinates specialists and the 9-member default review panel (of 12 reviewers total; privacy/i18n/budget tier in on relevance) to ship working code.
 
 #### Mode Selection
 
@@ -630,7 +630,7 @@ Both modes follow the same five steps. Step 1 (inventory) is mandatory in both m
 3. **Specialist Work** — each agent contributes from their domain expertise, referencing the inventory.
 4. **Review** — outputs go through the relevant reviewer subset:
    - **`plan` mode**: `grumpy-architecture-skeptic`, `grumpy-maintainability-curmudgeon`, `grumpy-security-nag`, `grumpy-performance-troll`. Add `grumpy-budget-hawk` for infra-heavy plans, `grumpy-privacy-paranoid` for PII-touching plans, `grumpy-testing-tyrant` when a test strategy is part of the plan.
-   - **`implement` mode**: all 9 grumps (code-reviewer, standards-enforcer, architecture-skeptic, maintainability-curmudgeon, security-nag, performance-troll, accessibility-auditor, documentation-pedant, testing-tyrant).
+   - **`implement` mode**: all 9 default-panel grumps (of 12 reviewers total) — (code-reviewer, standards-enforcer, architecture-skeptic, maintainability-curmudgeon, security-nag, performance-troll, accessibility-auditor, documentation-pedant, testing-tyrant).
 5. **Iteration & Synthesis** — feedback routes back to specialists until reviewers approve. Conflicts resolved via priority: **security > correctness > maintainability > performance > convenience**. Out-of-scope recommendations are logged to a "Deferred" section rather than blocking approval.
 
 #### Plan Artifact (plan mode only)
@@ -685,7 +685,7 @@ The council will engage:
 - **backend-goblin** for performance of auth checks
 - **api-keeper** for token handling and API contracts
 - **system-architect** for overall design
-- All 9 grumpy reviewers for critical review
+- The 9-member default review panel for critical review (privacy/i18n/budget reviewers tier in when relevant — 12 total)
 
 ```
 /summon-council plan

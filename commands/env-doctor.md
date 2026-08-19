@@ -81,22 +81,42 @@ cap, which the fan-out policy treats as a security concern (a queued floor membe
 waited for, never dropped).
 
 - Report whether `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is set and, if so, its value.
-- **WARN if it is set below 9** — the full grumpy-reviewer panel is 9 members, so a cap under 9
-  serialises the panel and can starve floor members (security, code review). If unset, note that
-  Claude Code's default (20) is above the panel size, so no warning.
+- **WARN if it is set below the selected-set size** — the default implement panel is 9 members
+  and relevance-tiering can bring the fleet's other reviewers in (12 total with `--all` or
+  tiered-in privacy/i18n/budget members), so a cap below the dispatched set serialises the
+  panel and can starve floor members (security, code review). If unset, note that Claude Code's
+  default (20) is above the largest possible panel, so no warning.
 - **Confirm Claude Code ≥ v2.1.128** — the parallel-fan-out floor (single-sourced in
   `.claude/rules/fan-out-policy.md` → *Parallel fan-out version floor*). Older versions cannot fan
   the panel out in parallel regardless of the env var; WARN with the detected version if below.
 - **Cross-check against the fan-out policy.** Per `.claude/rules/fan-out-policy.md`, there is **no
   fixed batch-width constant** — batching engages only when the selected-set size would exceed the
   live cap. So WARN when `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is **below the selected-set size
-  the review would dispatch** (up to the 9-member full panel); below that, members queue and can
+  the review would dispatch** (up to the full 12-reviewer fleet under `--all`/tiering); below that, members queue and can
   appear hung. If the rule file is absent, skip the cross-check with a one-line note rather than
   failing.
 
 This check never sets or mutates the env var — Parliament's no-policy stance means
 `CLAUDE_CODE_MAX_*` env vars are the user's own to set (see `/settings-audit` for a
 confirmation-gated opt-in snippet). `/env-doctor` only reports the divergence.
+
+### Task-event telemetry liveness (v2.1.233 Todo-tool removal)
+
+Read-only. The fan-out detection table (`.claude/rules/fan-out-policy.md`) relies on
+`TaskCreated`/`TaskCompleted` hook events landing in `activity.jsonl` as `task_created` /
+`task_completed`. It is **undocumented** whether those events are tied to the task-list (Todo)
+tool system, which v2.1.233 removed by default on Fable 5 / Sonnet 5 / Opus 4.8
+(`CLAUDE_CODE_ENABLE_TODO_TOOLS=1` restores it). Two-part probe:
+
+- **Static**: if the session model is one of the affected tiers and
+  `CLAUDE_CODE_ENABLE_TODO_TOOLS` is unset, note the *possibility* of dark task-event
+  telemetry (INFO, not WARN — provenance is unconfirmed).
+- **Runtime (the disambiguator)**: scan the recent `activity.jsonl` window; **WARN only on the
+  asymmetry signature** — `subagent_start` records present with **zero** `task_created` /
+  `task_completed` siblings in the same window. A quiet log (no subagent activity at all) is
+  not evidence and must not warn. On WARN, point to the fallback semantics in
+  fan-out-policy.md (absent signals ⇒ Non-reporting ⇒ floor `INCOMPLETE` guarantee holds) and
+  to `CLAUDE_CODE_ENABLE_TODO_TOOLS=1` as the user-side restore if the events prove tool-tied.
 
 ### Plugin orphans (Claude Code v2.1.121+)
 
@@ -167,7 +187,7 @@ WARN — CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS = 4 (below panel size 9)
        effect: serialises the 9-reviewer panel; can starve floor members behind the cap
        note: unset would default to 20 (safe); set it ≥ 9 or leave it unset
 WARN — CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS (4) is below the selected-set size a --all review
-       would dispatch (up to 9); members beyond the cap queue and can appear hung
+       would dispatch (up to 12); members beyond the cap queue and can appear hung
        remediation: raise the cap to the panel size you run, or leave it unset (defaults to 20)
 
 ## Conventions

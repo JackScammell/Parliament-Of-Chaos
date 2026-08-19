@@ -29,6 +29,7 @@ When reviewers or agents disagree, apply this priority hierarchy:
 
 ## Delegation Rules
 
-- Only orchestrators (senior-council, deliberation-conductor) may spawn sub-agents
+- Only orchestrators (senior-council, deliberation-conductor) may spawn sub-agents — enforced structurally via `Task` in every non-orchestrator's `disallowedTools` (v1.24.0), not just by this rule
 - Specialists and reviewers must not spawn other agents
+- Non-orchestrator agents (specialists, reviewers, planning agents, task-executor) must not message other fanned-out agents laterally (the harness's cross-session SendMessage / @-mention primitives) — enforced structurally via `SendMessage` in their `disallowedTools` (v1.24.0). All coordination flows through the orchestrator — a lateral channel would bypass verdict tallying and corrupt per-member attribution, the same reason spawning is banned
 - Reviewers must not modify code — they only read and critique

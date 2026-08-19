@@ -76,4 +76,6 @@ Out-of-scope recommendations logged for future work.
 
 ## Notes
 
+- **Upstream `/code-review` distinction**: Claude Code's built-in `/code-review` (including `/code-review ultra`, for which the older `/ultrareview` is a deprecated alias) is a separate upstream feature with its own review model — it does not run the grumpy fleet or honour the fan-out policy floor. This command is the Parliament governance flow.
+
 - Parallel fan-out reliability has a Claude Code version floor (non-cascading sibling failures) and the detection/recovery behaviour (batching, one re-dispatch, liveness floor, `INCOMPLETE` on floor non-report) — both are single-sourced in `.claude/rules/fan-out-policy.md`; see the *Parallel fan-out version floor* and degradation sections there rather than restating the version here.

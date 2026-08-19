@@ -5,6 +5,36 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.0] - 2026-08-19
+
+Claude Code feature-adoption release for upstream v2.1.219–v2.1.235, driven by `/changelog-review` (six-member panel: config-curator, system-architect, pipeline-engineer, refactor-ranger, maintainability-curmudgeon, architecture-skeptic — all five findings approved as amended). The unifying theme: upstream defaults Parliament had leaned on have flipped, so this release converts prose rules into structural enforcement and adopts an **invariants-not-defaults** documentation standard (record what Parliament pins explicitly; only track an upstream default when Parliament relies on it being unset).
+
+### Added — structural spawn enforcement
+
+- **Spawn and lateral-messaging primitives denied fleet-wide** — every non-orchestrator agent (16 specialists, 12 grumpy reviewers, 2 planning, task-executor) now carries `Task`, `Agent`, and `SendMessage` in `disallowedTools` (both spawn-tool names are denied so the guard survives the harness's tool-rename; `SendMessage` closes the lateral spawn-by-proxy channel). Upstream v2.1.219 re-enabled nested subagent spawning by default (depth 3), which silently demoted `governance.md`'s "only orchestrators spawn" rule from defence-in-depth to prose-only; the fleet-wide denial makes it structural again, protecting `/parliament-metrics` per-member attribution and the B4 breaker's member identity model. The `Skill`/fork residual channel is documented (not denied) in `agent-standards.md`. Users wanting a defence-in-depth cap on top of the structural denial can set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` themselves (guide-don't-ship, per the `worktree.baseRef` precedent).
+- **Lateral-messaging ban** (`governance.md`) — fanned-out members must not message each other via the harness's cross-session SendMessage/@-mention primitives; all coordination flows through the orchestrator (same rationale as the spawn ban).
+- **`task-executor` frontmatter repaired** — its pre-existing `tools: []` (an empty whitelist that granted nothing, contradicting its documented Read/Write/Edit duties) is now an explicit whitelist (`Read, Write, Edit` + the native task tools for when `CLAUDE_CODE_ENABLE_TODO_TOOLS=1`), with belt-and-braces `disallowedTools: [Task, Agent, SendMessage]`; its dangling `Stop` hook pointing at `log_agent_activity.sh` (removed in v1.9.0) is deleted — activity logging is handled globally via `settings.json`.
+
+### Added — telemetry liveness probe
+
+- **`/env-doctor` task-event probe** — v2.1.233 removed the Todo tools by default on newer models, and it is undocumented whether the `TaskCreated`/`TaskCompleted` hook events the fan-out detection table depends on are tied to that system. The probe warns only on the disambiguating asymmetry signature (`subagent_start` present, zero `task_completed` siblings), not on quiet logs, and points to `CLAUDE_CODE_ENABLE_TODO_TOOLS=1` as the user-side restore.
+- **Fallback semantics documented** (`fan-out-policy.md`) — absent task-event signals collapse members into Non-reporting → one re-dispatch → `INCOMPLETE` for floor members; degraded telemetry loses disambiguation quality but the never-false-`APPROVE` liveness floor holds by design.
+- **`task-executor` availability gate** — its Native Task Integration section now checks for the Todo tools before using them (removed by default on Fable 5 / Sonnet 5 / Opus 4.8); `tasks.md` is the sole record when absent.
+
+### Changed — documentation
+
+- **Background Execution blockquote rewritten** (`agent-standards.md`) — three consecutive amendments of upstream default-flips replaced with a current-state invariants statement plus a compact version-lineage table (v2.1.198 → v2.1.219+).
+- **Pricing figures deleted** from the advisory-reviewer sonnet-pin rationale — the relative rationale (`effort` errors on Haiku, valid on Sonnet; sonnet materially cheaper) carries the decision; absolute $/Mtok anchors rot on someone else's schedule.
+- **Prefix-stagger note** (`fan-out-policy.md` Batching) — v2.1.234's harness-automatic stagger shifts `SubagentStart` timestamps within a wave; Queued is diagnosed from the *absence* of `SubagentStart`, never start-time spread.
+- **`/code-review` refresh** — README callout and both review commands now note the upstream `/code-review ultra` cloud review and the deprecated `/ultrareview` alias.
+- **Plugin distribution notes** — `/plugin-install` documents v2.1.221 immediate activation (no reload) and v2.1.232 marketplace-refresh-first; `/plugin-upgrade` adds a `claude plugin validate` pre-release gate and the mandatory CHANGELOG compare-link step.
+
+### Deferred
+
+- SendMessage-based member *resume* as an alternative to re-dispatch-from-scratch (first harness primitive that could replace it — architect flag).
+- Plugin `archive` + SHA-256 source distribution (supply-chain decision, not a doc line).
+- `sandbox.network.strictAllowlist` recognition in `/settings-audit`; `CLAUDE_CODE_TOOL_MEMORY_LIMIT` caveat in `/telemetry-query`.
+
 ## [1.23.0] - 2026-07-24
 
 Council cost control and member fault-tolerance. Both problems live at one seam — the orchestrator's fan-out boundary (cost = admission control; reliability = completion control) — so both are governed by a single new policy file that the orchestrators reference rather than duplicate. Planned and reviewed through the council (5 planning specialists, two rounds of grumpy review); user ruled on three trade-offs. Full plan: `.project-files/plans/council-cost-and-resilience.md`.
@@ -612,6 +642,7 @@ Subsequent tiers from the toolset-gaps plan land in v1.11.0 (Learning Loop), v1.
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.24.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.23.0...v1.24.0
 [1.23.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.22.0...v1.23.0
 [1.22.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.21.0...v1.22.0
 [1.21.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.20.0...v1.21.0

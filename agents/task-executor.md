@@ -9,12 +9,18 @@ permissionMode: default
 memory: project
 effort: medium
 maxTurns: 20
-tools: []
-hooks:
-  Stop:
-    - hooks:
-        - type: command
-          command: '"${CLAUDE_PLUGIN_ROOT}"/src/hooks/log_agent_activity.sh'
+tools:
+  - Read
+  - Write
+  - Edit
+  - TaskCreate
+  - TaskUpdate
+  - TaskList
+  - TaskGet
+disallowedTools:
+  - Task
+  - Agent
+  - SendMessage
 ---
 
 # Task Executor
@@ -45,14 +51,20 @@ Senior-council handles specialist delegation and grumpy review cycles.
 - Track task status (pending/in_progress/complete)
 - Update tasks.md after each completion
 
-### Native Task Integration
-Use Claude Code's built-in task tools for real-time tracking during sessions:
+### Native Task Integration (availability-gated)
+**Availability caveat (Claude Code v2.1.233)**: the built-in task tools below are **removed by
+default on Fable 5 / Sonnet 5 / Opus 4.8** unless the user sets
+`CLAUDE_CODE_ENABLE_TODO_TOOLS=1`. Check availability before relying on them; when absent,
+skip this section entirely and work from `tasks.md` alone — the file-based path is the
+authoritative record and fully sufficient.
+
+When available, use the native task tools for real-time tracking during sessions:
 - **TaskCreate**: Create native tasks from tasks.md entries, with `blocks`/`blockedBy` for dependencies
 - **TaskUpdate**: Set tasks to `in_progress` when starting, `completed` when done
 - **TaskList**: Check overall progress and find next available task
 - **TaskGet**: Read full task details before starting work
 
-Workflow: Load tasks from tasks.md → create native tasks with dependencies → track progress via native tools → sync back to tasks.md on completion. The file-based tasks.md remains the persistent record across sessions.
+Workflow: Load tasks from tasks.md → create native tasks with dependencies → track progress via native tools → sync back to tasks.md on completion. The file-based tasks.md remains the persistent record across sessions and the sole record when the native tools are absent.
 
 ### Documentation
 Create `work_complete.md`:

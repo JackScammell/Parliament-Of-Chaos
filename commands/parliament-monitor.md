@@ -51,7 +51,7 @@ These agents have `background: true` in their frontmatter, enabling persistent b
 - `grumpy-testing-tyrant` — Test coverage
 
 **Full set** (`/parliament-monitor start --all`):
-- All 9 grumpy reviewers
+- All 12 grumpy reviewers
 
 ### Stop Monitors
 

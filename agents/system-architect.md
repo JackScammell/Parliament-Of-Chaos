@@ -14,6 +14,9 @@ disallowedTools:
   - Write
   - NotebookEdit
   - Bash
+  - Task
+  - Agent
+  - SendMessage
 ---
 
 # System Architect

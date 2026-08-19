@@ -52,7 +52,8 @@ The command maintains the authoritative list in `${CLAUDE_PLUGIN_DATA}/version-s
 3. **Compute edits**:
    - `plugin.json`: replace `"version":` value
    - `marketplace.json`: replace both `"version":` values
-   - `CHANGELOG.md`: insert `## [X.Y.Z] - YYYY-MM-DD` stub, or verify one already exists (with `--no-changelog`)
+   - `CHANGELOG.md`: insert `## [X.Y.Z] - YYYY-MM-DD` stub, or verify one already exists (with `--no-changelog`), **and** add the matching `[X.Y.Z]:` compare link at the bottom of the file (RELEASE_INSTRUCTIONS.md mandates it; it was missed for 8 consecutive releases before v1.24.0)
+3b. **Validate (pre-release gate, Claude Code v2.1.221+)** — run `claude plugin validate .` and surface every warning/error before proposing the diff. Treat validation failure as a hard stop; warnings are surfaced to the user. This same gate belongs in CI via `/pre-commit-check --strict`.
 4. **Preview diff** — render a unified diff across all target files.
 5. **Apply** (unless `--check`) — write files atomically; stage them for the caller to commit.
 6. **Post-conditions check** — re-read all files and confirm versions agree. If any file is out of sync after the write, abort with a loud error.

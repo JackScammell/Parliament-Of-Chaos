@@ -47,9 +47,31 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 
 | Role | disallowedTools | Rationale |
 |------|----------------|-----------|
-| Grumpy reviewers | `[Edit, Write, NotebookEdit, Bash]` | Read-only: critique only, never modify code |
-| system-architect | `[Edit, Write, NotebookEdit, Bash]` | Advisory: designs architecture, does not implement |
-| All other specialists | None | Full tool access for implementation work |
+| Grumpy reviewers | `[Edit, Write, NotebookEdit, Bash, Task, Agent, SendMessage]` | Read-only: critique only, never modify code, never spawn or laterally message |
+| system-architect | `[Edit, Write, NotebookEdit, Bash, Task, Agent, SendMessage]` | Advisory: designs architecture, does not implement, does not spawn or message |
+| All other specialists & planning agents | `[Task, Agent, SendMessage]` | Full tool access for implementation work, but only orchestrators spawn or coordinate |
+| task-executor | `[Task, Agent, SendMessage]` + explicit `tools:` whitelist (`Read, Write, Edit`, native task tools) | Utility under senior-council; whitelist plus denial is belt-and-braces |
+| Orchestrators (senior-council, deliberation-conductor) | None (whitelist via `tools:`) | The only agents permitted to spawn — enforced structurally, not just by `governance.md` prose |
+
+> **Why `Task`, `Agent`, and `SendMessage` are denied fleet-wide (v1.24.0)**: upstream Claude
+> Code re-enabled nested subagent spawning **by default** (depth 3) in v2.1.219, so the harness
+> default no longer backs `governance.md`'s "only orchestrators spawn" rule. Denying the spawn
+> primitive on every non-orchestrator turns that rule back into a structural guarantee — the
+> same mechanism that enforces read-only on reviewers. **Both spawn-tool names are denied**
+> (`Task` — the historic name this plugin's own `tools:` lists use — and `Agent`, the name
+> newer harnesses surface) because a denial keyed to a stale name is a no-op. `SendMessage` is
+> denied for the same reason the spawn ban exists: a lateral channel between fanned-out members
+> bypasses orchestrator tallying, and messaging an orchestrator-context agent is spawn-by-proxy.
+> Without these, a nested spawn or lateral message would corrupt `/parliament-metrics`
+> per-member attribution and the B4 circuit-breaker's member identity model.
+>
+> **Known residual channel (documented, not denied)**: the `Skill` tool can invoke
+> `context: fork` commands, which create a forked execution context outside `disallowedTools`'
+> reach. `Skill` is *not* denied fleet-wide because specialists legitimately use non-forking
+> skills; the guard here is `governance.md`'s delegation rule plus the fact that Parliament's
+> fork commands are orchestrator entry points whose first act is top-level coordination — a
+> nested fork surfaces immediately in `/parliament-metrics` attribution. Users wanting a hard
+> cap can set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` (guide-don't-ship).
 
 > **MCP inheritance (v2.1.101)**: Subagents now inherit MCP tools from the parent session automatically. Parliament specialists no longer need to re-declare MCP servers; any MCP tool available to the user is available to spawned agents unless explicitly listed in `disallowedTools`. Sandboxed subagents also now resolve worktree paths correctly.
 
@@ -71,8 +93,9 @@ deliberate deviations apply.
 > `grumpy-code-reviewer`) and every other reviewer stay `inherit` so security and correctness
 > keep the strongest model. `sonnet` is chosen over `haiku` specifically because these reviewers
 > carry `effort: low`, and the `effort` parameter **errors on Haiku 4.5** but is fully supported
-> on **Sonnet 5** — sonnet keeps `effort` valid while still cutting per-token cost (Opus
-> $5/$25 → Sonnet $3/$15 per Mtok). The deviation is **reversible in one frontmatter line**, and
+> on **Sonnet 5** — sonnet keeps `effort` valid while remaining materially cheaper per token
+> than the inherit-tier model (consult current Claude API pricing for exact figures; absolute
+> prices are deliberately not recorded here because they drift). The deviation is **reversible in one frontmatter line**, and
 > review quality under the downgrade is to be measured after the fact via
 > `/parliament-metrics --by-effort`. `/parliament-optimize` flags any reviewer still on
 > `inherit` as a downgrade candidate, respecting the floor exclusion.
@@ -92,14 +115,22 @@ deliberate deviations apply.
 |-------|--------|---------|
 | `background: true` | Grumpy reviewers | Can run as background review tasks |
 
-> **Background-by-default baseline & the `background: false` opt-out (v2.1.198 → v2.1.218)**: Upstream Claude Code moved subagents and forked skills to *background-by-default* over several releases, and this supersedes any earlier note that described subagents as running foreground or nesting "5 levels deep" by default. The relevant history:
+> **Parliament's invariants (documented explicitly because upstream defaults keep flipping)**:
+> Parliament pins the behaviour it depends on rather than tracking upstream defaults:
 >
-> - **v2.1.198** — subagents run in the **background by default** (the `Task` tool's `mode` parameter is now deprecated/ignored). Claude keeps working while the subagent runs and is notified on completion.
-> - **v2.1.212** — per-session spawn cap `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` (default **200**); `/clear` resets the budget.
-> - **v2.1.217** — skills / slash commands with `context: fork` also **background by default**. The documented opt-out is `background: false` in the command's frontmatter (booleans now also accept `no`/`off`/`0`).
-> - **v2.1.218** — subagents **no longer spawn nested subagents by default** (gated behind `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, default disabled), plus a concurrency cap `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default **20**).
+> 1. **Interactive commands stay foreground.** All twelve `context: fork` commands set `background: false` explicitly (since v1.22.0) — a forked orchestrator that silently backgrounded would break the round-by-round review UX (`governance.md`: "Present genuine trade-offs to user"). This holds regardless of what the harness's background default is.
+> 2. **One spawn level.** Only `senior-council` and `deliberation-conductor` orchestrate; every non-orchestrator agent carries `Task`, `Agent`, and `SendMessage` in `disallowedTools` (structural enforcement, since v1.24.0) in addition to the `governance.md` prohibition. This matters because **nested spawning is no longer disabled by default upstream** (as of v2.1.219 the harness default is nesting-on, depth 3) — the harness default is not a guard any more; Parliament's own denial is.
+> 3. **No shipped caps.** Consistent with the no-policy stance, Parliament ships none of the `CLAUDE_CODE_MAX_*` env vars. Users who want defence-in-depth on top of Parliament's structural denial can set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` themselves (same guide-don't-prescribe precedent as `worktree.baseRef`).
 >
-> **Parliament impact.** Parliament ships **twelve** `context: fork` commands and, as of v1.22.0, every one sets `background: false` to preserve the interactive contract the plugin is built on — a forked orchestrator that silently backgrounded would break the round-by-round review UX (`governance.md`: "Present genuine trade-offs to user"). The nesting block in v2.1.218 is **inert for Parliament**: `governance.md` already forbids specialists and reviewers from spawning sub-agents (only `senior-council` and `deliberation-conductor` orchestrate), and those orchestrators run **top-level** via slash commands, one spawn level deep — well inside the default concurrency cap. Consistent with the standing no-policy stance, Parliament does **not** ship any of these `CLAUDE_CODE_MAX_*` env vars in `settings.json`; the defaults are safe for the fleet as designed. A future release that fanned specialists out beyond one nesting level would need to set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` explicitly.
+> Upstream lineage, for the record (consult the Claude Code changelog for current behaviour — these defaults have already flipped more than once):
+>
+> | Version | Change |
+> |---------|--------|
+> | v2.1.198 | Subagents background-by-default; `Task` `mode` param deprecated |
+> | v2.1.212 | Per-session spawn cap added (default 200) |
+> | v2.1.217 | `context: fork` skills background-by-default; `background: false` opt-out |
+> | v2.1.218 | Nested spawning disabled by default; concurrency cap 20 |
+> | v2.1.219+ | Nested spawning **re-enabled** by default (depth 3); session cap removed |
 
 ## Council Fan-Out and Hang-Recovery
 
@@ -228,6 +259,10 @@ memory: project
 effort: medium
 maxTurns: 15
 isolation: worktree
+disallowedTools:
+  - Task
+  - Agent
+  - SendMessage
 ```
 
 ### Specialist (read-only advisory)
@@ -245,6 +280,9 @@ disallowedTools:
   - Write
   - NotebookEdit
   - Bash
+  - Task
+  - Agent
+  - SendMessage
 ```
 
 ### Grumpy Reviewer
@@ -263,6 +301,9 @@ disallowedTools:
   - Write
   - NotebookEdit
   - Bash
+  - Task
+  - Agent
+  - SendMessage
 ```
 
 ### Planning Agent
@@ -275,4 +316,10 @@ permissionMode: default
 memory: project
 effort: medium
 maxTurns: 20
+initialPrompt: >-
+  First-turn prompt that starts the interview/scoping workflow (see Initial Prompts)
+disallowedTools:
+  - Task
+  - Agent
+  - SendMessage
 ```

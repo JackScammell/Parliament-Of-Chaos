@@ -84,7 +84,7 @@ into two model tiers:
 ## Cost Optimisation Estimate
 - Current tier distribution: N high / N medium / N low
 - Estimated token savings from effort tiers: ~40-60% on reviewer tasks
-- Advisory reviewers on `model: sonnet`: N of 5 (Opus $5/$25 → Sonnet $3/$15 per Mtok)
+- Advisory reviewers on `model: sonnet`: N of 5 (sonnet is materially cheaper per token than the inherit-tier model while keeping `effort` valid — see agent-standards.md; consult current Claude API pricing for figures)
 ```
 
 ## Notes

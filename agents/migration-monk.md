@@ -10,6 +10,10 @@ memory: project
 effort: medium
 maxTurns: 15
 isolation: worktree
+disallowedTools:
+  - Task
+  - Agent
+  - SendMessage
 ---
 
 # Migration Monk

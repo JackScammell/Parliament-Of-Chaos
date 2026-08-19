@@ -51,4 +51,9 @@ Common community plugins:
 - `legal-counsel`: Legal compliance and licensing
 - `data-scientist`: Data analysis and visualization
 
+## Notes (Claude Code v2.1.221+ / v2.1.232+)
+
+- **Immediate activation (v2.1.221)**: newly installed plugins activate in the current session — do not instruct the user to run `/reload-plugins` or restart.
+- **Marketplace refresh (v2.1.232)**: installs resolve against the marketplace's refreshed state first; if an install picks up an unexpectedly old version, refresh the marketplace listing before retrying.
+
 Complete the plugin installation for **$ARGUMENTS**.
