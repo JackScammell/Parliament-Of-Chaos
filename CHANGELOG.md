@@ -5,6 +5,29 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.1] - 2026-08-19
+
+Hotfix, fast-tracked: v1.25.0's hook fix over-corrected. Claude Code **auto-loads**
+`hooks/hooks.json` from its conventional path, and v1.25.0 *also* referenced it from
+`plugin.json`'s `hooks` field — which the harness rejects as a duplicate registration,
+so updating to v1.25.0 left the plugin **failing to load entirely** ("Duplicate hooks file
+detected"). Caught minutes after release by running the update on a real machine.
+
+### Fixed
+
+- Removed the `hooks` field from `.claude-plugin/plugin.json` — the manifest field is only for
+  *additional* hook files; the standard `hooks/hooks.json` needs no reference.
+- Corrected the four docs that mandated the manifest reference (`agent-standards.md`,
+  `fan-out-policy.md`, `env-doctor.md`, `docs/hooks.md`); `/env-doctor` now WARNs on the
+  duplicate-registration misconfiguration as well as the old root-`settings.json` one.
+
+### Lesson recorded
+
+Both failure modes are the same shape: **hook registration asserted but never load-tested on a
+real install**. v1.9.0–v1.24.0 under-registered (ignored file); v1.25.0 over-registered
+(duplicate). The release process now includes "update a real install and run
+`claude plugin list`" as the post-release verification step (added to RELEASE_INSTRUCTIONS.md).
+
 ## [1.25.0] - 2026-08-19
 
 Emergency correctness release driven by a real `/parliament-review --all` field failure (10-reviewer fan-out on a production PR): the orchestrator gave up on a live fan-out after 44 seconds, classified working reviewers as non-reporting, skipped real re-dispatch, and substituted its own hand-done review — with three genuine reviewer reports arriving after it had already terminated. The liveness floor held (`INCOMPLETE`, never a false `APPROVE`), which is the only reason this was an inconvenience rather than an unreviewed auth change shipping with a confident green tick. Two root causes, both fixed.
@@ -673,6 +696,7 @@ Subsequent tiers from the toolset-gaps plan land in v1.11.0 (Learning Loop), v1.
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.25.1]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.25.0...v1.25.1
 [1.25.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.24.0...v1.25.0
 [1.24.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.23.0...v1.24.0
 [1.23.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.22.0...v1.23.0

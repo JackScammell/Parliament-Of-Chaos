@@ -43,7 +43,7 @@ Closes the `feedback_hooks_location.md` footgun — if a hook script has drifted
 
 ### Hook scripts
 
-- The plugin's hook config must live in `hooks/hooks.json` and be referenced by the `hooks` field in `.claude-plugin/plugin.json` — a `hooks` block in a root `settings.json` is **silently ignored** by Claude Code for plugins (the defect shipped from v1.9.0 to v1.24.0; fixed in v1.25.0). WARN loudly if a root `settings.json` with a `hooks` key exists.
+- The plugin's hook config must live in `hooks/hooks.json`, which Claude Code **auto-loads** — a `hooks` block in a root `settings.json` is **silently ignored** for plugins (shipped broken v1.9.0–v1.24.0; fixed v1.25.0). WARN loudly if a root `settings.json` with a `hooks` key exists, **and** WARN if `.claude-plugin/plugin.json` has a `hooks` field referencing `./hooks/hooks.json` — that double-registers the auto-loaded file and the plugin fails to load (the v1.25.0 regression, fixed v1.25.1; the manifest field is only for *additional* hook files).
 - Each hook wired in `hooks/hooks.json` must resolve to an existing file under `src/hooks/`
 - Each hook script must be executable
 - Each hook script must have a valid shebang (`#!/usr/bin/env bash` or language-appropriate)

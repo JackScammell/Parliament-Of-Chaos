@@ -108,7 +108,7 @@ Matchers filter which specific events trigger the hook:
 Parliament of Chaos includes a ready-to-use Microsoft Teams notification hook.
 
 > **⚠️ As of v1.25.0 this hook is auto-registered by the plugin.** `hooks/hooks.json`
-> (referenced from `.claude-plugin/plugin.json`'s `hooks` field) already wires
+> (auto-loaded by Claude Code from that conventional path) already wires
 > `notify_teams.sh` to `Notification`, `Stop`, `TaskCompleted`, `StopFailure`,
 > `PermissionDenied`, and `TeammateIdle`. **You only need Step 1 (the webhook URL)** — do NOT also wire these
 > events manually in your own settings, or every Teams message will arrive twice. The manual
@@ -390,9 +390,10 @@ When installed via the marketplace, Parliament of Chaos hook scripts are stored 
 
 ### Configuration Files
 
-**The plugin's own hooks are auto-registered** from `hooks/hooks.json` in the plugin root,
-referenced by the `hooks` field in `.claude-plugin/plugin.json` — this is the only mechanism
-Claude Code honours for plugin hooks (a `hooks` block in a plugin-root `settings.json` is
+**The plugin's own hooks are auto-registered** from `hooks/hooks.json` in the plugin root —
+Claude Code loads that path automatically (do not also reference it from `plugin.json`'s
+`hooks` field, which is only for additional files and double-registers this one). This is the
+only mechanism Claude Code honours for plugin hooks (a `hooks` block in a plugin-root `settings.json` is
 silently ignored; that misconfiguration shipped from v1.9.0 to v1.24.0 and was fixed in
 v1.25.0).
 

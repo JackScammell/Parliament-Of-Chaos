@@ -82,8 +82,8 @@ classifies **only when terminal**; while its task is live it is **Working** and 
 
 > The "Returned a verdict" → Done and the Done/Failed distinctions require the **`TaskCompleted`**
 > hook event to be written to `activity.jsonl` (emitted with `type: "task_completed"`).
-> `log_event.sh` writes it and `hooks/hooks.json` wires it (registered via the `hooks` field in
-> `plugin.json`). **Registration history matters**: from v1.9.0 to v1.24.0 the hooks were declared
+> `log_event.sh` writes it and `hooks/hooks.json` wires it (auto-loaded by Claude Code from
+> that conventional path; `plugin.json`'s `hooks` field is only for *additional* hook files). **Registration history matters**: from v1.9.0 to v1.24.0 the hooks were declared
 > in a root `settings.json`, which Claude Code silently ignores for plugins — so no telemetry was
 > ever written on installed copies before **v1.25.0**. Treat any pre-v1.25.0 `activity.jsonl`
 > reasoning as untested. Two further caveats:

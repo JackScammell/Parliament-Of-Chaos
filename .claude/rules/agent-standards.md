@@ -195,8 +195,9 @@ orthogonal to `${CLAUDE_EFFORT}`, which controls reasoning effort per turn.
 
 Parliament ships **no `settings.json` at all** (the root one was removed in v1.25.0 — Claude
 Code ignores a plugin-root `settings.json` for everything except `agent`/`subagentStatusLine`
-keys, so its hooks block had never been registered). Hooks are registered via
-`.claude-plugin/plugin.json` → `hooks/hooks.json`, which contains hook events **only** — no
+keys, so its hooks block had never been registered). Hooks are **auto-loaded from `hooks/hooks.json`** (the conventional path; do NOT also
+reference it from `plugin.json`'s `hooks` field — that double-registers it and the plugin
+fails to load, the v1.25.0→v1.25.1 hotfix). It contains hook events **only** — no
 `permissions.allow`/`permissions.deny`, no env vars. Permission policy is the user's
 responsibility, not the plugin's. This decision was reaffirmed in the v1.14.0 audit triggered
 by Claude Code v2.1.113.

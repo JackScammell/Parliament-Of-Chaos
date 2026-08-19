@@ -108,3 +108,16 @@ Then verify:
 | Version mismatch | `plugin.json` and `marketplace.json` disagree | Ensure all three version locations match |
 | Hooks don't run | Hook scripts in `hooks/` instead of `src/hooks/` | Plugin cache only includes `src/` — hooks must live there |
 | Agents can't find hooks | Frontmatter references `hooks/` path | Update to `src/hooks/` in agent `command:` lines |
+
+## Post-release verification (added v1.25.1 — non-negotiable)
+
+After pushing the tag, verify the release actually loads on a real install:
+
+```bash
+claude plugin marketplace update parliament-of-chaos
+claude plugin list   # chaos@parliament-of-chaos must show "enabled", not "failed to load"
+```
+
+Both hook-registration incidents (v1.9.0's ignored settings.json, v1.25.0's duplicate
+hooks-field) would have been caught by this step. Config that has never been load-tested on a
+real install is config that has never worked.
