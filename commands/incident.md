@@ -4,6 +4,7 @@ effort: high
 context: fork
 background: false
 agent: senior-council
+argument-hint: "[--severity <level>] [--postmortem] [--runbook <service>]"
 ---
 
 # Incident

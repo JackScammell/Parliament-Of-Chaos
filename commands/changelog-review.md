@@ -4,6 +4,7 @@ effort: medium
 context: fork
 background: false
 agent: deliberation-conductor
+argument-hint: "[--mode fast|consensus|deep] [--focus <area>] [--full]"
 ---
 
 # Changelog Review

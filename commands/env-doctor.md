@@ -1,6 +1,7 @@
 ---
 description: Validate runtime environment — plugin data dir, hook locations, tool availability, and fallback behaviour
 effort: low
+argument-hint: "[--fix-permissions] [--strict] [--check-orphans] [--prune]"
 ---
 
 # Env Doctor

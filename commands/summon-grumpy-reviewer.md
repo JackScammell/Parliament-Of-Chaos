@@ -3,6 +3,7 @@ description: Ruthless senior code review focusing on quality, structure, standar
 effort: medium
 context: fork
 background: false
+argument-hint: "[target or scope]"
 ---
 
 # Summon Grumpy Reviewer

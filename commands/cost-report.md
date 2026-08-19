@@ -1,6 +1,7 @@
 ---
 description: Pre-flight and post-flight cost visibility with dry-run, soft caps, and expensive-command warnings
 effort: medium
+argument-hint: "[estimate <command>] [budget] [session] [--effort low|medium|high|xhigh]"
 ---
 
 # Cost Report
@@ -156,6 +157,10 @@ The user always has the final word. Governance priority: convenience never trump
 - `/changelog-review --full`
 
 The registry is editable in `${CLAUDE_PLUGIN_DATA}/cost-rates.json` under `expensive_commands`.
+
+## Fresh-install guard
+
+Historical spend panels depend on `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jsonl` (or the `.project-files/.telemetry/` fallback). If it is absent or empty, report **"no telemetry recorded yet"** for those panels rather than fabricating figures; pre-flight estimates (which need no history) still work.
 
 ## Process
 

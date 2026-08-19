@@ -1,6 +1,7 @@
 ---
 description: Auto-detect and run the project's test suite with intelligent options
 effort: low
+argument-hint: "[--changed] [--coverage] [--explain] [--all] [files...]"
 ---
 
 # Run Tests

@@ -61,4 +61,4 @@ Before generating spec:
 3. Build on previous implementations
 4. Flag conflicts explicitly
 
-Thorough but not bureaucratic. Ask clarifying questions if ambiguous.
+Thorough but not bureaucratic. In an interactive session, ask clarifying questions if ambiguous; when dispatched in a council fan-out, state assumptions and proceed instead — never block on input (fan-out-policy B5).

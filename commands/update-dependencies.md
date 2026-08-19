@@ -1,6 +1,7 @@
 ---
 description: Interactive dependency update with changelog review and test verification
 effort: medium
+argument-hint: "[--all] [--patch] [--minor] [--major] [--security]"
 ---
 
 # Update Dependencies

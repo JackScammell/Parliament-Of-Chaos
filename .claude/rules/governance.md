@@ -22,7 +22,7 @@ When reviewers or agents disagree, apply this priority hierarchy:
 - **senior-council**: Orchestrates specialists and reviewers. Coordinates, does not implement.
 - **deliberation-conductor**: Orchestrates structured debates with convergence detection.
 - **Specialists** (16): Domain experts who analyse and implement solutions.
-- **Grumpy reviewers** (9): Quality gates who critique but never implement. Read-only access enforced.
+- **Grumpy reviewers** (12): Quality gates who critique but never implement. Read-only access enforced. (The "9-grump implement panel" used by `/summon-council implement` is a deliberate subset — privacy-paranoid, i18n-nitpicker, and budget-hawk are relevance-tiered in rather than part of the default panel.)
 - **task-executor**: Utility agent for task mechanics. Works under senior-council.
 - **project-oracle**: Interviews users and generates project planning artifacts.
 - **scope-weaver**: Breaks roadmap items into detailed specifications.

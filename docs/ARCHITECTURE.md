@@ -7,7 +7,7 @@ layers** living in one repository, and understanding that split resolves most of
 | | **A. The Claude Code plugin (runtime)** | **B. The Python deliberation library** |
 |---|---|---|
 | **What it is** | The thing that actually runs when you type `/chaos:…` in Claude Code | A standalone, importable Python implementation of the same deliberation concepts |
-| **Lives in** | `agents/`, `commands/`, `src/hooks/`, `.claude/rules/`, `.claude-plugin/` | `src/deliberation/`, with `tests/` and `examples/` |
+| **Lives in** | `agents/`, `commands/`, `src/hooks/`, `.claude/rules/`, `.claude-plugin/` | `reference/deliberation/`, with `reference/tests/` and `reference/examples/` |
 | **Language** | Markdown (agents + commands) + Bash (hooks) | Python 3.8+ (`pydantic`, `pyyaml`, `tiktoken`) |
 | **Executed by** | Claude Code, as LLM-native prompts and Task fan-out | A Python interpreter, via `import` — see [`API_REFERENCE.md`](API_REFERENCE.md) |
 | **Docs** | [`usage.md`](usage.md), [`installation.md`](installation.md), [`hooks.md`](hooks.md) | [`API_REFERENCE.md`](API_REFERENCE.md), [`DELIBERATION_SYSTEM.md`](DELIBERATION_SYSTEM.md), [`ENHANCED_FEATURES.md`](ENHANCED_FEATURES.md) |
@@ -47,7 +47,7 @@ src/hooks/             # Bash hook scripts (log_event.sh, notify_teams.sh, _comm
 frontmatter (`deliberation-conductor`). That agent is an LLM persona whose tools are
 `Task(<other-agent>)` calls plus Read/Write/Edit. Orchestrators fan out to specialists and
 reviewers as sub-agents; hooks fire on lifecycle events (`SubagentStart`, `TaskCompleted`, …)
-and append telemetry to `activity.jsonl`. No step shells out to `src/deliberation/`.
+and append telemetry to `activity.jsonl`. No step shells out to `reference/deliberation/`.
 
 **Governance is enforced in prose, not code.** The rules in `.claude/rules/` — the conflict-
 resolution priority, the read-only reviewer constraint, the council fan-out/liveness floor —
@@ -55,14 +55,14 @@ are instructions the orchestrating LLM follows, wired in through the `Instructio
 See [`governance.md`](../.claude/rules/governance.md) and
 [`fan-out-policy.md`](../.claude/rules/fan-out-policy.md).
 
-## Layer B — The Python deliberation library (`src/deliberation/`)
+## Layer B — The Python deliberation library (`reference/deliberation/`)
 
 A conventional, importable Python package implementing the deliberation engine as code. It has
 its own tests and runnable examples and is documented as a library API — it is **not** invoked
 by Layer A.
 
 ```
-src/deliberation/
+reference/deliberation/
   core/          # debate_controller, state_engine, token_counter, statement_pruner,
                  # context_manager, vector_memory, session_manager, metrics, model_tier, …
   memory/        # memory_manager, memory_store — persistent cross-session memory
@@ -79,7 +79,7 @@ examples/        # standalone runnable demos (add repo root to sys.path; no CLI 
 
 **Entry point.** There is no CLI or `setup.py`/`pyproject.toml`; you use it as a library —
 `sys.path`-insert the repo root and `import` from `deliberation`, exactly as the files under
-`examples/` do. Concepts, schemas, and module APIs are documented in
+`reference/examples/` do. Concepts, schemas, and module APIs are documented in
 [`API_REFERENCE.md`](API_REFERENCE.md), [`DELIBERATION_SYSTEM.md`](DELIBERATION_SYSTEM.md),
 [`CONTEXT_OPTIMIZATION.md`](CONTEXT_OPTIMIZATION.md), and
 [`TOKEN_REDUCTION_GUIDE.md`](TOKEN_REDUCTION_GUIDE.md).

@@ -4,6 +4,7 @@ effort: medium
 context: fork
 background: false
 agent: senior-council
+argument-hint: "[--scope branch|commit|staged] [--apply] [--create] [--dry-run]"
 ---
 
 # Update Docs

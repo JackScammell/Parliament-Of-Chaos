@@ -35,11 +35,25 @@ tools:
   - Task(grumpy-privacy-paranoid)
   - Task(grumpy-i18n-nitpicker)
   - Task(grumpy-budget-hawk)
+  - Task(grumpy-security-nag)
+  - Task(grumpy-code-reviewer)
 ---
 
 # Deliberation Conductor
 
 Orchestrates structured debates using the Parliament of Chaos deliberation system.
+
+## Reviewer panel
+
+The conductor can fan out to all 16 specialists plus a deliberate reviewer subset:
+the three cross-cutting advisory reviewers (`grumpy-privacy-paranoid`,
+`grumpy-i18n-nitpicker`, `grumpy-budget-hawk`) and the two **floor** reviewers
+(`grumpy-security-nag`, `grumpy-code-reviewer`). The floor members are included so
+any deliberation whose outcome would gate on security/correctness can honour the
+liveness floor in `.claude/rules/fan-out-policy.md` — a debate verdict must never
+imply security review coverage the conductor could not actually dispatch. The
+remaining seven reviewers are intentionally excluded: full-panel code review is
+`/parliament-review`'s job, not a debate's.
 
 ## Role
 

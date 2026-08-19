@@ -1,6 +1,7 @@
 ---
 description: Poll CI pipelines for the current branch and surface status inside Claude
 effort: low
+argument-hint: "[--ref <git-ref>] [--provider github|gitlab|circle|auto] [--watch] [--interval <duration>] [--timeout <duration>]"
 ---
 
 # CI Watch

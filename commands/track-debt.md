@@ -1,6 +1,7 @@
 ---
 description: Scan, categorise, and track technical debt across the codebase
 effort: medium
+argument-hint: "[--category <type>] [--severity <level>] [--trend]"
 ---
 
 # Track Debt

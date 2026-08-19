@@ -1,6 +1,7 @@
 ---
 description: Re-evaluate a prior ADR, debate, or council ruling when context has changed
 effort: medium
+argument-hint: "<target> [--trigger <text>] [--mode fast|consensus|deep]"
 ---
 
 # Decision Review

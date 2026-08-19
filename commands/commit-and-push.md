@@ -1,6 +1,7 @@
 ---
 description: Guided commit + push helper that drafts the commit message and prints the exact git commands for the developer to run — never executes them
 effort: medium
+argument-hint: "[--message <subject>] [--scope <area>] [--type <conv-type>]"
 ---
 
 # Commit and Push

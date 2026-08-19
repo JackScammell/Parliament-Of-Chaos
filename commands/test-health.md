@@ -1,6 +1,7 @@
 ---
 description: Detect flaky tests, stale assertions, and non-deterministic test patterns
 effort: medium
+argument-hint: "[--flaky-check <n>] [--stale] [--coupling]"
 ---
 
 # Test Health

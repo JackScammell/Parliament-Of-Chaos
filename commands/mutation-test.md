@@ -3,6 +3,7 @@ description: Evaluate test quality by introducing code mutations and checking if
 effort: high
 context: fork
 background: false
+argument-hint: "[<path>] [--changed] [--limit <n>]"
 ---
 
 # Mutation Test

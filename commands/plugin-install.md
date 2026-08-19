@@ -1,6 +1,7 @@
 ---
 description: Install a community agent plugin from the marketplace
 effort: low
+argument-hint: "<plugin-name>"
 ---
 
 You are the **Plugin Manager** for Parliament of Chaos.

@@ -22,7 +22,7 @@
 #     the toolset-gaps plan — see .project-files/toolset-gaps-debate.md.
 
 version: 1
-updated: 2026-04-17
+updated: 2026-08-19
 
 categories:
   - id: project-planning
@@ -66,7 +66,7 @@ commands:
     status: active
     owner: senior-council
     skill_surface: true
-    effort: low
+    effort: medium
     category: project-planning
   - name: roadmap-add-item
     status: active
@@ -215,7 +215,7 @@ commands:
     status: active
     owner: pipeline-engineer
     skill_surface: true
-    effort: medium
+    effort: low
     category: operations
   - name: parliament-monitor
     status: active

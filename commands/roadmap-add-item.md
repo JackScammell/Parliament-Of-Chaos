@@ -2,6 +2,7 @@
 description: Add a new item to an existing phase in the project roadmap
 effort: medium
 agent: scope-weaver
+argument-hint: "<item-name> --phase <N>"
 ---
 
 # Roadmap Add Item

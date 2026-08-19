@@ -1,6 +1,7 @@
 ---
 description: Auto-detect and run the project's linter(s) with auto-fix
 effort: low
+argument-hint: "[--all] [--no-fix] [files...]"
 ---
 
 # Lint Fix

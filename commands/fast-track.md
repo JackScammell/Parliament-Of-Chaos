@@ -1,6 +1,7 @@
 ---
 description: Minimum-review-floor bypass — runs only security + correctness reviewers, never waives them
 effort: medium
+argument-hint: "<change-description> [--scope <path>] [--reason <text>] [--link <url>]"
 ---
 
 # Fast Track

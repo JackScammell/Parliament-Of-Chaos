@@ -1,5 +1,10 @@
 # Parliament of Chaos - API Reference
 
+> **⚠️ Reference-only code.** This documents the Python library under `reference/`, which is a
+> **non-executing design study** — nothing in the running plugin invokes it, and its model-call
+> layer is an unimplemented stub. See [`reference/README.md`](../reference/README.md) and
+> [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) before relying on anything here.
+
 This document provides detailed API reference for using Parliament of Chaos as a Python library.
 
 ## Table of Contents
@@ -23,7 +28,7 @@ git clone https://github.com/JackScammell/Parliament-Of-Chaos.git
 cd Parliament-Of-Chaos
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r reference/requirements.txt
 
 # Add to PYTHONPATH
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"

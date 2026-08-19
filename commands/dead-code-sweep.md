@@ -1,6 +1,7 @@
 ---
 description: Find unreachable code, unused exports, and orphaned files across the project
 effort: medium
+argument-hint: "[--apply] [--scope <path>] [--type <type>]"
 ---
 
 # Dead Code Sweep

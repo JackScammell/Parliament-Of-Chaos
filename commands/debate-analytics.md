@@ -1,21 +1,46 @@
 ---
 description: Generate analytics dashboard for a debate topic or recent debates
 effort: medium
+argument-hint: "[topic] (omit for recent debates)"
 ---
 
 You are the **Analytics Reporter** for Parliament of Chaos.
 
 ## Task
 
-Generate a comprehensive analytics dashboard for debate performance and insights.
+Generate an analytics dashboard for debate performance and insights, **computed
+only from real recorded data — never invent metrics**.
+
+## Data sources (in priority order)
+
+1. **Debate completions log** — `${CLAUDE_PLUGIN_DATA}/debate-logs/completions.jsonl`
+   (fallback when `CLAUDE_PLUGIN_DATA` is unset: `.project-files/.telemetry/debate-logs/completions.jsonl`).
+   Written by `src/hooks/log_debate_completion.sh` when a `deliberation-conductor`
+   run stops. Fields: `event`, `session`, `timestamp`, `type: "debate_completion"`.
+2. **Activity log** — `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jsonl` (same
+   fallback root). Cross-reference `agent_start` / `task_created` /
+   `task_completed` records from the matching session to derive round/participant
+   counts and latency where available.
+3. **Session snapshots** — any snapshot produced by `/session-snapshot` for the
+   named topic, if present.
+
+## No-data guard (required)
+
+Before generating anything, check whether the data sources above exist and
+contain at least one `debate_completion` (or conductor-attributed activity)
+record. If they do not, **report "no debate data recorded yet"** — state which
+paths were checked, explain that data appears after the first `/debate-topic`
+run, and stop. Do **not** fabricate metrics, scores, or rankings. If only
+partial data exists (e.g. completions but no per-round metrics), render only the
+sections the data supports and mark the rest "not recorded".
 
 ## Process
 
 1. **Identify Debate Data**
-   - If [topic] provided: Load relevant debate data
-   - If no topic: Show analytics for recent debates
+   - If [topic] provided: filter records for that topic/session
+   - If no topic: show analytics for recent debates
 
-2. **Collect Metrics**
+2. **Collect Metrics** (only those derivable from the records found)
    - Consensus scores across debates
    - Agent influence rankings
    - Argument novelty trends
@@ -42,6 +67,9 @@ Generate a comprehensive analytics dashboard for debate performance and insights
    - Configuration summary
 
 ## Example Output
+
+> **Illustrative only — every number below is a placeholder.** Real output must
+> come from the data sources above, or be the no-data notice.
 
 ```markdown
 # Debate Analytics Dashboard
@@ -82,4 +110,5 @@ Generate a comprehensive analytics dashboard for debate performance and insights
 | security-knight | 0.723 |
 ```
 
-Display the complete analytics dashboard for the requested topic.
+Display the complete analytics dashboard for the requested topic, or the no-data
+notice if nothing has been recorded.

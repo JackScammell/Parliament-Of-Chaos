@@ -8,19 +8,19 @@ import tempfile
 import shutil
 from pathlib import Path
 
-from src.deliberation.models.schemas import (
+from reference.deliberation.models.schemas import (
     TeamRole, DebateTeamsConfig, AgentSkillTree, MemoryEntry,
     ConstraintDefinition, SessionState, MetaLearning
 )
-from src.deliberation.memory import MemoryManager, MemoryStore
-from src.deliberation.plugins import PluginManager, PluginRegistry
-from src.deliberation.analytics import DebateDashboard, AnalyticsEngine
-from src.deliberation.constraints import ConstraintValidator, ConstraintLoader
-from src.deliberation.governance import VotingSystemManager, CoalitionBuilder
-from src.deliberation.agents.skill_trees import SkillTreeManager
-from src.deliberation.agents.team_coordinator import TeamCoordinator, create_default_debate_teams
-from src.deliberation.core.session_manager import SessionManager
-from src.deliberation.core.self_improvement import SelfImprovementEngine
+from reference.deliberation.memory import MemoryManager, MemoryStore
+from reference.deliberation.plugins import PluginManager, PluginRegistry
+from reference.deliberation.analytics import DebateDashboard, AnalyticsEngine
+from reference.deliberation.constraints import ConstraintValidator, ConstraintLoader
+from reference.deliberation.governance import VotingSystemManager, CoalitionBuilder
+from reference.deliberation.agents.skill_trees import SkillTreeManager
+from reference.deliberation.agents.team_coordinator import TeamCoordinator, create_default_debate_teams
+from reference.deliberation.core.session_manager import SessionManager
+from reference.deliberation.core.self_improvement import SelfImprovementEngine
 
 
 class TestTeamIntegration(unittest.TestCase):
@@ -191,7 +191,7 @@ class TestAnalytics(unittest.TestCase):
         self.assertEqual(consensus, 0.7)
         
         # Agent influence
-        from src.deliberation.models.schemas import AgentPosition
+        from reference.deliberation.models.schemas import AgentPosition
         positions = {
             "agent1": AgentPosition(stance="Support", confidence=0.9, influence_score=1.2),
             "agent2": AgentPosition(stance="Oppose", confidence=0.7, influence_score=0.8)
@@ -273,7 +273,7 @@ class TestGovernance(unittest.TestCase):
     
     def test_voting_systems(self):
         """Test different voting systems."""
-        from src.deliberation.models.schemas import Vote, AgentPosition
+        from reference.deliberation.models.schemas import Vote, AgentPosition
         
         voting = VotingSystemManager()
         
@@ -299,7 +299,7 @@ class TestGovernance(unittest.TestCase):
     
     def test_coalition_builder(self):
         """Test coalition formation."""
-        from src.deliberation.models.schemas import AgentPosition, AgentAlignment
+        from reference.deliberation.models.schemas import AgentPosition, AgentAlignment
         
         coalition_builder = CoalitionBuilder()
         

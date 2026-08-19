@@ -1,6 +1,7 @@
 ---
 description: Analyse SQL queries and ORM code for performance issues and missing indexes
 effort: medium
+argument-hint: "[<path>] [--scan] [--sql <query>]"
 ---
 
 # Analyse Queries

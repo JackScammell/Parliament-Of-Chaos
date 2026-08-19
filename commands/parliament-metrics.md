@@ -1,6 +1,7 @@
 ---
 description: Dashboard view — token attribution per agent, session cost, SLO status for background monitors, trend analysis
 effort: medium
+argument-hint: "[--window <duration>] [--focus cost|latency|slo|trend|all] [--json] [--strict-duration] [--by-effort] [--by-trigger]"
 ---
 
 # Parliament Metrics
@@ -78,6 +79,10 @@ trigger fall under `unknown` and are reported separately so partial historical d
 does not skew the breakdown. When comparing trigger mix across windows that span the
 v2.1.126 boundary, prefer windows that fall entirely on one side, or filter to the
 authoritative source by checking the `source` column where surfaced.
+
+## Fresh-install guard
+
+Before rendering any panel, check that `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jsonl` (or the `.project-files/.telemetry/` fallback) exists and is non-empty. If not, report **"no telemetry recorded yet"** with the paths checked, note that records appear once hook events fire, and render only panels that have a real data source. Never fabricate metrics or render zero-filled panels as though they were measured.
 
 ## Panels
 

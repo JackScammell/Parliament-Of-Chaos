@@ -1,6 +1,7 @@
 ---
 description: Detect stale or fabricated documentation after code changes — symmetric to /onboard-codebase
 effort: medium
+argument-hint: "[--scope <path>] [--since <ref>] [--doc-globs <pattern>] [--severity <level>]"
 ---
 
 # Docs Audit

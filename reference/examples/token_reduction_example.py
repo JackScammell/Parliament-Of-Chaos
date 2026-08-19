@@ -5,9 +5,9 @@ This example demonstrates the session token reduction features
 in the Parliament of Chaos system.
 """
 
-from src.deliberation.core.context_manager import ContextManager
-from src.deliberation.core.token_counter import SessionTokenMonitor, TokenBudgetEnforcer
-from src.deliberation.models.schemas import DebateStatement, RoundSummary, AgentPosition
+from reference.deliberation.core.context_manager import ContextManager
+from reference.deliberation.core.token_counter import SessionTokenMonitor, TokenBudgetEnforcer
+from reference.deliberation.models.schemas import DebateStatement, RoundSummary, AgentPosition
 
 
 def run_token_optimized_debate():
@@ -207,7 +207,7 @@ def demonstrate_pruning():
     print("Context Pruning Example")
     print("=" * 60)
     
-    from src.deliberation.core.statement_pruner import ContextPruner
+    from reference.deliberation.core.statement_pruner import ContextPruner
     
     pruner = ContextPruner(min_confidence=0.5, keep_high_influence=True)
     

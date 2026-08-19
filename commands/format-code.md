@@ -1,6 +1,7 @@
 ---
 description: Auto-detect and run the project's code formatter
 effort: low
+argument-hint: "[--all] [--check] [files...]"
 ---
 
 # Format Code

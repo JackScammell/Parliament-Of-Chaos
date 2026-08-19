@@ -3,7 +3,7 @@ Unit tests for token counting and session monitoring.
 """
 
 import unittest
-from src.deliberation.core.token_counter import (
+from reference.deliberation.core.token_counter import (
     TokenCounter, SessionTokenMonitor, TokenBudgetEnforcer
 )
 

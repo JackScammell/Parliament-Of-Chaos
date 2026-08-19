@@ -1,6 +1,7 @@
 ---
 description: Structured retrospective from git history and session activity
 effort: medium
+argument-hint: "[--since <date|tag>] [--focus <area>]"
 ---
 
 # Retro

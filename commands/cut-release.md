@@ -1,6 +1,7 @@
 ---
 description: Automate version bumping, changelog generation, tagging, and release notes
 effort: medium
+argument-hint: "[--version <semver>] [--dry-run] [--no-tag]"
 ---
 
 # Cut Release
@@ -40,10 +41,13 @@ Orchestrate the full release ceremony: determine next version, generate changelo
    - `fix:`, `perf:`, `refactor:` = patch bump
 
 3. **Generate Changelog**
-   - Parse `git log` since last tag
-   - Group by type: Added, Changed, Fixed, Removed
-   - Generate Keep a Changelog formatted entries
-   - Prepend to `CHANGELOG.md`
+   - Delegate to `/release-notes-draft` (the single owner of changelog-generation
+     logic — do not reimplement its git-log parsing/grouping here): parse
+     `git log` since last tag, group by type (Added, Changed, Fixed, Removed),
+     emit Keep a Changelog formatted entries
+   - Prepend the result to `CHANGELOG.md`, and add the `[X.Y.Z]:` compare link
+     at the bottom of the file (see RELEASE_INSTRUCTIONS.md — this was missed
+     for 8 consecutive releases before v1.24)
 
 4. **Bump Version**
    - Update version in ALL detected version-bearing files

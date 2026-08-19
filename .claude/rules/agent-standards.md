@@ -1,6 +1,6 @@
 # Agent Frontmatter Standards
 
-All Parliament of Chaos agents must include standardised frontmatter fields. This ensures consistent behaviour, cost optimisation, and proper resource allocation across the 30-agent fleet.
+All Parliament of Chaos agents must include standardised frontmatter fields. This ensures consistent behaviour, cost optimisation, and proper resource allocation across the 33-agent fleet (2 orchestrators, 16 specialists, 12 grumpy reviewers, 2 planning agents, 1 utility agent).
 
 ## Required Fields
 
@@ -21,8 +21,8 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 |------|--------|--------|-----------|
 | **Reserved** | `effort: xhigh` | _(none currently)_ | Opus 4.7 tier sitting between `high` and `max` (Claude Code v2.1.111). Reserved for future deliberation-conductor deep-mode runs if measurements justify the extra cost. Do not adopt without before/after benchmarks. |
 | **High** | `effort: high` | Orchestrators (senior-council, deliberation-conductor) | Complex multi-agent coordination requiring deep reasoning |
-| **Medium** | `effort: medium` | Specialists (16) and Planning agents (3) | Domain analysis, implementation, and scoping work |
-| **Low** | `effort: low` | Grumpy reviewers (9) | Read-only critique with focused, concise output |
+| **Medium** | `effort: medium` | Specialists (16), Planning agents (2), and task-executor | Domain analysis, implementation, and scoping work |
+| **Low** | `effort: low` | Grumpy reviewers (12) | Read-only critique with focused, concise output |
 
 > **Note**: As of Claude Code v2.1.94 the global default `effort` is `high` (previously `medium`). Parliament sets `effort` explicitly on every agent, so this default never applies — but new contributors reading upstream docs should be aware the implicit fallback changed.
 
@@ -32,6 +32,7 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 |------|----------|-----------|
 | Orchestrators | 30 | Coordinate multiple specialists and reviewers across iterations |
 | Planning agents | 20 | Interactive Q&A and scoping require extended dialogue |
+| task-executor | 20 | Task-mechanics utility under senior-council; task loading + progress tracking spans many small turns |
 | Specialists | 15 | Focused domain analysis and implementation |
 | Grumpy reviewers | 5 | Concise critique: summary, issues, recommendations, verdict |
 
@@ -39,7 +40,7 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 
 | Scope | Agents | Purpose |
 |-------|--------|---------|
-| `memory: project` | Orchestrators, specialists, planning agents | Accumulate project-specific knowledge across sessions |
+| `memory: project` | Orchestrators, specialists, planning agents, task-executor | Accumulate project-specific knowledge across sessions |
 | `memory: user` | Grumpy reviewers | Accumulate review preferences and patterns across projects |
 
 ## Tool Restrictions

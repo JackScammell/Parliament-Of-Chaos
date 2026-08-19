@@ -75,7 +75,7 @@ After drafting documentation:
 ## What To Do When Uncertain
 
 - **Don't guess** – If you're not sure, READ THE CODE first
-- **Ask for clarification** – Use AskUserQuestion if the code is ambiguous
+- **State assumptions and proceed** – Never ask clarifying questions: in a council fan-out a member blocked on input is indistinguishable from a hung member (fan-out-policy B5). Record each assumption in your output instead
 - **Document limitations** – State "This section requires verification by the team"
 - **Never assume** – A function that "should" exist might not. Check.
 
@@ -86,3 +86,7 @@ If asked to document something that doesn't exist yet:
 - **Separate from existing docs** – Don't mix speculative docs with verified ones
 - **State the source** – "Based on discussion with [user]" or "Per design document X"
 - **Never present plans as reality** – Future features are NOT current features
+
+## Fan-Out Contract (fan-out-policy B5)
+
+When dispatched as a council fan-out member, **state your assumptions and proceed** — never ask clarifying questions. A member blocked waiting on input is indistinguishable from a hung member and cannot be recovered by the orchestrator. Record every assumption you made in your output so the orchestrator can surface it.

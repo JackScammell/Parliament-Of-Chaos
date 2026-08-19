@@ -1,6 +1,7 @@
 ---
 description: Configure webhook notification endpoints for Parliament events
 effort: medium
+argument-hint: "[action] [options]"
 ---
 
 # Parliament Webhook
@@ -86,6 +87,10 @@ Shows:
 ## Recent Activity
 - [last 5 notification events from agent-logs/activity.jsonl]
 ```
+
+## Fresh-install guard
+
+The Recent Activity panel reads `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jsonl` (or the `.project-files/.telemetry/` fallback). If it is absent or empty, show **"no notification events recorded yet"** instead of an empty or invented list.
 
 ## Notes
 

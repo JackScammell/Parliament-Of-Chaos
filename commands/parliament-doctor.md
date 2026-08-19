@@ -1,6 +1,7 @@
 ---
 description: Reconcile the command manifest against commands/*.md and the skill registry — report orphans, ghosts, and drift
 effort: medium
+argument-hint: "[--fix-manifest] [--strict] [--json]"
 ---
 
 # Parliament Doctor

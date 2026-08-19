@@ -1,6 +1,7 @@
 ---
 description: Unified audit of settings.json, permissions, scope-diff, secret leakage, and feature flags
 effort: medium
+argument-hint: "[--scope user|project|local|all] [--fix] [--focus permissions|secrets|flags|hooks|diff]"
 ---
 
 # Settings Audit

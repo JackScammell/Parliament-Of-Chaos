@@ -6,8 +6,8 @@ to reduce token usage while maintaining debate quality.
 """
 
 import asyncio
-from src.deliberation.core.context_manager import ContextManager
-from src.deliberation.models.schemas import (
+from reference.deliberation.core.context_manager import ContextManager
+from reference.deliberation.models.schemas import (
     DebateStatement, RoundSummary, AgentPosition
 )
 

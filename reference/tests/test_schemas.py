@@ -3,7 +3,7 @@ Unit tests for Parliament of Chaos deliberation system schemas.
 """
 
 import unittest
-from src.deliberation.models.schemas import (
+from reference.deliberation.models.schemas import (
     DebateStatement, Vote, RoundSummary, DebateState,
     MetaAnalysis, DeliberationConfig, AgentAlignment, AgentPosition
 )
@@ -159,13 +159,13 @@ class TestValidation(unittest.TestCase):
     
     def test_validator_import(self):
         """Test that validator can be imported."""
-        from src.deliberation.utils.validation import Validator
+        from reference.deliberation.utils.validation import Validator
         validator = Validator(max_retries=1)
         self.assertIsNotNone(validator)
     
     def test_clamp_confidence_values(self):
         """Test confidence value clamping utility."""
-        from src.deliberation.utils.validation import clamp_confidence_values
+        from reference.deliberation.utils.validation import clamp_confidence_values
         
         data = {"confidence": 1.5, "nested": {"confidence": -0.3}}
         result = clamp_confidence_values(data)
@@ -179,14 +179,14 @@ class TestStateEngine(unittest.TestCase):
     
     def test_state_engine_initialization(self):
         """Test StateEngine initialization."""
-        from src.deliberation.core.state_engine import StateEngine
+        from reference.deliberation.core.state_engine import StateEngine
         engine = StateEngine()
         state = engine.get_current_state()
         self.assertEqual(state.round, 0)
     
     def test_agent_context_retrieval(self):
         """Test getting agent context."""
-        from src.deliberation.core.state_engine import StateEngine
+        from reference.deliberation.core.state_engine import StateEngine
         engine = StateEngine()
         context = engine.get_agent_context("agent-1")
         
@@ -196,7 +196,7 @@ class TestStateEngine(unittest.TestCase):
     
     def test_amendment_management(self):
         """Test adding and resolving amendments."""
-        from src.deliberation.core.state_engine import StateEngine
+        from reference.deliberation.core.state_engine import StateEngine
         engine = StateEngine()
         
         engine.add_amendment("Amendment 1")
@@ -211,13 +211,13 @@ class TestMetrics(unittest.TestCase):
     
     def test_metrics_initialization(self):
         """Test MetricsCollector initialization."""
-        from src.deliberation.core.metrics import MetricsCollector
+        from reference.deliberation.core.metrics import MetricsCollector
         metrics = MetricsCollector()
         self.assertEqual(metrics.metrics.total_tokens, 0)
     
     def test_debate_lifecycle(self):
         """Test debate start/end tracking."""
-        from src.deliberation.core.metrics import MetricsCollector
+        from reference.deliberation.core.metrics import MetricsCollector
         metrics = MetricsCollector()
         
         metrics.start_debate()

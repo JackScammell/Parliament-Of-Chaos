@@ -49,7 +49,7 @@ ContextManager Layers:
 
 ### 1. ContextManager
 
-**Location:** `src/deliberation/core/context_manager.py`
+**Location:** `reference/deliberation/core/context_manager.py`
 
 The main orchestrator for token-efficient context handling.
 
@@ -269,7 +269,7 @@ context_stats = result.get("context_optimization")
 
 ### SessionManager Integration
 
-**Location:** `src/deliberation/core/session_manager.py`
+**Location:** `reference/deliberation/core/session_manager.py`
 
 The SessionManager now integrates with ContextManager for cross-session persistence.
 
@@ -509,11 +509,11 @@ session_manager.create_session(
 
 ## References
 
-- **Primary Implementation:** `src/deliberation/core/context_manager.py`
-- **Integration Layer:** `src/deliberation/core/state_engine.py`
-- **Session Persistence:** `src/deliberation/core/session_manager.py`
-- **Schema Definitions:** `src/deliberation/models/schemas.py`
-- **Tests:** `tests/test_context_manager.py`
+- **Primary Implementation:** `reference/deliberation/core/context_manager.py`
+- **Integration Layer:** `reference/deliberation/core/state_engine.py`
+- **Session Persistence:** `reference/deliberation/core/session_manager.py`
+- **Schema Definitions:** `reference/deliberation/models/schemas.py`
+- **Tests:** `reference/tests/test_context_manager.py`
 
 ---
 

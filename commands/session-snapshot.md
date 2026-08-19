@@ -1,6 +1,7 @@
 ---
 description: Checkpoint the current session so it can be resumed or replayed after a crash or interruption
 effort: medium
+argument-hint: "create [--label <text>]"
 ---
 
 # Session Snapshot

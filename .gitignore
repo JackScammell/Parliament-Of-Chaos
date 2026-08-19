@@ -59,13 +59,12 @@ src/hooks/.env
 .parliament-learning/
 .parliament-skills/
 
-# Plugin telemetry (fallback when CLAUDE_PLUGIN_DATA is not set)
-.project-files/.telemetry/
+# User project artifacts — owned by the user, never shipped with the plugin
+# (per the storage-separation policy in .claude/rules/agent-standards.md; also
+# covers the .telemetry/ fallback and changelog-review local state)
+.project-files/
 
 # User-specific Claude Code settings (not part of the plugin)
 .claude/settings.local.json
 .claude/hooks/
 .claude/worktrees/
-
-# Changelog review local state (user-specific, not shipped with plugin)
-.project-files/changelog-review/

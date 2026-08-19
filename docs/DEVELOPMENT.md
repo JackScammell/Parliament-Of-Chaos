@@ -61,7 +61,7 @@ venv\Scripts\activate
 
 ```bash
 # Install all dependencies
-pip install -r requirements.txt
+pip install -r reference/requirements.txt
 
 # Install development dependencies (if you create requirements-dev.txt)
 # pip install -r requirements-dev.txt
@@ -71,7 +71,7 @@ pip install -r requirements.txt
 
 ```bash
 # Run tests to verify everything works
-python -m pytest tests/ -v
+python -m pytest reference/tests/ -v
 
 # Should see output like:
 # ======================== test session starts ========================
@@ -121,7 +121,7 @@ Create `.vscode/settings.json`:
 
 1. **Set Interpreter**: File → Settings → Project → Python Interpreter → Add → Existing Environment → Select `venv/bin/python`
 2. **Enable pytest**: Settings → Tools → Python Integrated Tools → Testing → Default test runner: pytest
-3. **Mark src as Sources Root**: Right-click `src` → Mark Directory as → Sources Root
+3. **Mark src as Sources Root**: Right-click the repository root → Mark Directory as → Sources Root (the reference package imports as `reference.deliberation`)
 
 ---
 
@@ -134,43 +134,33 @@ Parliament-Of-Chaos/
 ├── .claude-plugin/
 │   ├── plugin.json                   # Plugin manifest (version 1.23.0)
 │   └── marketplace.json              # Marketplace metadata
-├── agents/                           # 33 agent definitions (2 orchestrators, 3 planning, 16 specialists, 12 grumpy reviewers)
+├── agents/                           # 33 agent definitions (2 orchestrators, 2 planning, 16 specialists, 12 grumpy reviewers, 1 utility)
 ├── commands/                         # 66 slash commands across 15 categories
 │   ├── manifest.yaml                 # Source-of-truth registry — reconciled by /parliament-doctor
 │   └── <66 .md files>
 │
-├── src/                              # Python source code
-│   └── deliberation/                 # Deliberation system
-│       ├── core/                     # Core modules
-│       │   ├── context_manager.py   # Context optimization
-│       │   ├── state_engine.py      # Debate state management
-│       │   ├── token_counter.py     # Token counting and monitoring
-│       │   ├── statement_pruner.py  # Statement deduplication/pruning
-│       │   └── vector_memory.py     # Semantic memory storage
-│       ├── agents/                   # Agent implementations
-│       ├── schemas/                  # Pydantic schemas
-│       └── __init__.py
+├── src/                              # Live plugin sources
+│   └── hooks/                        # Hook scripts (_common.sh, log_event.sh, notify_teams.sh, log_debate_completion.sh)
 │
-├── tests/                            # Test files
-│   ├── test_schemas.py               # Schema validation tests
-│   ├── test_token_counter.py        # Token counting tests
-│   ├── test_statement_pruner.py     # Pruning logic tests
-│   └── ...
+├── reference/                        # NON-EXECUTING Python reference implementation (see reference/README.md)
+│   ├── deliberation/                 # Deliberation engine design study
+│   │   ├── core/                     # context_manager, state_engine, token_counter, statement_pruner, vector_memory, …
+│   │   ├── agents/                   # Agent implementations
+│   │   └── models/                   # Pydantic schemas
+│   ├── tests/                        # Unit tests for the reference code
+│   ├── examples/                     # Example scripts
+│   └── requirements.txt              # Python dependencies for the reference code
 │
 ├── docs/                             # Documentation
 │   ├── installation.md               # Installation guide
 │   ├── usage.md                      # Usage guide
-│   ├── API_REFERENCE.md             # Python API reference
+│   ├── API_REFERENCE.md             # Python API reference (documents reference/, non-executing)
 │   ├── DELIBERATION_SYSTEM.md       # System architecture
 │   └── ...
-│
-├── examples/                         # Example scripts
-│   └── token_reduction_example.py   # Token optimization demo
 │
 ├── CONTRIBUTING.md                   # Contribution guidelines
 ├── CHANGELOG.md                      # Version history
 ├── README.md                         # Project overview
-├── requirements.txt                  # Python dependencies
 └── .gitignore                        # Git ignore rules
 ```
 
@@ -180,11 +170,9 @@ Parliament-Of-Chaos/
 - **`commands/`**: 66 command definitions plus `manifest.yaml` (the source-of-truth registry)
 - **`.claude/rules/`**: Project rules (agent-standards, governance, output-standards) — loaded via the `InstructionsLoaded` hook
 - **`.claude-plugin/`**: Plugin manifest and marketplace metadata (version must stay in sync)
-- **`src/deliberation/`**: Python implementation of the deliberation system
-- **`src/hooks/`**: Hook scripts (`_common.sh`, `log_event.sh`, `notify_teams.sh`)
-- **`tests/`**: Unit and integration tests
+- **`src/hooks/`**: Hook scripts (`_common.sh`, `log_event.sh`, `notify_teams.sh`, `log_debate_completion.sh`) — the only executable code the plugin ships
+- **`reference/`**: **Non-executing** Python reference implementation of the deliberation system, with its own tests and examples — see `reference/README.md`
 - **`docs/`**: User-facing documentation
-- **`examples/`**: Executable example scripts
 
 ---
 
@@ -193,19 +181,19 @@ Parliament-Of-Chaos/
 ### Run All Tests
 
 ```bash
-python -m pytest tests/ -v
+python -m pytest reference/tests/ -v
 ```
 
 ### Run Specific Test File
 
 ```bash
-python -m pytest tests/test_schemas.py -v
+python -m pytest reference/tests/test_schemas.py -v
 ```
 
 ### Run Specific Test
 
 ```bash
-python -m pytest tests/test_schemas.py::test_statement_validation -v
+python -m pytest reference/tests/test_schemas.py::test_statement_validation -v
 ```
 
 ### Run with Coverage
@@ -215,7 +203,7 @@ python -m pytest tests/test_schemas.py::test_statement_validation -v
 pip install pytest-cov
 
 # Run with coverage report
-python -m pytest tests/ --cov=src --cov-report=html
+python -m pytest reference/tests/ --cov=reference --cov-report=html
 
 # View report
 open htmlcov/index.html  # On Mac/Linux
@@ -229,7 +217,7 @@ open htmlcov/index.html  # On Mac/Linux
 pip install pytest-watch
 
 # Run in watch mode (auto-reruns on file changes)
-ptw tests/
+ptw reference/tests/
 ```
 
 ### Test Output Interpretation
@@ -254,10 +242,10 @@ Use **black** for consistent code formatting:
 pip install black
 
 # Format all Python files
-black src/ tests/
+black reference/
 
 # Check formatting without making changes
-black src/ tests/ --check
+black reference/ --check
 ```
 
 ### Type Checking
@@ -269,10 +257,10 @@ Use **mypy** for static type checking:
 pip install mypy
 
 # Run type checker
-mypy src/
+mypy reference/
 
 # With more strict options
-mypy src/ --strict
+mypy reference/ --strict
 ```
 
 ### Linting
@@ -284,7 +272,7 @@ Use **flake8** for code linting:
 pip install flake8
 
 # Run linter
-flake8 src/ tests/
+flake8 reference/
 
 # With specific rules
 flake8 src/ --max-line-length=100 --ignore=E501
@@ -423,14 +411,14 @@ Press F5 to start debugging.
 
 1. **Create module file**:
    ```bash
-   touch src/deliberation/core/my_module.py
+   touch reference/deliberation/core/my_module.py
    ```
 
 2. **Write implementation** with type hints and docstrings
 
 3. **Create test file**:
    ```bash
-   touch tests/test_my_module.py
+   touch reference/tests/test_my_module.py
    ```
 
 4. **Write tests** for all functions
@@ -450,7 +438,7 @@ Press F5 to start debugging.
 
 2. **Install dependency**:
    ```bash
-   pip install -r requirements.txt
+   pip install -r reference/requirements.txt
    ```
 
 3. **Test thoroughly** to ensure compatibility
@@ -530,7 +518,7 @@ If tests fail unexpectedly:
 
 1. **Run single test** to isolate issue
 2. **Check for stale .pyc files**: `find . -name "*.pyc" -delete`
-3. **Reinstall dependencies**: `pip install -r requirements.txt --force-reinstall`
+3. **Reinstall dependencies**: `pip install -r reference/requirements.txt --force-reinstall`
 4. **Clear pytest cache**: `rm -rf .pytest_cache`
 
 ### Git Issues
@@ -564,7 +552,7 @@ git push --force-with-lease
 If you need help with development:
 
 1. **Check documentation** in `docs/`
-2. **Review examples** in `examples/`
+2. **Review examples** in `reference/examples/`
 3. **Search GitHub Issues** for similar problems
 4. **Create a new issue** with the `question` label
 5. **Reach out** to maintainers

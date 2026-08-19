@@ -1,6 +1,7 @@
 ---
 description: Risk-prioritised test coverage analysis — find the most dangerous untested code
 effort: medium
+argument-hint: "[--generate] [--threshold <percent>]"
 ---
 
 # Coverage Audit

@@ -3,10 +3,10 @@ Unit tests for statement deduplication and pruning.
 """
 
 import unittest
-from src.deliberation.core.statement_pruner import (
+from reference.deliberation.core.statement_pruner import (
     StatementDeduplicator, ContextPruner
 )
-from src.deliberation.models.schemas import DebateStatement
+from reference.deliberation.models.schemas import DebateStatement
 
 
 class TestStatementDeduplicator(unittest.TestCase):

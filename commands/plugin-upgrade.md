@@ -1,6 +1,7 @@
 ---
 description: Version-sync migration helper — bumps plugin.json, marketplace.json, and CHANGELOG together
 effort: medium
+argument-hint: "<next-version> [--check] [--from <current>] [--no-changelog] [--tag|--no-tag]"
 ---
 
 # Plugin Upgrade

@@ -1,6 +1,7 @@
 ---
 description: Scaffold a new Architectural Decision Record (ADR) from a title or ongoing discussion
 effort: medium
+argument-hint: "<title> [--from-session <id>] [--supersedes <adr-number>] [--status proposed|accepted]"
 ---
 
 # ADR New

@@ -1,6 +1,7 @@
 ---
 description: Deterministically replay a past debate from a session snapshot — regression tests the deliberation engine
 effort: medium
+argument-hint: "<session-id> [--snapshot <path>] [--strict] [--compare-to <session-id>]"
 ---
 
 # Debate Replay

@@ -18,7 +18,12 @@ LOG_FILE="$LOG_DIR/activity.jsonl"
 
 # Log rotation: rotate when >10MB. Timestamped backups accumulate and
 # should be pruned externally if disk space is a concern.
-# Uses a lock file to prevent race conditions under concurrent hook invocations.
+# The noclobber lock only serialises the rotation decision itself (so two
+# concurrent invocations don't both mv the file). It does NOT cover the
+# append at the bottom of this script: a write racing a rotation may land in
+# the freshly-rotated .old file, which is acceptable — appends use O_APPEND
+# and are small enough to be atomic on local filesystems, so no record is
+# ever corrupted or lost, merely filed in the previous window.
 if [ -f "$LOG_FILE" ]; then
   LOCK_FILE="${LOG_FILE}.lock"
   if ( set -o noclobber; echo $$ > "$LOCK_FILE" ) 2>/dev/null; then

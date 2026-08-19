@@ -1,6 +1,7 @@
 ---
 description: Drive grumpy-i18n-nitpicker to audit the project for hardcoded strings, missing translations, and locale bugs
 effort: medium
+argument-hint: "[--scope <path>] [--locale <code>] [--severity <level>] [--since <ref>]"
 ---
 
 # I18n Audit

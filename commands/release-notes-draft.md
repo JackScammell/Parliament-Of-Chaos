@@ -1,6 +1,7 @@
 ---
 description: Auto-generate CHANGELOG entries from merged PRs and commits since the last release
 effort: medium
+argument-hint: "[--since <tag>] [--version <next>] [--style keepachangelog|simple] [--apply]"
 ---
 
 # Release Notes Draft

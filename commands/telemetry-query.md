@@ -1,6 +1,7 @@
 ---
 description: Ad-hoc query over activity.jsonl and the plugin data directory — read path for Parliament telemetry
 effort: medium
+argument-hint: "[--event <name>] [--agent <name>] [--since <duration>] [--until <duration>] [--where <expr>] [--group-by <field>] [--limit <n>] [--json]"
 ---
 
 # Telemetry Query
@@ -34,11 +35,15 @@ The `activity.jsonl` log and other files under `${CLAUDE_PLUGIN_DATA}/` are writ
 
 ## Data Sources
 
-- `${CLAUDE_PLUGIN_DATA}/activity.jsonl` (primary)
-- `${CLAUDE_PLUGIN_DATA}/activity.jsonl.old` (rotated previous window, merged transparently when the `--since` window reaches back into it)
-- `${CLAUDE_PLUGIN_DATA}/debates/` (optional — surfaced via `--event DebateCompleted`)
+- `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jsonl` (primary — the path `log_event.sh` writes)
+- `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jsonl.<epoch>.old` (timestamped rotation backups, merged transparently when the `--since` window reaches back into them)
+- `${CLAUDE_PLUGIN_DATA}/debate-logs/completions.jsonl` (optional — surfaced via `--event DebateCompleted`)
 
 If the plugin data directory falls back to `.project-files/.telemetry/` (older Claude Code without `CLAUDE_PLUGIN_DATA`), the fallback is used automatically.
+
+## Fresh-install guard
+
+If no `activity.jsonl` exists at either location (or it is empty), report **"no telemetry recorded yet"** — name the paths checked and note that records appear once hook events fire (any tool use writes one). Never render an empty table as though the query matched nothing in real data, and never invent rows.
 
 ## Process
 

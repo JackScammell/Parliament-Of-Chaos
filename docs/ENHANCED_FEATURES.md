@@ -484,7 +484,7 @@ Add these to `.gitignore` to keep them local.
 
 ## Examples
 
-See `examples/` directory for:
+See the `reference/examples/` directory for:
 - `constraints.yaml`: Constraint configuration example
 - `skill-trees.yaml`: Agent skill tree definitions
 - `example_usage.py`: Programmatic usage examples

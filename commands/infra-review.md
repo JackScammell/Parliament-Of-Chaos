@@ -1,6 +1,7 @@
 ---
 description: Audit Dockerfiles, k8s manifests, and docker-compose for best practices
 effort: medium
+argument-hint: "[<path>] [--type <docker|k8s|compose|ci>]"
 ---
 
 # Infra Review

@@ -1,6 +1,7 @@
 ---
 description: Set up recurring Parliament monitoring using /loop integration
 effort: low
+argument-hint: "[interval] [command] [args]"
 ---
 
 # Parliament Loop

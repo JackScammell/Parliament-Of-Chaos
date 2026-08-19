@@ -1,6 +1,7 @@
 ---
 description: Manage background monitoring agents for continuous code oversight
 effort: medium
+argument-hint: "[action] [agents...]"
 ---
 
 # Parliament Monitor

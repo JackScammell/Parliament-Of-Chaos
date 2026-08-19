@@ -3,10 +3,10 @@ Unit tests for Context Manager.
 """
 
 import unittest
-from src.deliberation.core.context_manager import (
+from reference.deliberation.core.context_manager import (
     ContextManager, ImmediateContext, HistoricalContext, ReferenceContext
 )
-from src.deliberation.models.schemas import (
+from reference.deliberation.models.schemas import (
     DebateStatement, RoundSummary, AgentPosition
 )
 

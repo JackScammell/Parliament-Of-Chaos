@@ -46,7 +46,7 @@ Thank you for your interest in contributing to Parliament of Chaos! This documen
 ### Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install -r reference/requirements.txt
 ```
 
 ### Verify Installation
@@ -54,7 +54,7 @@ pip install -r requirements.txt
 Run the test suite to ensure everything is working:
 
 ```bash
-python -m pytest tests/ -v
+python -m pytest reference/tests/ -v
 ```
 
 ### Project Structure
@@ -71,14 +71,13 @@ Parliament-Of-Chaos/
 │   ├── manifest.yaml                  # Source-of-truth registry for every slash command
 │   └── <66 command .md files>         # Command definitions across 15 categories
 ├── src/
-│   ├── deliberation/                  # Python deliberation system
-│   │   ├── core/                      # Core modules
-│   │   ├── agents/                    # Agent implementations
-│   │   └── schemas/                   # Data schemas
 │   └── hooks/                         # Hook scripts (_common.sh, log_event.sh, notify_teams.sh)
-├── tests/                             # Test files
-├── docs/                              # Documentation
-└── examples/                          # Example scripts
+├── reference/                         # NON-EXECUTING Python reference implementation (see reference/README.md)
+│   ├── deliberation/                  # Deliberation engine design study
+│   ├── tests/                         # Its unit tests
+│   ├── examples/                      # Its example scripts
+│   └── requirements.txt               # Its Python dependencies
+└── docs/                              # Documentation
 ```
 
 ### Source-of-truth Files
@@ -223,7 +222,7 @@ Description of what the command returns.
 
 ### Writing Tests
 
-- Place tests in the `tests/` directory
+- Place tests in the `reference/tests/` directory
 - Name test files with `test_` prefix
 - Use descriptive test function names
 - Test both success and failure cases
@@ -247,13 +246,13 @@ def test_statement_validation_with_valid_input():
 
 ```bash
 # Run all tests
-python -m pytest tests/ -v
+python -m pytest reference/tests/ -v
 
 # Run specific test file
-python -m pytest tests/test_schemas.py -v
+python -m pytest reference/tests/test_schemas.py -v
 
 # Run with coverage
-python -m pytest tests/ --cov=src --cov-report=html
+python -m pytest reference/tests/ --cov=reference --cov-report=html
 ```
 
 ---
@@ -275,7 +274,7 @@ When making changes that affect documentation:
 1. Update relevant documentation files in `docs/`
 2. Update README.md if necessary
 3. Update inline code comments and docstrings
-4. Add examples to `examples/` if appropriate
+4. Add examples to `reference/examples/` if appropriate
 
 ---
 
@@ -291,7 +290,7 @@ When making changes that affect documentation:
 
 2. **Run tests** to ensure everything passes:
    ```bash
-   python -m pytest tests/ -v
+   python -m pytest reference/tests/ -v
    ```
 
 3. **Update documentation** if needed

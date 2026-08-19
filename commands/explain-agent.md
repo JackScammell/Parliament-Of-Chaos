@@ -1,6 +1,7 @@
 ---
 description: Explain what a specific agent does and when to use it
 effort: low
+argument-hint: "<agent-name>"
 ---
 
 # Explain Agent

@@ -4,6 +4,7 @@ effort: high
 context: fork
 background: false
 agent: senior-council
+argument-hint: "<task-description> [plan|implement]"
 ---
 
 # Summon the Council

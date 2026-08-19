@@ -1,6 +1,7 @@
 ---
 description: Show frequency and effectiveness per agent — input to retirement and optimisation decisions
 effort: medium
+argument-hint: "[--since <duration>] [--agent <name>] [--json] [--underused]"
 ---
 
 # Agent Usage Stats

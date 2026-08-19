@@ -40,3 +40,7 @@ Database specialist focused on schema architecture, query performance and index 
 1. **Data Model Summary** – Schema strengths and weaknesses
 2. **Query Issues** – Problematic queries with issue, impact, evidence
 3. **Optimisation Suggestions** – Change type, implementation, expected benefit, priority
+
+## Fan-Out Contract (fan-out-policy B5)
+
+When dispatched as a council fan-out member, **state your assumptions and proceed** — never ask clarifying questions. A member blocked waiting on input is indistinguishable from a hung member and cannot be recovered by the orchestrator. Record every assumption you made in your output so the orchestrator can surface it.

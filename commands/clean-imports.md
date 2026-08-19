@@ -1,6 +1,7 @@
 ---
 description: Remove unused imports and organise import ordering across changed files
 effort: low
+argument-hint: "[--all] [--check] [files...]"
 ---
 
 # Clean Imports

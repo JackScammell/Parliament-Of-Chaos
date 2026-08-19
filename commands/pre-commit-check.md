@@ -1,6 +1,7 @@
 ---
 description: Auto-detect and run all CI checks locally before committing
 effort: medium
+argument-hint: "[--fix] [--skip <step>]"
 ---
 
 # Pre-Commit Check

@@ -1,6 +1,7 @@
 ---
 description: Assist with complex git operations — conflicts, cherry-picks, branch cleanup, bisect
 effort: medium
+argument-hint: "<subcommand> [options]"
 ---
 
 # Git Workflow

@@ -4,6 +4,7 @@ effort: medium
 context: fork
 background: false
 agent: senior-council
+argument-hint: "<question>"
 ---
 
 # Ask the Council

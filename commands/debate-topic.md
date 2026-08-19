@@ -4,6 +4,7 @@ effort: high
 context: fork
 background: false
 agent: deliberation-conductor
+argument-hint: "[topic] --mode [fast|adversarial|consensus|deep] --voting [majority|supermajority|quadratic|influence_weighted]"
 ---
 
 # Debate Topic

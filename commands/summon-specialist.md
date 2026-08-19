@@ -3,6 +3,7 @@ description: Directly invoke a specialist agent on the current task
 effort: medium
 context: fork
 background: false
+argument-hint: "<specialist-name> <task-description>"
 ---
 
 # Summon Specialist

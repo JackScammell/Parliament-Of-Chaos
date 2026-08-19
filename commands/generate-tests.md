@@ -1,6 +1,7 @@
 ---
 description: Generate tests for existing code following project conventions
 effort: medium
+argument-hint: "[<path>] [--changed] [--type <unit|integration|e2e>] [--coverage-gaps]"
 ---
 
 # Generate Tests

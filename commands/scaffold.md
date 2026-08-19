@@ -1,6 +1,7 @@
 ---
 description: Generate convention-compliant boilerplate by reading existing project patterns
 effort: medium
+argument-hint: "<type> <name> [--path <directory>]"
 ---
 
 # Scaffold

@@ -1,6 +1,7 @@
 ---
 description: Mark an existing ADR as superseded and link it to its replacement
 effort: low
+argument-hint: "<old-adr-number> [--by <new-adr-number>] [--reason <text>]"
 ---
 
 # ADR Supersede
