@@ -1,5 +1,5 @@
 ---
-description: Grumpy-reviewer review — relevance-tiered by default, --all forces the full 9
+description: Grumpy-reviewer review — relevance-tiered by default; --all forces the full 9-member panel (privacy-paranoid joins on personal data, making 10)
 effort: high
 context: fork
 background: false
@@ -9,7 +9,7 @@ argument-hint: "[target] [--all]"
 
 # Parliament Review
 
-Full review using the 9 grumpy reviewers. By default, relevance-tiered to the reviewers whose domain the diff touches; `--all` forces the full 9 for maximum scrutiny.
+Full review using the 9-member default panel (of 12 reviewers total). By default, relevance-tiered to the reviewers whose domain the diff touches; `--all` forces the full 9 for maximum scrutiny — and `grumpy-privacy-paranoid` additionally joins whenever the diff carries personal data, so an `--all` run on PII dispatches **10**. Dispatch follows the reconcile-on-notification loop in `.claude/rules/fan-out-policy.md`: members run detached and report back via completion notifications — a member that has not answered yet is Working, and the run must not be declared INCOMPLETE while any member's task is live.
 
 ## Reviewers
 
@@ -29,7 +29,7 @@ Full review using the 9 grumpy reviewers. By default, relevance-tiered to the re
 /parliament-review [target] [--all]
 ```
 
-- `--all` — force the full 9 reviewers ("maximum scrutiny"). Without it, review is relevance-tiered (see step 1a).
+- `--all` — force the full 9-member panel ("maximum scrutiny"); +privacy-paranoid on personal data = 10. Without it, review is relevance-tiered (see step 1a).
 
 ## Process
 
@@ -50,7 +50,7 @@ Full review using the 9 grumpy reviewers. By default, relevance-tiered to the re
 
 1b. **Pre-flight cost gate (A4)** — before fan-out, apply the existing `/cost-report estimate` soft-cap band as a **WARN/CONFIRM** gate. This is advisory only and **never a hard block**: over the soft cap → warn and ask to proceed; no telemetry history → degrade to "estimate unavailable — proceed?". This is a **whole-run** estimate — `/cost-report estimate` is the existing whole-command static estimator, not a per-subset admission controller, so do not claim per-reviewer or batch-boundary admission from it. The estimate is **provisional**: relevance-tiering (1a) changes the cost structure, so a telemetry-sourced figure stays approximate until post-change history re-accumulates. **Skip this gate below a small-review size threshold** so small reviews don't pay its fixed overhead net-negative.
 
-2. **Fan out to the selected reviewers** following the reconcile-after-return policy loop in `.claude/rules/fan-out-policy.md` — concurrency-aware batching (B1), graceful degradation with one re-dispatch of any non-reporting member (B2), and the liveness floor. A non-reporting **floor** member forces an `INCOMPLETE` result (never a survivor-synthesised `APPROVE`); a non-reporting non-floor member is dropped with a loud notice in Reviewer Notes/Deferred.
+2. **Fan out to the selected reviewers** following the **reconcile-on-notification** policy loop in `.claude/rules/fan-out-policy.md` — dispatch prompts carry disk-verified paths (B7) and demand an explicit `APPROVE`/`REJECT`/`NO-FINDINGS` verdict (B6); members run detached and are tallied as their completion notifications arrive; a member with a live task is **Working** and must be waited for, never nudged, never given up on. Only at a member's terminal state does classification apply: a completed run without an explicit verdict, or a failed task, gets its one fresh full-context re-dispatch (B2). A **floor** member still unresolved after that forces `INCOMPLETE` (never a survivor-synthesised `APPROVE`); an unresolved non-floor member is dropped with a loud notice in Reviewer Notes/Deferred. The orchestrator must never substitute its own hand-done review for a live fan-out.
 3. Collect and deduplicate findings.
 4. Rank by severity.
 

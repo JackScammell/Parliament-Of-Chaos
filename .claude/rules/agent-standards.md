@@ -107,7 +107,7 @@ deliberate deviations apply.
 | `isolation: worktree` | Present | Implementation specialists | Work in isolated git branches without conflicts |
 | Not present | — | Read-only agents, orchestrators | No isolation needed for analysis/coordination |
 
-> **Worktree branching baseline — data-loss correction (supersedes the v2.1.128 note)**: A previous version of this note told contributors to "treat v2.1.128 as the minimum safe version" for workflows that spawn `isolation: worktree` specialists from a local feature branch with unpushed commits. **That guidance is no longer sufficient and acting on it risks silently losing unpushed local commits.** History: on Claude Code < v2.1.128, `EnterWorktree` branched from the remote tracking head, so unpushed local commits could be dropped; v2.1.128 changed it to branch from local HEAD. However, as of **v2.1.133** the worktree base is governed by the `worktree.baseRef` setting, whose default is `fresh` (origin-based). On v2.1.133+ with the default in effect, a worktree-isolated specialist spawned from a local feature branch with unpushed work branches from `origin` again and that work is not visible in the worktree. **The safe configuration is Claude Code ≥ v2.1.133 _with_ an explicit `worktree.baseRef: "head"` setting** — the version floor alone is not enough. Parliament does **not** ship `worktree.baseRef` in `settings.json`: settings/permission policy is the user's responsibility (no-policy stance, reaffirmed in the v1.14.0 audit). This note guides the user to set `worktree.baseRef: "head"` themselves before relying on worktree-isolated specialists with unpushed local work; it does not prescribe it.
+> **Worktree branching baseline — data-loss correction (supersedes the v2.1.128 note)**: A previous version of this note told contributors to "treat v2.1.128 as the minimum safe version" for workflows that spawn `isolation: worktree` specialists from a local feature branch with unpushed commits. **That guidance is no longer sufficient and acting on it risks silently losing unpushed local commits.** History: on Claude Code < v2.1.128, `EnterWorktree` branched from the remote tracking head, so unpushed local commits could be dropped; v2.1.128 changed it to branch from local HEAD. However, as of **v2.1.133** the worktree base is governed by the `worktree.baseRef` setting, whose default is `fresh` (origin-based). On v2.1.133+ with the default in effect, a worktree-isolated specialist spawned from a local feature branch with unpushed work branches from `origin` again and that work is not visible in the worktree. **The safe configuration is Claude Code ≥ v2.1.133 _with_ an explicit `worktree.baseRef: "head"` setting** — the version floor alone is not enough. Parliament does **not** ship a `worktree.baseRef` setting (it ships no settings file at all as of v1.25.0): settings/permission policy is the user's responsibility (no-policy stance, reaffirmed in the v1.14.0 audit). This note guides the user to set `worktree.baseRef: "head"` themselves before relying on worktree-isolated specialists with unpushed local work; it does not prescribe it.
 
 ## Background Execution
 
@@ -135,23 +135,30 @@ deliberate deviations apply.
 ## Council Fan-Out and Hang-Recovery
 
 The full council fan-out policy — dispatch loop, the security-critical liveness floor, the
-post-return detection table, batching, and graceful degradation — lives in its single source,
+per-member terminal-state detection table, batching, and graceful degradation — lives in its single source,
 `.claude/rules/fan-out-policy.md`. Two facts about it belong in the frontmatter standards:
 
-> **No wall-clock timeout, no auto-retry primitive**: Claude Code offers **no** per-subagent
-> wall-clock timeout and **no** auto-retry primitive. There is no frontmatter field, no
-> `settings.json` knob, and no harness default that will time out or retry a hung council
-> member for you. Hang-recovery is therefore **genuine engineering**, not configuration — it is
-> the out-of-band `Monitor` watchdog (B4) documented in `.claude/rules/fan-out-policy.md`, which
-> tails `activity.jsonl` alongside the session and opens a per-member circuit breaker. Do not
-> assume a hung member will be reaped automatically; nothing reaps it.
+> **Dispatch is detached; completion notifications are the primitive**: subagent dispatch is
+> background-by-default (upstream v2.1.198+) — a `Task(...)` call returns immediately and the
+> harness re-invokes the orchestrator with a notification as each member finishes. The fan-out
+> loop is therefore **reconcile-on-notification** (`.claude/rules/fan-out-policy.md`): a member
+> with a live task is *Working*, silence is not a signal, and the orchestrator must never
+> substitute its own review for a live fan-out. Claude Code still offers **no** per-subagent
+> wall-clock timeout and **no** auto-retry primitive — no frontmatter field, no settings knob,
+> no harness default will time out or retry a hung member for you. Hang-recovery is the
+> out-of-band `Monitor` watchdog (B4) in `fan-out-policy.md`, which tails `activity.jsonl`
+> alongside the session and opens a per-member circuit breaker. Do not assume a hung member
+> will be reaped automatically; nothing reaps it.
 
-> **Prompt-standard — state assumptions, do not ask (B5)**: Council members dispatched into a
-> detached fan-out must **state their assumptions and proceed**; they must **never** ask
-> clarifying questions. In a fan-out context a member blocked waiting on input is
-> indistinguishable from a hung member and cannot be recovered by the orchestrator. This is a
-> standing prompt-authoring standard for every agent that can be fanned out under the council.
-> See `.claude/rules/fan-out-policy.md`.
+> **Prompt-standard — state assumptions, do not ask (B5); end with an explicit verdict (B6)**:
+> Council members dispatched into a detached fan-out must **state their assumptions and
+> proceed**; they must **never** ask clarifying questions. In a fan-out context a member blocked
+> waiting on input is indistinguishable from a hung member and cannot be recovered by the
+> orchestrator. Every member must also **end its run with an explicit verdict** — `APPROVE`,
+> `REJECT`, or `NO-FINDINGS` — because the reconcile loop treats a completed task without a
+> verdict as Non-reporting; silence is never a pass, and availability pings are not verdicts.
+> These are standing prompt-authoring standards for every agent that can be fanned out under
+> the council. See `.claude/rules/fan-out-policy.md` (B5, B6).
 
 ## Initial Prompts
 
@@ -186,9 +193,13 @@ orthogonal to `${CLAUDE_EFFORT}`, which controls reasoning effort per turn.
 
 ## Permissions
 
-Parliament's `settings.json` deliberately ships **no** `permissions.allow` or `permissions.deny`
-rules. The plugin only configures hooks; permission policy is the user's responsibility, not the
-plugin's. This decision was reaffirmed in the v1.14.0 audit triggered by Claude Code v2.1.113.
+Parliament ships **no `settings.json` at all** (the root one was removed in v1.25.0 — Claude
+Code ignores a plugin-root `settings.json` for everything except `agent`/`subagentStatusLine`
+keys, so its hooks block had never been registered). Hooks are registered via
+`.claude-plugin/plugin.json` → `hooks/hooks.json`, which contains hook events **only** — no
+`permissions.allow`/`permissions.deny`, no env vars. Permission policy is the user's
+responsibility, not the plugin's. This decision was reaffirmed in the v1.14.0 audit triggered
+by Claude Code v2.1.113.
 
 ### Claude Code v2.1.113 hardening — verified safe
 

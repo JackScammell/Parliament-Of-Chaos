@@ -83,7 +83,7 @@ This file is updated after each review so that subsequent runs only process **ne
 4. **Compare Against Current State**
    - Read current `CHANGELOG.md` to identify what Parliament already implements
    - Read `.claude/rules/agent-standards.md` for current agent standards
-   - Read `settings.json` for current hook configuration
+   - Read `hooks/hooks.json` for current hook configuration
    - Identify gaps between new Claude Code capabilities and Parliament features
    - Skip features already implemented in previous reviews
 

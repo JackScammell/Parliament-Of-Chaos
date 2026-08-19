@@ -45,6 +45,8 @@ Makes systems antifragile by identifying and hardening failure points.
 2. **Weak Points** – Vulnerable components, failure scenarios, impact, likelihood
 3. **Hardening Plan** – Prioritised patterns with config values and code examples
 
-## Fan-Out Contract (fan-out-policy B5)
+## Fan-Out Contract (fan-out-policy B5 + B6)
 
 When dispatched as a council fan-out member, **state your assumptions and proceed** — never ask clarifying questions. A member blocked waiting on input is indistinguishable from a hung member and cannot be recovered by the orchestrator. Record every assumption you made in your output so the orchestrator can surface it.
+
+**End every fan-out run with an explicit verdict line** — `APPROVE`, `REJECT`, or `NO-FINDINGS` (reviewed, nothing to report). A completed run without an explicit verdict is classified Non-reporting and re-dispatched; silence is never a pass. Do not send availability pings or status chatter — they are not verdicts and pollute reconciliation.

@@ -5,6 +5,37 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.0] - 2026-08-19
+
+Emergency correctness release driven by a real `/parliament-review --all` field failure (10-reviewer fan-out on a production PR): the orchestrator gave up on a live fan-out after 44 seconds, classified working reviewers as non-reporting, skipped real re-dispatch, and substituted its own hand-done review — with three genuine reviewer reports arriving after it had already terminated. The liveness floor held (`INCOMPLETE`, never a false `APPROVE`), which is the only reason this was an inconvenience rather than an unreviewed auth change shipping with a confident green tick. Two root causes, both fixed.
+
+### Fixed — plugin hooks were never registered (all installs, v1.9.0 → v1.24.0)
+
+- **Hook config moved to `hooks/hooks.json`**, referenced via the `hooks` field in `.claude-plugin/plugin.json`. Every prior release declared its hooks in a root `settings.json` — which Claude Code **silently ignores for plugins** (a plugin-root `settings.json` is only read for `agent`/`subagentStatusLine` keys). Consequence: the entire telemetry chain — `activity.jsonl`, the fan-out detection table, the B4 watchdog, `/parliament-metrics` member reliability, the v1.23.0 `TaskCompleted` work — has never operated on any installed copy. The dead `settings.json` is removed; `/env-doctor` now WARNs loudly if a root `settings.json` with a `hooks` key reappears; the fan-out policy's detection-table caveat records the registration history so pre-v1.25.0 telemetry reasoning is treated as untested.
+
+### Changed — fan-out loop rewritten for detached dispatch (reconcile-on-notification)
+
+- **The blocking-turn model was fiction.** Dispatch has been background-by-default upstream since v2.1.198: `Task(...)` returns immediately and members report back via completion notifications. The policy loop is rewritten accordingly: members are tallied per notification; a member with a live task is **Working** — silence is not a signal; the orchestrator must not reach any terminal result while a member's task is live, and "gave up on elapsed time" is named as a policy violation on par with a false `APPROVE`. Late reports amend the synthesis rather than being discarded.
+- **Explicit-verdict rule (B6)** — every member must end with `APPROVE` / `REJECT` / `NO-FINDINGS`; a completed run without an explicit verdict is Non-reporting. "Reviewed, found nothing" is now structurally distinguishable from "never reviewed"; availability pings are explicitly not verdicts. Propagated into all 29 fan-out-capable agents' Fan-Out Contract sections.
+- **True re-dispatch semantics (B2)** — a re-dispatch is a fresh, full-context dispatch at the member's terminal state; a status-check nudge is not a re-dispatch, and nudging a Working member is prohibited outright.
+- **Dispatch-prompt hygiene (B7)** — every path in a dispatch prompt must be verified against disk at dispatch time (the field failure sent six reviewers a directory that does not exist); defective prompts are remedied via the terminal-state re-dispatch, not mid-flight correction messages.
+- **Detection table reordered around harness task notifications** as the primary signal, with `activity.jsonl` telemetry (now actually registered) as the secondary disambiguator.
+- `senior-council`, `/parliament-review`, and `/summon-council` orchestration steps updated to the notification model; `agent-standards` B5 blockquote extended with B6.
+
+### Hardened in council review (three-reviewer gate: security-nag, code-reviewer, standards-enforcer)
+
+- **B6 anti-gaming clauses** — a bare verdict line without the `output-standards.md` review structure classifies as Non-reporting (a degraded member cannot launder a skipped review through `NO-FINDINGS`); verdicts are read only from the member's own final output line, never quoted content.
+- **Late-report amendment scoped** — orchestrator-only, gated on a known dispatched task ID, and an amended synthesis re-applies the floor rule and severity ordering in full.
+- **`output-standards.md` verdict format** updated to the B6 three-token vocabulary (it still said "Approve or reject").
+- **`agent-standards.md` Permissions section** rewritten — Parliament now ships no `settings.json` at all; stale references corrected.
+- **`docs/hooks.md`** — plugin hooks documented as auto-registered; the manual Teams-wiring example no longer guides users into duplicate notifications; stale script list fixed.
+- **`TeammateIdle` registered** in `hooks/hooks.json` — `notify_teams.sh` handled it and two commands documented it, but no config had ever wired it.
+- **B4 rationale/history** reworded to the notification model; `summon-council` version-floor restatement de-inlined per the single-source rule.
+
+### Fixed — documentation
+
+- `/parliament-review` `--all` wording: the full panel is 9, and `grumpy-privacy-paranoid` joins on personal-data diffs, making **10** — the command description and options now say so (the field run correctly dispatched 10 while the doc said 9).
+
 ## [1.24.0] - 2026-08-19
 
 Claude Code feature-adoption release for upstream v2.1.219–v2.1.235, driven by `/changelog-review` (six-member panel: config-curator, system-architect, pipeline-engineer, refactor-ranger, maintainability-curmudgeon, architecture-skeptic — all five findings approved as amended). The unifying theme: upstream defaults Parliament had leaned on have flipped, so this release converts prose rules into structural enforcement and adopts an **invariants-not-defaults** documentation standard (record what Parliament pins explicitly; only track an upstream default when Parliament relies on it being unset).
@@ -642,6 +673,7 @@ Subsequent tiers from the toolset-gaps plan land in v1.11.0 (Learning Loop), v1.
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.25.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.24.0...v1.25.0
 [1.24.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.23.0...v1.24.0
 [1.23.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.22.0...v1.23.0
 [1.22.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.21.0...v1.22.0

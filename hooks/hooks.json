@@ -122,6 +122,16 @@
           }
         ]
       }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/src/hooks/notify_teams.sh"
+          }
+        ]
+      }
     ]
   }
 }

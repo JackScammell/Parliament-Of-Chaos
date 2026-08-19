@@ -25,12 +25,12 @@ All three values must match.
   Should return zero results (CHANGELOG/RELEASE_NOTES references are historical and OK).
 
 - [ ] Hook paths use `src/hooks/` not `hooks/` in:
-  - `settings.json`
+  - `hooks/hooks.json`
   - Agent frontmatter (`agents/*.md` — check `command:` lines)
 
   **Verify with:**
   ```bash
-  grep -rn '"hooks/' settings.json agents/
+  grep -rn '"hooks/' hooks/hooks.json agents/
   ```
   Should return zero results.
 

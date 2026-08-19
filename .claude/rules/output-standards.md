@@ -7,7 +7,7 @@ All grumpy reviewers must use this structure:
 1. **Summary** - High-level assessment (2-3 sentences)
 2. **Issues** - Problems with severity (Critical/High/Medium/Low) and rationale
 3. **Recommendations** - Suggested fixes with specific references
-4. **Verdict** - Approve or reject with clear reasoning
+4. **Verdict** - An explicit final verdict line — `APPROVE`, `REJECT`, or `NO-FINDINGS` (reviewed, nothing to report) — with clear reasoning. The three-token vocabulary is mandated by fan-out-policy.md B6: a review without an explicit verdict line is classified Non-reporting
 
 ## Council Output Format
 

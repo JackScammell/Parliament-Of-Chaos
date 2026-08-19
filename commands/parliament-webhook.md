@@ -36,7 +36,7 @@ Configure HTTP webhook endpoints to receive notifications for Parliament of Chao
    - Write `DISCORD_WEBHOOK_URL=<url>` for Discord
    - Write `CUSTOM_WEBHOOK_URL=<url>` for custom endpoints
 
-4. **Verify hooks are enabled** in `settings.json`:
+4. **Verify hooks are enabled** in `hooks/hooks.json` (registered via the `hooks` field in `.claude-plugin/plugin.json`):
    - Confirm all hook events have corresponding entries
    - List which events will trigger notifications
 
@@ -51,7 +51,7 @@ Configure HTTP webhook endpoints to receive notifications for Parliament of Chao
 | `SubagentStart` | New sub-agent spawned |
 | `PostCompact` | Context window compacted |
 | `InstructionsLoaded` | Rules files reloaded |
-| `TeammateIdle` | Teammate available for work |
+| `TeammateIdle` | Teammate available for work (registered in `hooks/hooks.json` as of v1.25.0 — handled by `notify_teams.sh`) |
 
 ## Test Action
 

@@ -105,7 +105,15 @@ Matchers filter which specific events trigger the hook:
 
 ## Example: Teams Notification Hook
 
-Parliament of Chaos includes a ready-to-use Microsoft Teams notification hook. Here's how to set it up:
+Parliament of Chaos includes a ready-to-use Microsoft Teams notification hook.
+
+> **⚠️ As of v1.25.0 this hook is auto-registered by the plugin.** `hooks/hooks.json`
+> (referenced from `.claude-plugin/plugin.json`'s `hooks` field) already wires
+> `notify_teams.sh` to `Notification`, `Stop`, `TaskCompleted`, `StopFailure`,
+> `PermissionDenied`, and `TeammateIdle`. **You only need Step 1 (the webhook URL)** — do NOT also wire these
+> events manually in your own settings, or every Teams message will arrive twice. The manual
+> wiring in Step 2 below is only for (a) pre-v1.25.0 installs, where plugin hooks were never
+> actually registered, or (b) a deliberately customised local copy replacing the plugin's.
 
 ### Step 1: Configure the Webhook URL
 
@@ -126,7 +134,7 @@ cp ~/.claude/plugins/cache/chaos/chaos/*/src/hooks/.env .claude/hooks/
 # Edit .claude/hooks/.env with your webhook URL
 ```
 
-### Step 2: Configure the Hook
+### Step 2 (only if NOT using the plugin's auto-registration): Configure the Hook
 
 Add to `.claude/settings.local.json`:
 
@@ -374,20 +382,30 @@ When installed via the marketplace, Parliament of Chaos hook scripts are stored 
 
 ```
 ~/.claude/plugins/cache/chaos/chaos/*/src/hooks/
+  _common.sh                # Shared payload/env helpers (sourced by the others)
+  log_event.sh              # Unified telemetry logger -> activity.jsonl
   notify_teams.sh           # Teams notification script
-  log_agent_activity.sh     # Agent lifecycle logging
-  log_debate_completion.sh  # Debate completion logging
+  log_debate_completion.sh  # Debate completion logging (agent-level Stop hook)
 ```
 
-### Configuration Files (Your Project)
+### Configuration Files
 
-Hook **configuration** still lives in your project's settings files:
+**The plugin's own hooks are auto-registered** from `hooks/hooks.json` in the plugin root,
+referenced by the `hooks` field in `.claude-plugin/plugin.json` — this is the only mechanism
+Claude Code honours for plugin hooks (a `hooks` block in a plugin-root `settings.json` is
+silently ignored; that misconfiguration shipped from v1.9.0 to v1.24.0 and was fixed in
+v1.25.0).
+
+**Your own additional hooks** live in your project's settings files as usual:
 
 ```
 .claude/
   settings.json           # Shared hooks (committed)
   settings.local.json     # Personal hooks (gitignored)
 ```
+
+Avoid re-wiring events the plugin already registers (see the Teams example above) unless you
+intend duplicates.
 
 ### Using Plugin Hooks in Configuration
 
@@ -422,6 +440,7 @@ Hook scripts live in `src/hooks/` (so they survive plugin cache refreshes). As o
 | `_common.sh` | `src/hooks/` | Shared helper — payload parsing, path validation, data-directory resolution, log rotation (v1.7.0) |
 | `log_event.sh` | `src/hooks/` | Unified event dispatcher — handles Stop, StopFailure, PostCompact, InstructionsLoaded, TaskCompleted, TaskCreated, SubagentStart, PermissionDenied, etc. (v1.9.0) |
 | `notify_teams.sh` | `src/hooks/` | Webhook notifications (Teams / Slack / Discord / custom HTTP endpoints) |
+| `log_debate_completion.sh` | `src/hooks/` | Debate completion logging — wired as `deliberation-conductor`'s agent-level Stop hook |
 
 Before v1.9.0 these were separate scripts (`log_agent_activity.sh`, `handle_stop_failure.sh`, `handle_post_compact.sh`, `handle_instructions_loaded.sh`). They have been removed; add a new logged event by adding a case to `log_event.sh`.
 

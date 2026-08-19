@@ -43,18 +43,19 @@ Closes the `feedback_hooks_location.md` footgun — if a hook script has drifted
 
 ### Hook scripts
 
-- Each hook wired in settings.json must resolve to an existing file under `src/hooks/`
+- The plugin's hook config must live in `hooks/hooks.json` and be referenced by the `hooks` field in `.claude-plugin/plugin.json` — a `hooks` block in a root `settings.json` is **silently ignored** by Claude Code for plugins (the defect shipped from v1.9.0 to v1.24.0; fixed in v1.25.0). WARN loudly if a root `settings.json` with a `hooks` key exists.
+- Each hook wired in `hooks/hooks.json` must resolve to an existing file under `src/hooks/`
 - Each hook script must be executable
 - Each hook script must have a valid shebang (`#!/usr/bin/env bash` or language-appropriate)
 - `_common.sh` must be sourced correctly
 - `CLAUDE_PLUGIN_DATA` fallback must be present in scripts that log — check for the pattern `${CLAUDE_PLUGIN_DATA:-`
 
-### settings.json resilience (Claude Code v2.1.121 / v2.1.122)
+### Hook-config resilience (Claude Code v2.1.121 / v2.1.122)
 
-As of upstream v2.1.121 a malformed legacy enum value in `settings.json` no longer invalidates
+As of upstream v2.1.121 a malformed legacy enum value in a settings/hook-config file no longer invalidates
 the entire file, and v2.1.122 extends the same defensive parsing to a malformed `hooks` block.
 `/env-doctor` mirrors this: a single broken hook entry is reported as a **targeted warning**
-that names the specific event and hook index, never as a blanket "settings.json is invalid"
+that names the specific event and hook index, never as a blanket "hook config is invalid"
 fatal. Errors elsewhere in the file are reported separately so a single bad hook does not mask
 unrelated config issues.
 
@@ -164,7 +165,7 @@ to see if any auto-installed companions can be removed cleanly.
 OK   — ${CLAUDE_PLUGIN_DATA} = /Users/jack/Library/Claude/plugin-data/chaos (writable)
 OK   — .project-files/.telemetry/ is gitignored
 
-## Hook scripts (4 wired in settings.json)
+## Hook scripts (4 wired in hooks/hooks.json)
 OK   — src/hooks/log_event.sh (executable, valid shebang)
 OK   — src/hooks/notify_teams.sh (executable, valid shebang)
 OK   — src/hooks/_common.sh (not directly wired; sourced by others)
@@ -172,9 +173,9 @@ OK   — src/hooks/log_debate_completion.sh (executable, valid shebang)
 FAIL — src/hooks/log_event.sh does not contain CLAUDE_PLUGIN_DATA fallback pattern
        expected: ${CLAUDE_PLUGIN_DATA:-...}
        (see feedback_hooks_location.md)
-WARN — settings.json: hooks.PostToolUse[2] failed to parse
+WARN — hooks/hooks.json: hooks.PostToolUse[2] failed to parse
        reason: "command" key is not a string
-       remediation: edit that single entry; the rest of settings.json was loaded successfully
+       remediation: edit that single entry; the rest of hooks/hooks.json was loaded successfully
 
 ## External tools
 OK   — git 2.47.0
