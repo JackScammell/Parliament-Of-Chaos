@@ -43,6 +43,10 @@ Display all installed community agent plugins.
    ```
 
 3. **Include Built-in Agents**
-   Note that Parliament of Chaos includes 30 built-in agents plus any community plugins.
+   Note that Parliament of Chaos includes 33 built-in agents (2 orchestrators, 16 specialists, 12 grumpy reviewers, 2 planning agents, 1 utility agent) plus any community plugins.
 
 Display the complete plugin marketplace listing.
+
+## Notes
+
+- Not the same as Claude Code's built-in `/plugin list` (upstream, lists installed plugins and their state). Use `/chaos:plugin-list` for the Parliament-relative view of agent plugins alongside the built-in fleet count.

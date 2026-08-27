@@ -18,8 +18,23 @@
 #   - Substring, case-insensitive checks on words: "enabled", the version
 #     string, absence of "fail". NEVER glyphs ("✔"/"✘") or column layout —
 #     those drift across CLI releases.
-#   - `claude plugin validate` is feature-detected, never required (absent on
-#     CLI 2.1.197; may exist on newer versions).
+#   - `claude plugin validate` presence is ASSERTED, not feature-detected, when
+#     the caller knows the pin guarantees it (REQUIRE_PLUGIN_VALIDATE=1, set by
+#     The Gate's pinned install-smoke job). Feature detection survives only for
+#     the dual-use local path, where the user's CLI may genuinely predate the
+#     subcommand. Rationale: `--help`-based detection is a weak signal — a CLI
+#     that exits 0 on an unrecognised subcommand's --help yields a false
+#     positive, and the real failure then misreports as "validate reported
+#     errors" instead of "not available".
+#   - stdin is closed off SCRIPT-WIDE via `exec 0</dev/null` immediately below,
+#     not per call site. Upstream v2.1.246 fixed a class where a CLI call could
+#     block waiting on input; with stdin at EOF, any such prompt fails
+#     IMMEDIATELY instead of hanging until the job's timeout-minutes budget is
+#     exhausted. Non-interactive is asserted here, not assumed. The per-call
+#     `</dev/null` redirects are KEPT as belt-and-braces (they are explicit at
+#     the point of risk and survive code extraction), but correctness no longer
+#     depends on remembering one: a convention that must be re-applied to every
+#     new call site is a convention that drifts.
 #
 # Not verified by this script (green here is NOT full validation):
 #   - Hooks firing inside a live session (needs an API key + a real turn)
@@ -27,6 +42,15 @@
 #   - macOS installs (CI runs Linux only)
 # ============================================================================
 set -euo pipefail
+
+# Close stdin ONCE, for the whole script and everything it spawns (v1.27.0).
+# This supersedes the per-call `</dev/null` convention as the load-bearing
+# guard: enumerating call sites is a maintenance burden that silently regresses
+# the first time someone adds a `claude` call without reading the header comment
+# — the same enumerate-the-literals anti-pattern that has already bitten this
+# repo elsewhere. The per-call redirects below are retained as documentation and
+# defence-in-depth, but no longer carry the invariant.
+exec 0</dev/null
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
@@ -134,20 +158,20 @@ trap cleanup EXIT
 
 echo "== using throwaway CLAUDE_CONFIG_DIR=$CLAUDE_CONFIG_DIR"
 
-if ! claude plugin marketplace add "$SOURCE"; then
+if ! claude plugin marketplace add "$SOURCE" </dev/null; then
   echo "ERROR: 'claude plugin marketplace add $SOURCE' failed" >&2
   exit 1
 fi
 pass "marketplace add"
 
-if ! claude plugin install "${PLUGIN_NAME}@${MARKETPLACE_NAME}"; then
+if ! claude plugin install "${PLUGIN_NAME}@${MARKETPLACE_NAME}" </dev/null; then
   echo "ERROR: 'claude plugin install ${PLUGIN_NAME}@${MARKETPLACE_NAME}' failed" >&2
   exit 1
 fi
 pass "plugin install"
 
 # --- Assertions on `claude plugin list` -------------------------------------
-LIST_OUTPUT="$(claude plugin list 2>&1 || true)"
+LIST_OUTPUT="$(claude plugin list </dev/null 2>&1 || true)"
 echo "---- claude plugin list ----"
 echo "$LIST_OUTPUT"
 echo "----------------------------"
@@ -214,19 +238,53 @@ else
   done <<< "$MANIFESTS"
 fi
 
-# --- Feature-detected: claude plugin validate (newer CLIs only) -------------
-if claude plugin validate --help >/dev/null 2>&1; then
-  if [ "$SOURCE_IS_LOCAL" -eq 1 ]; then
-    if claude plugin validate "$SOURCE"; then
-      pass "claude plugin validate"
-    else
-      fail "claude plugin validate reported errors"
-    fi
+# --- claude plugin validate ---------------------------------------------------
+# Presence is ASSERTED where the caller knows the CLI pin guarantees it, and only
+# feature-detected on the dual-use local path.
+#
+# Why not feature-detection everywhere (code-review L3, v1.27.0): `--help` is a
+# weak probe. A CLI that exits 0 on an unrecognised subcommand's `--help` gives a
+# false positive, after which a genuinely-absent subcommand misreports as
+# "validate reported errors" — pointing the reader at the manifests when the real
+# cause is the CLI. Worse, the failure that matters most (the pinned release job
+# silently stopping running validate at all, because upstream renamed or removed
+# the subcommand) degrades to a NOTE nobody reads.
+#
+# The Gate's pinned install-smoke job sets REQUIRE_PLUGIN_VALIDATE=1 because its
+# CLAUDE_CLI_VERSION pin (>= 2.1.247) ships the subcommand. There, absence is a
+# hard failure with an unambiguous message. Locally — and on the non-blocking
+# canary — the default 0 keeps the old skip-with-NOTE behaviour, because a user's
+# CLI may legitimately predate it.
+#
+# If validate starts reporting errors, fix the manifests — do not weaken this
+# back to an unconditional skip.
+REQUIRE_PLUGIN_VALIDATE="${REQUIRE_PLUGIN_VALIDATE:-0}"
+
+HAVE_PLUGIN_VALIDATE=0
+if claude plugin validate --help </dev/null >/dev/null 2>&1; then
+  HAVE_PLUGIN_VALIDATE=1
+fi
+
+if [ "$HAVE_PLUGIN_VALIDATE" -eq 0 ]; then
+  if [ "$REQUIRE_PLUGIN_VALIDATE" = "1" ]; then
+    fail "'claude plugin validate' is NOT available on this CLI, but the caller set" \
+         "REQUIRE_PLUGIN_VALIDATE=1 (the pinned CLI is documented to ship it)." \
+         "Either upstream removed/renamed the subcommand — adopt the change and update" \
+         "CLAUDE_CLI_VERSION in .github/workflows/gate.yml — or the pinned install did not" \
+         "take effect. This is NOT a manifest error."
   else
-    echo "NOTE: skipping 'claude plugin validate' for a remote source" >&2
+    echo "NOTE: 'claude plugin validate' not available on this CLI version — skipped." \
+         "(Not required on the dual-use local path; the pinned CI job sets" \
+         "REQUIRE_PLUGIN_VALIDATE=1 and fails instead of skipping.)" >&2
+  fi
+elif [ "$SOURCE_IS_LOCAL" -eq 1 ]; then
+  if claude plugin validate "$SOURCE" </dev/null; then
+    pass "claude plugin validate"
+  else
+    fail "claude plugin validate reported errors"
   fi
 else
-  echo "NOTE: 'claude plugin validate' not available on this CLI version — skipped (feature-detected, not required)" >&2
+  echo "NOTE: skipping 'claude plugin validate' for a remote source" >&2
 fi
 
 # --- Verdict ----------------------------------------------------------------

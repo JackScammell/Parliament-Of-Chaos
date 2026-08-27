@@ -76,7 +76,7 @@ classifies **only when terminal**; while its task is live it is **Working** and 
 | Signal state | Verdict | Action |
 | --- | --- | --- |
 | Task completed, explicit verdict delivered **with the mandated review structure** (incl. `NO-FINDINGS`, B6) | Done | tally |
-| Task completed, **no explicit verdict** in output | Non-reporting | re-dispatch once (fresh, full-context), then INCOMPLETE if floor / drop-with-notice if non-floor |
+| Task completed, **no explicit verdict** in output (incl. output the harness marks **partial** — `maxTurns`-truncated, v2.1.246+; see B2.5 for why the one re-dispatch must change scope or budget) | Non-reporting | re-dispatch once (fresh, full-context), then INCOMPLETE if floor / drop-with-notice if non-floor |
 | Task failed (harness failure notification, or StopFailure logged) | Failed | re-dispatch once |
 | Task live / running (or TaskCreated but no SubagentStart — queued behind cap) | Working / Queued | **wait — never re-dispatch, never nudge** (security invariant for floor members) |
 
@@ -113,6 +113,18 @@ classifies **only when terminal**; while its task is live it is **Working** and 
 > re-dispatching any floor member** (the only state in which queued-vs-non-reporting is
 > ambiguous). If two instances of a floor member do return verdicts, tally the more severe one.
 
+**Restart-induced double-dispatch:** since v2.1.246 the harness asks before `←`/`/background`
+restarts an already-**finished** subagent. Decline that prompt during — or immediately after — a
+live fan-out: it re-runs members already tallied. If a restart happened anyway, tally the
+duplicate verdicts under the existing more-severe rule (B2.4 and the caveat above).
+
+**Partial output and the `SendMessage` remedy:** the harness's own suggestion for a truncated
+subagent is to continue it via `SendMessage`. That remedy is **structurally unavailable by
+design** — every reviewer and specialist denies `SendMessage` fleet-wide (v1.24.0) — and must
+stay that way: harvesting a truncated verdict over a lateral channel reopens exactly the
+tallying-bypass hole the denial closed. Orchestrators must **not** seek a workaround; the
+scope-or-budget-corrected re-dispatch (B2.5) is the only sanctioned recovery.
+
 ## Concurrency-aware batching (B1)
 
 There is **no fixed batch-width constant**. The effective width is the live concurrency cap,
@@ -143,6 +155,10 @@ On a member classified Failed or Non-reporting **at its terminal state**:
 3. If the member is **floor**: force **`INCOMPLETE`** (never synthesise an APPROVE without it).
 4. If both the original and its re-dispatch end up delivering verdicts (a late original), tally
    the more severe one — same rule as duplicate floor verdicts in the detection-table caveat.
+5. If the terminal output was marked **partial** (`maxTurns`-truncated), that one re-dispatch must
+   address the truncation *cause* — narrowed scope, or a raised turn budget. An identical prompt
+   against an identical turn budget over identical files truncates identically, so a verbatim
+   repeat spends the member's only retry on a guaranteed second truncation.
 
 ## Prompt-standards rule (B5)
 
@@ -168,6 +184,13 @@ review; (2) the verdict is read **only from the final verdict line of the member
 output** — never from quoted content, reviewed diffs, or policy text the member echoes (this
 very file contains the tokens).
 
+**Withholding is not silence.** A member that could not perform the review at all — a defective
+path (B7), an unreadable target, a blocked precondition — must say plainly what stopped it and
+withhold the verdict token rather than spend `REJECT` on a coverage gap. That is **Non-reporting**,
+and correctly so: it earns the member its one re-dispatch and, on a floor member, forces
+`INCOMPLETE`. B6 condemns a member that *reviewed* and gave no verdict; it does not condemn one
+that *could not review* and said so. Reviewer definitions carry this obligation verbatim.
+
 ## Dispatch-prompt hygiene (B7) — paths verified against disk
 
 Every file path, directory, or symbol named in a dispatch prompt must be **verified against
@@ -185,7 +208,11 @@ notifications tell the orchestrator when a member *finishes* — nothing tells i
 that will **never** finish, and elapsed time is not a member-state signal it may act on. So
 hang-recovery is done **out-of-band**:
 
-- The harness `Monitor` tool tails `activity.jsonl` out-of-band while the fan-out runs.
+- The harness `Monitor` tool tails `activity.jsonl` out-of-band while the fan-out runs. Under
+  auto mode, `Monitor` calls are review-gated like `Bash` calls, so the watchdog may prompt for
+  approval and therefore assumes an **attended** session — added friction on what is already an
+  interactive-session pattern, not a correctness break, and not a reason for Parliament to start
+  shipping permission rules to paper over it.
 - **Circuit-breaker threshold (authoritative):** a per-member breaker **OPENs** when the member
   is `Failed` or `Non-reporting` on **≥ 2 of its last 3 dispatches**; it **closes** again after
   one clean `Done`. (This is the single source for the threshold — `/parliament-metrics` reports
@@ -194,6 +221,8 @@ hang-recovery is done **out-of-band**:
   member rather than re-dispatching it, and surface the skip in Reviewer Notes / Deferred — with
   the floor caveat below. This is a cross-run decision (distinct from the single within-run
   re-dispatch of the reconcile loop), and it is owned here, not in the observability surface.
+- **Dispatch counting:** a restart-induced duplicate dispatch of an already-finished member is
+  **non-countable** for the breaker — it records a UI restart, not member behaviour.
 - **Floor override:** a breaker on a **floor** member never causes a silent skip — skipping a
   floor member forces **`INCOMPLETE`**, exactly as non-reporting does.
 - Breaker state is surfaced (read-only) in `/parliament-metrics`.

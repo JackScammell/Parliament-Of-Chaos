@@ -1,10 +1,12 @@
 # The Gate — Parliament of Chaos release-blocking CI (v1.26.0)
 #
-# Three independent jobs, all dependency-light, target end-to-end < 3 min:
-#   install-smoke : headless plugin install on a throwaway CLAUDE_CONFIG_DIR
-#                   (catches the v1.25.0 "failed to load" incident class; no API key needed)
-#   hook-fixture  : fires fixture payloads through src/hooks/log_event.sh (pure bash+jq)
-#   conformance   : repo-shape checks (scripts/ci/conformance.py, python3 + pyyaml only)
+# Four jobs, all dependency-light, target end-to-end < 3 min:
+#   install-smoke        : headless plugin install on a throwaway CLAUDE_CONFIG_DIR, on the
+#                          PINNED CLI (catches the v1.25.0 "failed to load" incident class;
+#                          no API key needed) — BLOCKING on every run
+#   install-smoke-canary : the same smoke test on CLI "latest" — NON-BLOCKING early warning
+#   hook-fixture         : fires fixture payloads through src/hooks/log_event.sh (pure bash+jq)
+#   conformance          : repo-shape checks (scripts/ci/conformance.py, python3 + pyyaml only)
 #
 # What green does NOT mean: see "Not verified by this gate" in scripts/ci/install_smoke.sh
 # and the v1.26.0 design notes — session-fired hooks and prompt/agent semantics are out of scope.
@@ -17,10 +19,12 @@ on:
   pull_request:
   workflow_dispatch:
 
-# SECURITY PRECONDITION (grumpy-security-nag, v1.26.0 review): this workflow
-# must NEVER gain secrets or write permissions while CLAUDE_CLI_VERSION floats
-# on "latest" — the unpinned-CLI trade-off is only acceptable because the worst
-# case is a corrupted gate verdict, not exfiltration. Revisit the pin first.
+# SECURITY PRECONDITION (grumpy-security-nag, v1.26.0 review; scope broadened
+# v1.27.0): this workflow must NEVER gain secrets or write permissions while ANY
+# job installs an unpinned CLI — that is now the install-smoke-canary job, which
+# still floats on "latest". The unpinned-CLI trade-off is only acceptable because
+# the worst case is a corrupted (and, post-inversion, non-blocking) gate verdict,
+# not exfiltration. If secrets are ever needed, pin the canary first — or drop it.
 permissions:
   contents: read
 
@@ -30,24 +34,51 @@ concurrency:
   cancel-in-progress: ${{ github.ref_type != 'tag' }}
 
 env:
-  # Upstream-version-coupling control. "latest" surfaces upstream CLI breakage early on
-  # main/PR runs; TAG (release) runs pin to the known-good version below so a release can
-  # never be blocked or greenwashed by an upstream CLI published an hour earlier
-  # (grumpy-testing-tyrant, v1.26.0 review). Bump the pin deliberately, not implicitly.
-  CLAUDE_CLI_VERSION: ${{ github.ref_type == 'tag' && '2.1.197' || 'latest' }}
+  # Upstream-version-coupling control. THE CANARY IS INVERTED relative to v1.26.0:
+  # the PIN is blocking on every run (PR, main and tag alike) and "latest" runs as a
+  # separate, NON-blocking canary job. Rationale:
+  #   - Reproducibility: a blocking verdict must be a function of the commit, not of what
+  #     npm published an hour ago. Under the old arrangement the same commit could be
+  #     green then red with no repo change, which is a correctness defect in the gate
+  #     itself, and a red gate nobody can act on trains people to ignore red gates.
+  #   - No third-party veto of the merge queue: 12 upstream releases in 8 days means an
+  #     upstream regression could veto unrelated Parliament work.
+  #   - The early warning is preserved, not deleted: install-smoke-canary still installs
+  #     "latest" on every run and emits a ::warning:: annotation when it breaks. What it
+  #     no longer does is fail the workflow. Adoption of a new upstream version stays a
+  #     deliberate act — bumping the pin below is the moment breakage becomes blocking.
+  # Accepted trade-off: upstream breakage now surfaces as an annotation a human must
+  # notice rather than as a red check. If canary failures start being ignored, escalate
+  # by bumping the pin (which makes the breakage blocking), not by re-floating the pin.
+  #
+  # PIN CHOICE — 2.1.247: the top of the reviewed upstream range. Parliament's adopted
+  # baseline is 2.1.235, but the pin deliberately tracks the newest REVIEWED version so a
+  # release is validated against the CLI its users actually run. The previous 2.1.197 pin
+  # predated 2.1.198 (subagent dispatch became background-by-default) — the exact upstream
+  # behaviour .claude/rules/fan-out-policy.md is written around — so release runs were
+  # validating against a dispatch model this repo documents as historical. Note that
+  # `claude plugin validate` EXISTS from this pin onward, so the feature-detected block at
+  # the bottom of scripts/ci/install_smoke.sh now executes on every run.
+  # Bump this deliberately, not implicitly.
+  CLAUDE_CLI_VERSION: '2.1.247'
+  # Floats by design; installed ONLY by the non-blocking canary job.
+  CLAUDE_CLI_CANARY_VERSION: 'latest'
 
 jobs:
   install-smoke:
-    name: install-smoke (headless plugin load)
+    name: install-smoke (headless plugin load, pinned CLI)
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2 — SHA-pinned (security review)
 
-      - name: Install Claude Code CLI
+      - name: Install Claude Code CLI (pinned)
         run: |
           npm install -g "@anthropic-ai/claude-code@${CLAUDE_CLI_VERSION}"
-          claude --version
+          # </dev/null on every CLI call: a prompt for input must fail immediately
+          # rather than burn the job's timeout-minutes budget (upstream v2.1.246
+          # fixed a class where a CLI call could block waiting on stdin).
+          claude --version </dev/null
 
       - name: Tag/manifest version agreement (release runs only)
         if: github.ref_type == 'tag'
@@ -64,7 +95,60 @@ jobs:
           echo "tag v${TAG_VERSION} == plugin.json ${MANIFEST_VERSION}"
 
       - name: Headless install smoke test
+        env:
+          # The pin (CLAUDE_CLI_VERSION, >= 2.1.247) is documented to ship
+          # `claude plugin validate`, so this job ASSERTS the subcommand's
+          # presence instead of feature-detecting it. If upstream ever removes or
+          # renames it, this job fails loudly rather than degrading to a skipped
+          # check nobody notices. The canary job deliberately does NOT set this:
+          # on "latest", a missing subcommand is exactly the upstream drift the
+          # canary exists to report as a warning, not a failure.
+          REQUIRE_PLUGIN_VALIDATE: '1'
         run: bash scripts/ci/install_smoke.sh
+
+  # Early warning, never a veto. Runs the identical smoke test against whatever the CLI
+  # publishes today. A failure here means "upstream changed something Parliament may need
+  # to adopt", which is information — not a reason to block an unrelated PR. Deliberately
+  # NOT a `needs:` dependency of anything, and deliberately without the tag/manifest step:
+  # release-blocking assertions live in install-smoke, on the pin.
+  install-smoke-canary:
+    name: install-smoke canary (CLI latest, non-blocking)
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2 — SHA-pinned (security review)
+
+      # continue-on-error is set at STEP level, not job level, so the job still finishes
+      # green and the annotation step below always runs: a swallowed failure with no
+      # annotation would be a canary nobody can hear.
+      - name: Install CLI (latest) and run the smoke test
+        id: canary
+        continue-on-error: true
+        run: |
+          npm install -g "@anthropic-ai/claude-code@${CLAUDE_CLI_CANARY_VERSION}"
+          claude --version </dev/null
+          bash scripts/ci/install_smoke.sh
+
+      - name: Annotate canary result
+        env:
+          CANARY_OUTCOME: ${{ steps.canary.outcome }}
+        run: |
+          # GitHub annotations are SINGLE-LINE: everything after the first
+          # newline is silently dropped into the raw log. `2>&1` here used to
+          # capture the CLI's own stderr ("claude: command not found") AND then
+          # append the `||` branch's fallback text, producing a two-line
+          # $INSTALLED whose second line vanished from the annotation. Discard
+          # stderr, let an install failure yield the empty string, and
+          # substitute the fallback as a parameter default so $INSTALLED is
+          # always exactly one line.
+          INSTALLED="$(claude --version </dev/null 2>/dev/null || true)"
+          INSTALLED="${INSTALLED:-unknown (install failed)}"
+          if [ "$CANARY_OUTCOME" = "failure" ]; then
+            echo "::warning title=Upstream CLI canary failed::The install smoke test FAILED on claude CLI '${CLAUDE_CLI_CANARY_VERSION}' (resolved: ${INSTALLED}) while passing on the pinned ${CLAUDE_CLI_VERSION}. This does NOT block the merge. It means upstream changed behaviour Parliament may need to adopt — investigate before the next pin bump in .github/workflows/gate.yml."
+            echo "canary: FAILED on ${INSTALLED} (non-blocking)"
+          else
+            echo "canary: green on ${INSTALLED}"
+          fi
 
   hook-fixture:
     name: hook-fixture (log_event.sh contract)

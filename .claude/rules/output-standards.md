@@ -9,6 +9,27 @@ All grumpy reviewers must use this structure:
 3. **Recommendations** - Suggested fixes with specific references
 4. **Verdict** - An explicit final verdict line — `APPROVE`, `REJECT`, or `NO-FINDINGS` (reviewed, nothing to report) — with clear reasoning. The three-token vocabulary is mandated by fan-out-policy.md B6: a review without an explicit verdict line is classified Non-reporting
 
+The three-token requirement governs the **form** of a reviewer's verdict instruction, not one
+particular phrasing of it. Every reviewer definition must name all three tokens as exact
+uppercase literals, and a binary formulation is non-conformant however it is spelled:
+
+- **Synonym pairs** — "approve or object", "approve or decline".
+- **Nominalised pairs** — "approval or rejection", "approved or rejected".
+- **Negative gating** — "no approval until all issues are addressed", "approve only when
+  resolved". The most dangerous class: it makes approval conditional while never offering
+  `NO-FINDINGS`, so a reviewer that reviewed and found nothing has no conformant way to say
+  so and falls silent — which B6 classifies as Non-reporting, forcing `INCOMPLETE` on a floor
+  reviewer.
+
+Conditional and gating grammar is itself **permitted**: what item 4 forbids is a construction that
+never offers `NO-FINDINGS`, not the word "until". A verdict instruction may gate each token on its
+own condition provided all three appear as exact uppercase literals — "Never `APPROVE` until all
+issues are addressed; `REJECT` while any remain; `NO-FINDINGS` only when the review surfaced none"
+is conformant, whereas the same sentence stopping at "`REJECT` otherwise" is not.
+
+This rule is mirrored by `scripts/ci/conformance.py` check 7 (`reviewer-verdicts`). Policy is
+widened here first; the pattern there follows. Never the other way round.
+
 ## Council Output Format
 
 1. **Agents Consulted** - Each agent and why involved

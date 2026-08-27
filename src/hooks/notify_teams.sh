@@ -108,7 +108,12 @@ PAYLOAD=$(jq -n \
   }')
 
 # Send silently to Teams
-curl -sS -X POST \
+# --max-time/--connect-timeout are REQUIRED, not optional hardening: a webhook
+# host that blackholes packets (rather than refusing) hangs curl, which hangs
+# the hook, which hangs the session. A stubbed curl returns instantly, so no
+# behavioural test can catch a missing timeout -- hook_fixture.sh asserts on the
+# recorded argv instead. Do not remove these flags.
+curl -sS --max-time 10 --connect-timeout 5 -X POST \
   -H "Content-Type: application/json" \
   -d "$PAYLOAD" \
   "$TEAMS_WEBHOOK_URL" >/dev/null 2>&1 || true

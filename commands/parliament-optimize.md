@@ -5,7 +5,7 @@ effort: medium
 
 # Parliament Optimize
 
-Advisory command that audits all 30 agent definitions and recommends effort/model settings based on agent role. **Read-only** — does not modify any files.
+Advisory command that audits all 33 agent definitions and recommends effort/model settings based on agent role. **Read-only** — does not modify any files.
 
 ## Process
 
@@ -14,7 +14,9 @@ Advisory command that audits all 30 agent definitions and recommends effort/mode
 3. Classify each agent by role:
    - **Orchestrator**: has `tools` list with `Task()` entries
    - **Grumpy Reviewer**: name starts with `grumpy-`
-   - **Planning Agent**: project-oracle, scope-weaver, task-executor
+   - **Planning Agent**: project-oracle, scope-weaver
+   - **Utility**: task-executor (its own role in `.claude/rules/agent-standards.md` and
+     `scripts/ci/conformance.py`, not a planning agent; same thresholds as Planning)
    - **Specialist**: all others
 4. Read `.claude/rules/agent-standards.md` for the standard frontmatter requirements
 5. Compare current frontmatter against standards and identify deviations
@@ -23,15 +25,15 @@ Advisory command that audits all 30 agent definitions and recommends effort/mode
 
 For each agent, verify:
 
-| Field | Orchestrators | Specialists | Reviewers | Planning |
-|-------|--------------|-------------|-----------|----------|
-| effort | high | medium | low | medium |
-| maxTurns | 30 | 15 | 5 | 20 |
-| memory | project | project | user | project |
-| disallowedTools | — | varies | required | — |
-| isolation | — | worktree (impl) | — | — |
-| background | — | — | true | — |
-| model | inherit | inherit | see below | inherit |
+| Field | Orchestrators | Specialists | Reviewers | Planning | Utility (task-executor) |
+|-------|--------------|-------------|-----------|----------|-------------------------|
+| effort | high | medium | low | medium | medium |
+| maxTurns | 30 | 15 | 5 | 20 | 20 |
+| memory | project | project | user | project | project |
+| disallowedTools | — | varies | required | — | required |
+| isolation | — | worktree (impl) | — | — | — |
+| background | — | — | true | — | — |
+| model | inherit | inherit | see below | inherit | inherit |
 
 ### Model-tier check (grumpy reviewers)
 
@@ -51,7 +53,7 @@ into two model tiers:
 # Parliament Agent Audit Report
 
 ## Summary
-- Total agents: 30
+- Total agents: 33
 - Compliant: N
 - Non-compliant: N
 - Warnings: N
@@ -66,11 +68,14 @@ into two model tiers:
 ### Specialists (16)
 [table with status per agent]
 
-### Grumpy Reviewers (9)
+### Grumpy Reviewers (12)
 [table with status per agent]
 
-### Planning Agents (3)
+### Planning Agents (2)
 [table with status per agent]
+
+### Utility (1)
+[table with status per agent — task-executor]
 
 ## Recommendations
 - [list of specific changes needed, if any]
@@ -91,6 +96,7 @@ into two model tiers:
 
 - This command is advisory only — it reads and reports but never modifies agent files
 - Run after adding new agents to verify they follow the standards in `.claude/rules/agent-standards.md`
+- Fleet shape (2 orchestrators + 16 specialists + 12 grumpy reviewers + 2 planning + 1 utility = 33) is machine-checked by `scripts/ci/conformance.py`; if the counts above ever disagree with it, `.claude/rules/agent-standards.md` wins and both must be corrected
 - The advisory-reviewer `model: sonnet` downgrade is surfaced as a **recommendation**, never
   applied automatically; the floor (grumpy-security-nag, grumpy-code-reviewer) is always excluded
 - Use `/summon-specialist config-curator` if you want to apply recommended changes

@@ -1,0 +1,127 @@
+# Probe corpus for scripts/ci/conformance.py check 7 (reviewer-verdicts).
+#
+# Replayed by check 8 (probe-corpus) on every gate run, and standalone via
+#   python3 scripts/ci/conformance.py --self-test
+# through the SAME predicate the real check uses (scan_verdict_line), so these
+# probes exercise the shipped detector rather than a parallel copy of it.
+#
+# Format:  <DEFECT|CONTROL><whitespace><one probe line>
+#   DEFECT   at least one detector MUST fire on this line
+#   CONTROL  no detector may fire on this line
+# Blank lines and lines starting with `#` are ignored.
+#
+# WHY THIS FILE EXISTS: a detector whose only evidence of working is a council
+# transcript is a regression ANECDOTE, not a regression test. This repo already
+# shipped one unprobed detector that missed 42% of the defects it was written
+# to catch. Every real historical defect below is committed here so a future
+# narrowing of the patterns fails CI instead of passing quietly.
+#
+# NOT REPRESENTABLE HERE: grumpy-testing-tyrant's frontmatter `description`
+# ("...rejects inadequate test suites") is a DEFECT-shaped line that check 7
+# excuses via FRONTMATTER_VERDICT_EXEMPT — a file+key+word allowlist, not a
+# line-level property. It is therefore deliberately absent from this corpus;
+# the exemption is asserted by the reviewer files themselves passing check 7.
+
+# ---------------------------------------------------------------------------
+# DEFECTS — the ten real historical defects, in their three original classes
+# ---------------------------------------------------------------------------
+
+# class 1 — synonym substitution
+DEFECT	Verdict: approve or object
+DEFECT	Approve or deny
+
+# class 2 — nominalised pairs
+DEFECT	Approval or rejection with reasons
+DEFECT	Approved or rejected with path to compliance
+
+# class 3 — negative gating that never offers NO-FINDINGS (the dangerous one:
+# it hid the defect in both floor reviewers)
+DEFECT	No approval until all issues addressed
+DEFECT	Approve only when resolved
+DEFECT	No approval until all cost concerns are addressed
+
+# mixed casing / punctuation variants of the same three classes
+DEFECT	Approve if maintainable; reject with guidance
+DEFECT	Verdict: approve or reject
+DEFECT	Approve/reject with reasoning
+DEFECT	4. Verdict: approve; reject
+
+# ---------------------------------------------------------------------------
+# DEFECTS — correctly-spelled tokens, still non-conformant (the bypass the
+# panel constructed: passes every casing and pair pattern, offers no NO-FINDINGS)
+# ---------------------------------------------------------------------------
+
+DEFECT	4. Never APPROVE until all issues addressed; REJECT otherwise.
+#
+# NOT LINE-DETECTABLE, recorded here as a known limitation rather than as a
+# probe: "Verdict: APPROVE until every issue is resolved; REJECT while any
+# remain." omits NO-FINDINGS with no negation word and no "only", so no
+# line-level pattern can distinguish it from conformant prose. It is caught
+# instead by check 7 assertion (a), which requires all three tokens somewhere
+# in the reviewer's own instruction region. Line-level detection and the
+# region-level assertion cover different halves of this defect class; neither
+# alone is sufficient, which is why check 7 keeps both.
+
+# ---------------------------------------------------------------------------
+# DEFECTS — the fourth evasion class: synonyms outside the approve/reject
+# families. Class 1 of the original defect WAS synonym substitution, so the
+# next synonym is the most likely regression, not the least.
+# ---------------------------------------------------------------------------
+
+DEFECT	4. Verdict: sign off, or send it back
+DEFECT	6. Withhold sign-off until every issue is addressed
+DEFECT	4. Verdict: bless or condemn
+DEFECT	4. Verdict: veto or endorse
+DEFECT	Never sign off until every issue is addressed
+DEFECT	4. Verdict: signed off or rejected
+
+# ---------------------------------------------------------------------------
+# DEFECTS — NO-FINDINGS in any casing other than the exact token. Before this
+# corpus, NO-FINDINGS had no casing backstop at all while approve/reject did.
+# ---------------------------------------------------------------------------
+
+DEFECT	4. Verdict: APPROVE, REJECT, or no-findings
+DEFECT	4. Verdict: APPROVE, REJECT, or no findings
+DEFECT	4. Verdict: APPROVE, REJECT, or No Findings
+
+# ---------------------------------------------------------------------------
+# CONTROLS — conformant phrasing currently shipped in the fleet. A false
+# positive here fails all twelve reviewers, so these matter as much as the
+# defects above.
+# ---------------------------------------------------------------------------
+
+# the plain three-token list, in every shape the fleet uses
+CONTROL	4. Verdict: exactly one of APPROVE, REJECT, or NO-FINDINGS
+CONTROL	4. **Verdict** – APPROVE, REJECT, or NO-FINDINGS with reasoning
+CONTROL	4. **Verdict** - APPROVE, REJECT, or NO-FINDINGS with clear reasoning
+CONTROL	4. Verdict on performance criteria: exactly one of APPROVE, REJECT, or NO-FINDINGS
+CONTROL	4. **Verdict** – APPROVE, REJECT (with steps to improve), or NO-FINDINGS
+CONTROL	4. **Verdict** – APPROVE, REJECT (with path to compliance), or NO-FINDINGS
+CONTROL	4. **Verdict** – APPROVE if maintainable, REJECT with guidance, or NO-FINDINGS if nothing to report
+
+# the UPPERCASE GATING FORM — the sanctioned fleet-wide fix. Gating grammar is
+# permitted (output-standards.md, Review Output Format); what is forbidden is a
+# construction that never offers NO-FINDINGS.
+CONTROL	4. Never APPROVE until all issues addressed; REJECT while any remain; NO-FINDINGS only when the review surfaced none
+CONTROL	6. Never APPROVE until all privacy concerns are addressed; REJECT while any remain; NO-FINDINGS only when the review surfaced none
+CONTROL	4. **Verdict** – APPROVE only when resolved, REJECT while anything is outstanding, NO-FINDINGS when the review surfaced nothing
+CONTROL	4. APPROVE only when all rules satisfied; REJECT otherwise; NO-FINDINGS when no violation was found at all
+
+# Fan-Out Contract prose ABOUT the tokens — must never read as an instruction
+CONTROL	**End every fan-out run with an explicit verdict line** — `APPROVE`, `REJECT`, or `NO-FINDINGS` (reviewed, nothing to report). A completed run without an explicit verdict is classified Non-reporting and re-dispatched; silence is never a pass.
+CONTROL	`NO-FINDINGS` is never a fallback for being unsure, under-informed, or unable to review, and it is not a synonym for `APPROVE`: collapsing the two destroys the distinction between "reviewed and found nothing" and "never reviewed".
+CONTROL	Do not send availability pings or status chatter — they are not verdicts and pollute reconciliation.
+CONTROL	Never use `REJECT` to signal that you could not review — `REJECT` is a finding, and spending it on a coverage gap launders "never reviewed" into "reviewed and found a problem".
+
+# prose that would break if `block` or `condemn` were added to the BLANKET
+# backstop rather than kept pair-position-only. These four lines are the reason
+# that distinction exists.
+CONTROL	A member blocked waiting on input is indistinguishable from a hung member and cannot be recovered by the orchestrator.
+CONTROL	`APPROVE` — you reviewed and judge the work fit to proceed, any issues you raised being non-blocking.
+CONTROL	B6 condemns a member that reviewed and then gave no verdict, whereas here there is no review to report.
+CONTROL	If you could not perform a proper review at all, do not emit a verdict token — say plainly what blocked you.
+
+# ordinary reviewer prose with no verdict vocabulary at all
+CONTROL	3. **Recommendations** – Mitigation actions
+CONTROL	- Naming conventions, folder structure, layering per `agent-os/standards/` and `CLAUDE.md`
+CONTROL	Audits for WCAG violations, ARIA usage and inclusive design failures.

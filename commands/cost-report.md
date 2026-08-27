@@ -1,7 +1,7 @@
 ---
 description: Pre-flight and post-flight cost visibility with dry-run, soft caps, and expensive-command warnings
 effort: medium
-argument-hint: "[estimate <command>] [budget] [session] [--effort low|medium|high|xhigh]"
+argument-hint: "[estimate <command>] [budget] [session] [--effort low|medium|high|xhigh|max]"
 ---
 
 # Cost Report
@@ -17,7 +17,7 @@ Addresses the Tier 3 gap flagged by `grumpy-budget-hawk` in the toolset-gaps deb
 
 ```
 /cost-report
-/cost-report estimate <command-with-args> [--effort low|medium|high|xhigh]
+/cost-report estimate <command-with-args> [--effort low|medium|high|xhigh|max]
 /cost-report last [--n <count>]
 /cost-report budget set|show|clear [--scope session|daily|monthly] [--tokens <n>] [--usd <amount>]
 ```
@@ -42,9 +42,29 @@ default effort baseline so estimates reflect the session that the user is actual
 | Resolution order | Source |
 |------------------|--------|
 | 1 | `--effort <level>` flag on the `estimate` invocation (explicit override) |
-| 2 | Target command's `effort:` frontmatter (the per-command default) |
-| 3 | `${CLAUDE_EFFORT}` from the running session (Claude Code v2.1.120+) |
-| 4 | `medium` (compatibility default for older Claude Code installations) |
+| 2 | `${CLAUDE_EFFORT}` from the running session (Claude Code v2.1.120+) |
+| 3 | Target command's `effort:` frontmatter — reached **only** when `${CLAUDE_EFFORT}` is *absent* (pre-v2.1.120 harness) |
+| 4 | `medium` — **only** when `${CLAUDE_EFFORT}` is absent *and* the target declares no `effort:` |
+
+**Why the session outranks the target's frontmatter.** Every Parliament slash command carries an
+explicit `effort:` (mandated by `.claude/rules/agent-standards.md`, enforced by conformance
+check 3), so a frontmatter-first order would terminate at that step for *every* valid target —
+making both the `${CLAUDE_EFFORT}` step and the `unknown` handling below structurally
+unreachable. The session value is also the live dial the user just turned with `/effort`,
+whereas frontmatter is a static authoring default; an estimator's job is to project *this* run
+in *this* session. When the two disagree, use the session value and name the target's declared
+level alongside it: `**Effort baseline**: low (source: ${CLAUDE_EFFORT}; target declares high)`.
+
+Steps 3–4 are scoped strictly to an **absent** `${CLAUDE_EFFORT}`. If the variable is *present*
+but carries a value not in the multiplier table below, report the effort baseline as `unknown`
+(`**Effort baseline**: unknown (source: ${CLAUDE_EFFORT}=<value>; no multiplier — projection
+suppressed)`) and omit the token/USD projection rather than silently assuming `medium` — and
+rather than silently falling through to the target's frontmatter, which is the same defect
+wearing a different source label. A fallback on an unrecognised (probably *higher*) tier
+under-projects the run at exactly the moment cost visibility matters most; an absent estimate
+beats a confidently wrong one. This matches `/parliament-metrics --by-effort`, which already has
+an explicit `unknown` bucket. Budget and soft-cap panels still render; only the effort-scaled
+projection is withheld.
 
 The chosen value is reflected in the estimate output (`**Effort baseline**: high
 (source: ${CLAUDE_EFFORT})`) so the user can see which level the projection used. No
@@ -58,7 +78,8 @@ Effort multipliers applied to the historical p50/p95 token bounds:
 | `low`   | 0.55× |
 | `medium`| 1.00× (baseline) |
 | `high`  | 1.55× |
-| `xhigh` | 2.10× (reserved tier — used only when an agent or command explicitly opts in) |
+| `xhigh` | 2.10× (reserved tier — used only when an agent or command explicitly opts in; requires thinking enabled, and the harness errors when it is off, v2.1.243) |
+| `max`   | 2.75× (heuristic, as with every row here — the highest documented tier in `.claude/rules/agent-standards.md`; reachable via `${CLAUDE_EFFORT}` on a session set to `max`) |
 
 Multipliers are heuristic and refined as telemetry accumulates per effort level; they are
 stored in `${CLAUDE_PLUGIN_DATA}/cost-rates.json` under `effort_multipliers` and override
@@ -168,8 +189,11 @@ Historical spend panels depend on `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jso
 2. For `estimate`:
    1. Resolve effort baseline using the four-step order documented under *Effort awareness*.
    2. Statically analyse the target command's `Process` block, look up historical per-agent cost.
-   3. Apply the effort multiplier to the p50/p95 bounds.
-   4. Compute soft-cap delta and render the baseline source for transparency.
+   3. If the baseline resolved to a level in the multiplier table, apply that multiplier to the
+      p50/p95 bounds. If it resolved to `unknown`, **skip this step** and suppress the
+      token/USD projection entirely (see *Effort awareness*) — never substitute a multiplier.
+   4. Compute soft-cap delta and render the baseline source for transparency (including the
+      target's declared `effort:` when it differs from the session baseline).
 3. For `last`: call `/telemetry-query --event TaskCompleted --since 7d --json`, sort, limit.
 4. For `budget`: read/write `${CLAUDE_PLUGIN_DATA}/budgets.json`.
 5. Render.
@@ -178,6 +202,8 @@ Historical spend panels depend on `${CLAUDE_PLUGIN_DATA}/agent-logs/activity.jso
 
 - Estimates are heuristic; they use the p50/p95 from recent telemetry when available, and fall back to static defaults for commands with no history.
 - Cost figures require `${CLAUDE_PLUGIN_DATA}/cost-rates.json`. If absent, tokens are shown but USD is `n/a`.
+- **Every USD figure here is a Parliament-derived estimate, and two known biases push it away from what you are actually billed.** (a) Parliament reads only its own `cost-rates.json`; it does **not** read the upstream managed `modelPricing` configuration, so on a managed org the two diverge and Parliament's is the wrong one — and because the `budgets.json` soft caps are USD-denominated, a cost guardrail can fire (or fail to fire) on rates the user is not billed at. (b) The v2.1.239 US-only-inference **1.1× premium** is the same defect class: a second systematic bias baked into the same derived figure. Native `/cost` (and the org's billing surface) is authoritative; set `cost-rates.json` to the org's contracted rates if you rely on the USD column.
+- **`subagentPromptCacheTtl` is a genuinely council-shaped lever** — a 9–18-member fan-out shares one large identical dispatch prefix, and the default 5-minute subagent cache TTL is shorter than a `/parliament-review` panel's span, so late-finishing members and every B2 re-dispatch miss the cache entirely. Two preconditions before it helps: it is gated to API-key / cloud-provider users, and an extended TTL raises the cache-**write** multiplier — so it is a **trade**, not a saving, and only pays off when reuse actually spans the window. Described, not prescribed: Parliament ships no settings file (standing no-policy stance, reaffirmed in the v1.14.0 audit); set it yourself if you measure a win.
 - This command never edits the cost-rates file — use `config-curator` or hand-edit for rate changes.
 - Budget caps are per-scope soft limits. A "hard cap" variant was rejected in the toolset-gaps debate — it would break governance (convenience cannot override security or correctness work).
 - Pair with `/parliament-metrics --focus cost` for the retrospective dashboard view.

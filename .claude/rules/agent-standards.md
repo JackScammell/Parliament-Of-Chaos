@@ -24,12 +24,10 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 
 | Tier | Effort | Agents | Rationale |
 |------|--------|--------|-----------|
-| **Reserved** | `effort: xhigh` | _(none currently)_ | Opus 4.7 tier sitting between `high` and `max` (Claude Code v2.1.111). Reserved for future deliberation-conductor deep-mode runs if measurements justify the extra cost. Do not adopt without before/after benchmarks. |
+| **Reserved** | `effort: xhigh` | _(none currently)_ | Opus 4.7 tier sitting between `high` and `max` (Claude Code v2.1.111). Reserved for future deliberation-conductor deep-mode runs if measurements justify the extra cost. Do not adopt without before/after benchmarks. Requires thinking enabled (v2.1.243) — errors when off. |
 | **High** | `effort: high` | Orchestrators (senior-council, deliberation-conductor) | Complex multi-agent coordination requiring deep reasoning |
 | **Medium** | `effort: medium` | Specialists (16), Planning agents (2), and task-executor | Domain analysis, implementation, and scoping work |
 | **Low** | `effort: low` | Grumpy reviewers (12) | Read-only critique with focused, concise output |
-
-> **Note**: As of Claude Code v2.1.94 the global default `effort` is `high` (previously `medium`). Parliament sets `effort` explicitly on every agent, so this default never applies — but new contributors reading upstream docs should be aware the implicit fallback changed.
 
 ## maxTurns Guidelines
 
@@ -68,7 +66,11 @@ Effort levels control reasoning depth and token cost. Assign based on agent role
 > denied for the same reason the spawn ban exists: a lateral channel between fanned-out members
 > bypasses orchestrator tallying, and messaging an orchestrator-context agent is spawn-by-proxy.
 > Without these, a nested spawn or lateral message would corrupt `/parliament-metrics`
-> per-member attribution and the B4 circuit-breaker's member identity model.
+> per-member attribution and the B4 circuit-breaker's member identity model. Recorded so a
+> future contributor does not quietly undo it: this denial **also** declines the harness's
+> advertised remedy for a `maxTurns`-truncated subagent (continue it via `SendMessage`) — a
+> trade accepted deliberately, because harvesting a truncated verdict over a lateral channel
+> reopens the tallying-bypass hole the denial closed (see `fan-out-policy.md`, detection table).
 >
 > **Known residual channel (documented, not denied)**: the `Skill` tool can invoke
 > `context: fork` commands, which create a forked execution context outside `disallowedTools`'
@@ -96,14 +98,22 @@ deliberate deviations apply.
 > `model: sonnet` rather than the `model: inherit` default. This is a deliberate, measured cost
 > deviation, not a standards violation. The **floor** reviewers (`grumpy-security-nag`,
 > `grumpy-code-reviewer`) and every other reviewer stay `inherit` so security and correctness
-> keep the strongest model. `sonnet` is chosen over `haiku` specifically because these reviewers
+> keep the strongest model — a guarantee that holds only while the *session* model is the
+> strongest available, since `ANTHROPIC_DEFAULT_MODEL` (v2.1.236) persistently re-bases what
+> `inherit` resolves to for new sessions, so a cheap default silently demotes the two floor
+> reviewers while the five sonnet-pinned advisory ones do not move, inverting the intended cost
+> gradient (guide-don't-ship: Parliament sets no such default). `sonnet` is chosen over `haiku` specifically because these reviewers
 > carry `effort: low`, and the `effort` parameter **errors on Haiku 4.5** but is fully supported
 > on **Sonnet 5** — sonnet keeps `effort` valid while remaining materially cheaper per token
 > than the inherit-tier model (consult current Claude API pricing for exact figures; absolute
 > prices are deliberately not recorded here because they drift). The deviation is **reversible in one frontmatter line**, and
 > review quality under the downgrade is to be measured after the fact via
 > `/parliament-metrics --by-effort`. `/parliament-optimize` flags any reviewer still on
-> `inherit` as a downgrade candidate, respecting the floor exclusion.
+> `inherit` as a downgrade candidate, respecting the floor exclusion. The pin is
+> also materially de-risked since v2.1.247: a first-call model 404 now falls back to the session
+> chain instead of killing the subagent outright, which matters on Bedrock/Vertex/Foundry where
+> the id spelling differs — and blast radius stays low regardless, because all five are non-floor
+> (a death is drop-with-notice, never `INCOMPLETE`).
 
 ## Isolation
 
@@ -205,21 +215,10 @@ reference it from `plugin.json`'s `hooks` field — that double-registers it and
 fails to load, the v1.25.0→v1.25.1 hotfix). It contains hook events **only** — no
 `permissions.allow`/`permissions.deny`, no env vars. Permission policy is the user's
 responsibility, not the plugin's. This decision was reaffirmed in the v1.14.0 audit triggered
-by Claude Code v2.1.113.
-
-### Claude Code v2.1.113 hardening — verified safe
-
-Three behaviour changes in v2.1.113 narrow how Bash allow/deny rules match. Parliament's stance
-on each:
-
-| Change | Parliament impact | Verdict |
-|--------|-------------------|---------|
-| `Bash(find:*)` allow rules no longer auto-approve `find -exec` and `find -delete` | Parliament has no `Bash(find:*)` allow rule | No change required |
-| Deny rules now match commands wrapped in `env`/`sudo`/`watch`/`ionice`/`setsid` | Parliament has no `Bash(...)` deny rules | No change required (strict tightening — any user-defined deny rule is now harder to bypass, which is desired) |
-| macOS `/private/{etc,var,tmp,home}` paths treated as dangerous removal targets | Parliament hooks never write to `/private/...` | No change required |
-
-If a future Parliament release introduces permission rules, the new semantics must be assumed.
-In particular: **never** rely on the pre-v2.1.113 behaviour where a wrapper command like
+by Claude Code v2.1.113. Because Parliament ships no `permissions.allow`/`permissions.deny`
+rules at all, that release's narrowing of Bash allow/deny matching cannot affect it (the audit's
+finding) — but any future Parliament permission rule must assume post-v2.1.113 semantics, and in
+particular must **never** rely on the pre-v2.1.113 behaviour where a wrapper command like
 `sudo rm -rf /` could bypass a deny rule on `Bash(rm:*)`.
 
 ### Hook-script invocation

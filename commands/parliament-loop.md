@@ -61,6 +61,6 @@ This command wraps Claude Code's native `/loop` functionality specifically for P
 - Requires Claude Code v2.1.71+ for `/loop` support
 - The `/loop` command runs within the current session — it stops when the session ends
 - For persistent recurring tasks across sessions, consider using Claude Code's cron scheduling tools
-- Heavy commands like `/parliament-review` should use longer intervals (15m+) to manage token usage
+- Heavy commands like `/parliament-review` should use longer intervals (15m+) to manage token usage. To check whether the interval you picked is actually too tight, use `/usage`'s **Loops** breakdown (upstream v2.1.243), which reports per-loop run count, tokens, tokens/run and last-run time — that is the native surface for this; Parliament's own telemetry records events but does not attribute them per loop
 - Use `/loop stop` to cancel the recurring execution
 - **Claude Code v2.1.140+**: `/loop` no longer issues a redundant wakeup when the looped command is a self-notifying background task (one that already signals its own completion). Before v2.1.140, wrapping a background-monitor command in `/parliament-loop` could double-fire — once from the loop interval and once from the task's own self-notify. On v2.1.140+ the loop suppresses its own wakeup in that case, so the effective cadence is the task's own signal, not `min(interval, self-notify)`. Pick the loop interval as an upper bound on staleness, not an exact tick, when looping self-notifying monitors.

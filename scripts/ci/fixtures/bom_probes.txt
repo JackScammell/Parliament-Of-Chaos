@@ -1,0 +1,44 @@
+# Probe corpus for scripts/ci/conformance.py check 0 (bom).
+#
+# Replayed by check 8 (probe-corpus) on every gate run, and standalone via
+#   python3 scripts/ci/conformance.py --self-test
+# against classify_boms() — the same function check 0 calls.
+#
+# Format:  <EXPECTATION><whitespace><hex bytes><whitespace><free-text note>
+#   EXPECTATION is CLEAN, or a comma-separated list of the labels
+#   classify_boms returns, in the order it returns them. UTF-8-embedded
+#   carries its byte offset as @N.
+# Blank lines and lines starting with `#` are ignored.
+#
+# THE PROBES ARE HEX-ENCODED, NOT COMMITTED AS REAL FILES, ON PURPOSE: a
+# fixture carrying an actual byte-order mark would be flagged by check 0
+# itself, and "never commit a BOM'd file" is the rule this corpus defends.
+
+# --- the defect this check was actually written to catch --------------------
+# A literal BOM pasted MID-FILE, inside a string literal that describes BOM
+# bytes. The original byte-0-only implementation passed this silently — the
+# single most likely regression in the file that defines the check.
+UTF-8-embedded@6	22424F4D3A20EFBBBF22	'"BOM: <BOM>"' — BOM inside a string literal
+UTF-8-embedded@4	23206869EFBBBF	trailing BOM after ASCII text
+
+# --- leading UTF-8 BOM (the classic) ----------------------------------------
+UTF-8-leading	EFBBBF23206869	BOM at byte 0, ASCII after
+
+# --- both at once: two distinct defects with two distinct fixes -------------
+UTF-8-leading,UTF-8-embedded@7	EFBBBF23206869EFBBBF	leading AND embedded
+
+# --- UTF-16 / UTF-32: break the harness identically, previously undetected --
+# The UTF-32LE row is the ordering guard: FF FE 00 00 begins with the UTF-16LE
+# signature FF FE, so a shortest-signature-first scan mislabels it.
+UTF-16LE	FFFE2300	FF FE
+UTF-16BE	FEFF0023	FE FF
+UTF-32LE	FFFE00002300	FF FE 00 00 — must NOT report as UTF-16LE
+UTF-32BE	0000FEFF00000023	00 00 FE FF
+
+# --- CONTROLS: must classify CLEAN ------------------------------------------
+CLEAN	23206869	plain ASCII
+CLEAN	C3A9	UTF-8 multibyte (e-acute), no mark
+CLEAN	4546204242204246	the TEXT "EF BB BF" — this module names those bytes in its own error messages, and describing a BOM must never read as carrying one
+CLEAN	EFBBBE	EF BB BE — one bit off the UTF-8 BOM
+CLEAN	FDFEFF	FD FE FF — contains FE FF but not at byte 0
+CLEAN	23FFFE	FF FE at offset 1 — UTF-16 marks are only meaningful at byte 0

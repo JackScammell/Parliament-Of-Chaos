@@ -13,7 +13,19 @@ umask 077
 
 # Set up log directory and file
 LOG_DIR="$HOOK_DATA_DIR/agent-logs"
-mkdir -p "$LOG_DIR"
+# Telemetry is best-effort and MUST degrade silently. A hook that cannot write
+# its log must never fail the event or print to the session: under `set -e` an
+# unguarded mkdir/append aborts non-zero, and the resulting stderr is surfaced
+# to the user on EVERY event -- the v2.1.247 "megabytes of hook output wedge the
+# session" class, reached one line at a time. All three write sites below are
+# guarded (mkdir, writability, append). Verified by scripts/ci/hook_fixture.sh's
+# unwritable-data-dir case; do not remove a guard without that fixture passing.
+# There are FOUR write sites, all guarded: the mkdir above, the rotation `mv`,
+# the noclobber lock `echo` (guarded by its own `2>/dev/null` inside `if`), and
+# the jq append at the bottom. `[ -w ]` is a probe, not a write site — do not
+# count it as one.
+mkdir -p "$LOG_DIR" 2>/dev/null || exit 0
+[ -w "$LOG_DIR" ] || exit 0
 LOG_FILE="$LOG_DIR/activity.jsonl"
 
 # Log rotation: rotate when >10MB. Timestamped backups accumulate and
@@ -23,7 +35,11 @@ LOG_FILE="$LOG_DIR/activity.jsonl"
 # append at the bottom of this script: a write racing a rotation may land in
 # the freshly-rotated .old file, which is acceptable — appends use O_APPEND
 # and are small enough to be atomic on local filesystems, so no record is
-# ever corrupted or lost, merely filed in the previous window.
+# ever corrupted or lost, merely filed in the previous window. That guarantee
+# is scoped to the ROTATION RACE only: it does not cover a jq process dying
+# mid-write (ENOSPC/EIO), which can leave one newline-less partial line that the
+# next append concatenates onto. Line-tailing consumers must tolerate a single
+# malformed line rather than assume every line parses.
 if [ -f "$LOG_FILE" ]; then
   LOCK_FILE="${LOG_FILE}.lock"
   # Stale-lock recovery (security review, v1.26.0): a SIGKILL'd holder would
@@ -37,7 +53,13 @@ if [ -f "$LOG_FILE" ]; then
     trap 'rm -f "$LOCK_FILE"' EXIT
     LOG_SIZE=$(wc -c < "$LOG_FILE" 2>/dev/null || echo 0)
     if [ "$LOG_SIZE" -gt 10485760 ]; then
-      mv "$LOG_FILE" "${LOG_FILE}.$(date +%s).old"
+      # Guarded for the same reason as mkdir/append below: an unguarded `mv`
+      # failing under `set -e` (permissions changed since the [ -w ] probe,
+      # ENOSPC, immutable file, a failing `date`) aborts the hook non-zero WITH
+      # stderr — the exact session-noise class these guards exist to prevent,
+      # just on a rarer path. Skipping rotation is always preferable to
+      # surfacing a telemetry failure to the user.
+      mv "$LOG_FILE" "${LOG_FILE}.$(date +%s).old" 2>/dev/null || true
     fi
     rm -f "$LOCK_FILE"
     trap - EXIT
@@ -112,6 +134,13 @@ case "$HOOK_EVENT_NAME" in
     EVENT_TYPE="compaction" ;;
   InstructionsLoaded)
     EVENT_TYPE="instructions_loaded" ;;
+  # DELIBERATE INVARIANT — extract ONLY tool_name, duration_ms and tool_use_id here.
+  # NEVER add tool_input or tool_response. This is the highest-frequency hook event
+  # and it appends to an unbounded JSONL: adding e.g. `--arg tool_input` would write
+  # unbounded, attacker-influenceable tool payloads (file contents, fetched web bodies,
+  # command output) to disk on every single tool call — a disk-exhaustion and
+  # data-exfiltration surface, not just noise. The three fields below are bounded
+  # identifiers/metrics by construction. Widen this only with a security review.
   PostToolUse|PostToolUseFailure)
     # Claude Code v2.1.119+ includes duration_ms on PostToolUse and PostToolUseFailure.
     # Capture for /parliament-metrics latency panel. Falls back to omitting the field
@@ -173,6 +202,6 @@ jq -cn \
    + (if $effort_level == "" then {} else {effort_level: $effort_level} end)
    + (if $agent_id == "" then {} else {agent_id: $agent_id} end)
    + $extra' \
-  >> "$LOG_FILE"
+  >> "$LOG_FILE" 2>/dev/null || exit 0
 
 exit 0
