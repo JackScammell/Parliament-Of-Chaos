@@ -169,9 +169,10 @@ per-member terminal-state detection table, batching, and graceful degradation �
 > Council members dispatched into a detached fan-out must **state their assumptions and
 > proceed**; they must **never** ask clarifying questions. In a fan-out context a member blocked
 > waiting on input is indistinguishable from a hung member and cannot be recovered by the
-> orchestrator. Every member must also **end its run with an explicit verdict** — `APPROVE`,
-> `REJECT`, or `NO-FINDINGS` — because the reconcile loop treats a completed task without a
-> verdict as Non-reporting; silence is never a pass, and availability pings are not verdicts.
+> orchestrator. Every member must also **end its run with an explicit verdict** — one of the four
+> tokens `REJECT`, `APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS` — because the reconcile loop
+> treats a completed task without a verdict as Non-reporting; silence is never a pass, and
+> availability pings are not verdicts.
 > These are standing prompt-authoring standards for every agent that can be fanned out under
 > the council. See `.claude/rules/fan-out-policy.md` (B5, B6).
 

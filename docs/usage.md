@@ -631,7 +631,7 @@ Both modes follow the same five steps. Step 1 (inventory) is mandatory in both m
 4. **Review** — outputs go through the relevant reviewer subset:
    - **`plan` mode**: `grumpy-architecture-skeptic`, `grumpy-maintainability-curmudgeon`, `grumpy-security-nag`, `grumpy-performance-troll`. Add `grumpy-budget-hawk` for infra-heavy plans, `grumpy-privacy-paranoid` for PII-touching plans, `grumpy-testing-tyrant` when a test strategy is part of the plan.
    - **`implement` mode**: all 9 default-panel grumps (of 12 reviewers total) — (code-reviewer, standards-enforcer, architecture-skeptic, maintainability-curmudgeon, security-nag, performance-troll, accessibility-auditor, documentation-pedant, testing-tyrant).
-5. **Iteration & Synthesis** — feedback routes back to specialists until reviewers approve. Conflicts resolved via priority: **security > correctness > maintainability > performance > convenience**. Out-of-scope recommendations are logged to a "Deferred" section rather than blocking approval.
+5. **Iteration & Synthesis** — a `REJECT` routes back to specialists for one delta-scoped second pass; `APPROVE-WITH-NOTES` means merge-ready with Medium/Low findings recorded. Conflicts resolved via priority: **security > correctness > maintainability > performance > convenience**. Out-of-scope recommendations are logged to a "Deferred" section rather than blocking approval.
 
 #### Plan Artifact (plan mode only)
 

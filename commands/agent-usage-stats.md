@@ -46,7 +46,7 @@ Reads `activity.jsonl` (plus rotated `activity.jsonl.old`) from the plugin data 
    - `avg_turns` — mean `maxTurns`-bounded actual turn count
    - `avg_duration_s` — mean wall-clock seconds
    - `token_cost` — summed token usage if present
-   - `approval_rate` — fraction of reviewer invocations ending in APPROVE (reviewers only)
+   - `approval_rate` — fraction of reviewer invocations ending in a **non-blocking** verdict (`APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS`); only `REJECT` counts against it (reviewers only)
    - `convergence_contribution` — for agents appearing in debates, mean delta-convergence they produced per round
 3. **Rank and classify**:
    - **Workhorses**: high invocation, predictable duration
@@ -73,7 +73,7 @@ Reads `activity.jsonl` (plus rotated `activity.jsonl.old`) from the plugin data 
 | backend-goblin | 72 | 14 | 210s | 950K |
 
 ## Reviewers — approval rate
-| Reviewer | Invocations | APPROVE rate | Median severity raised |
+| Reviewer | Invocations | Non-blocking rate | Median severity raised |
 |----------|-------------|--------------|------------------------|
 | grumpy-code-reviewer | 128 | 58% | Medium |
 | grumpy-security-nag | 44 | 71% | High |

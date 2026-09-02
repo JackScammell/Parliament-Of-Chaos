@@ -50,11 +50,36 @@ Full review using the 9-member default panel (of 12 reviewers total). By default
 
 1b. **Pre-flight cost gate (A4)** — before fan-out, apply the existing `/cost-report estimate` soft-cap band as a **WARN/CONFIRM** gate. This is advisory only and **never a hard block**: over the soft cap → warn and ask to proceed; no telemetry history → degrade to "estimate unavailable — proceed?". This is a **whole-run** estimate — `/cost-report estimate` is the existing whole-command static estimator, not a per-subset admission controller, so do not claim per-reviewer or batch-boundary admission from it. The estimate is **provisional**: relevance-tiering (1a) changes the cost structure, so a telemetry-sourced figure stays approximate until post-change history re-accumulates. **Skip this gate below a small-review size threshold** so small reviews don't pay its fixed overhead net-negative.
 
-2. **Fan out to the selected reviewers** following the **reconcile-on-notification** policy loop in `.claude/rules/fan-out-policy.md` — dispatch prompts carry disk-verified paths (B7) and demand an explicit `APPROVE`/`REJECT`/`NO-FINDINGS` verdict (B6); members run detached and are tallied as their completion notifications arrive; a member with a live task is **Working** and must be waited for, never nudged, never given up on. Only at a member's terminal state does classification apply: a completed run without an explicit verdict, or a failed task, gets its one fresh full-context re-dispatch (B2). A **floor** member still unresolved after that forces `INCOMPLETE` (never a survivor-synthesised `APPROVE`); an unresolved non-floor member is dropped with a loud notice in Reviewer Notes/Deferred. The orchestrator must never substitute its own hand-done review for a live fan-out.
+2. **Fan out to the selected reviewers** following the **reconcile-on-notification** policy loop in `.claude/rules/fan-out-policy.md` — dispatch prompts carry disk-verified paths (B7) and demand an explicit verdict from the four-token vocabulary — `REJECT`, `APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS` (B6); members run detached and are tallied as their completion notifications arrive; a member with a live task is **Working** and must be waited for, never nudged, never given up on. Only at a member's terminal state does classification apply: a completed run without an explicit verdict, or a failed task, gets its one fresh full-context re-dispatch (B2). A **floor** member still unresolved after that forces `INCOMPLETE` (never a survivor-synthesised `APPROVE`); an unresolved non-floor member is dropped with a loud notice in Reviewer Notes/Deferred. The orchestrator must never substitute its own hand-done review for a live fan-out.
 3. Collect and deduplicate findings.
 4. Rank by severity.
+5. **Bounded re-review** — a `REJECT` earns **one** second pass and no more:
+    - The second pass reviews only the **delta** — the changes made in response to round 1 — not the whole target again.
+    - Dispatch the reviewers that returned `REJECT`, **plus the floor** — `grumpy-security-nag`, `grumpy-code-reviewer`, and `grumpy-privacy-paranoid` where personal data is present — even when the floor returned a non-blocking verdict in round 1. A non-floor reviewer that returned `APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS` is done and is **not** re-dispatched; re-running it only harvests nits that did not exist when it last looked.
+    - **Why the floor is unconditional here**: the round-1 fixes are new code that no reviewer has ever read. If the floor is dispatched only when it rejected, the common path — floor returns `APPROVE-WITH-NOTES`, some other reviewer returns `REJECT`, code is written to satisfy that reviewer — merges code the floor never saw. "Security reviewed the previous revision" does not satisfy `governance.md`'s "Security always wins". Under the old blocking-only vocabulary the floor was re-dispatched by construction, because any finding at all forced a `REJECT`; the four-token widening removes that accidental coverage, so it is restored explicitly here. The floor is 2–3 members over a small delta — the cheapest part of the run.
+    - A floor member that does not report in the second pass forces **`INCOMPLETE`**, exactly as in round 1. It is never dropped and never assumed to still hold its round-1 verdict.
+    - There is **no third pass**. Anything still open after the second goes to **Deferred** as a tracked item, not a merge block.
+
+    This bound is the point of the four-token vocabulary. Under a blocking-only vocabulary each round mutated the code and each mutation generated fresh Low-severity nits, so a nine-member panel had no fixed point. Two passes, delta-scoped, terminates.
 
 ## Output
+
+### Severity and blocking
+
+Only **Critical** and **High** findings block. The run verdict is:
+
+- **`REJECT`** — at least one reviewer returned `REJECT`. Fix the Critical/High findings and take the bounded second pass (Process step 5).
+- **`APPROVE-WITH-NOTES`** — no reviewer returned `REJECT`. The change is **merge-ready**; the Medium and Low findings are recorded, not gates. This is the expected outcome of most runs.
+- **`INCOMPLETE`** — a floor reviewer did not report (see Summary below). Not a `REJECT`, and never a survivor-synthesised approval.
+
+Severity definitions (single-sourced from `.claude/rules/output-standards.md`):
+
+- **Critical** — security vulnerability, data-loss risk, or broken core functionality. Blocks.
+- **High** — significant bug, major standards violation, or architectural flaw. Blocks.
+- **Medium** — code smell, minor bug, or maintainability concern. Recorded, does not block.
+- **Low** — style issue, minor improvement, or documentation gap. Recorded, does not block.
+
+A reviewer that would not hold a release for a finding must not spend a `REJECT` on it.
 
 ### Summary
 High-level verdict from the parliament. If a **floor** reviewer (security / correctness, plus privacy on PII) did not report even after its one re-dispatch, the outcome is **`INCOMPLETE`** — a non-blocking terminal state meaning "security/correctness did not run," never a survivor-synthesised `APPROVE`. See the liveness floor in `.claude/rules/fan-out-policy.md`.
@@ -72,7 +97,9 @@ Prioritised action items.
 Notable disagreements or trade-offs between reviewers.
 
 ### Deferred
-Out-of-scope recommendations logged for future work.
+Out-of-scope recommendations, reviewers skipped by relevance-tiering, and anything still open after the bounded second pass.
+
+**Destination**: Deferred feeds the **debt register** — `/track-debt` — and nothing else. It becomes a tracker issue only when a human picks the item up and decides it is worth one. Nothing in this section is filed, assigned, or escalated automatically; an auto-filed backlog is how a review loop that cannot converge turns into an issue tracker that nobody reads.
 
 ## Notes
 

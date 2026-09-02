@@ -15,7 +15,18 @@ When reviewers or agents disagree, apply this priority hierarchy:
 - All implementation work must pass through grumpy review before approval
 - Out-of-scope recommendations: log to "Deferred" section, do not block approval
 - Present genuine trade-offs to user when reviewers disagree
-- Iterate until all reviewers approve or trade-offs are documented and accepted by user
+- Only `REJECT` blocks. A reviewer holding Medium or Low findings returns `APPROVE-WITH-NOTES`
+  and the change is merge-ready with those findings recorded — see the four-token vocabulary in
+  `.claude/rules/output-standards.md`
+- Iteration is **bounded**: a `REJECT` earns one delta-scoped second pass from the reviewers that
+  rejected **plus the floor**, and there is no third pass. Anything still open after it is
+  Deferred to the debt register, not a merge block. An unbounded "iterate until all approve" loop
+  has no fixed point, because each round mutates the code and each mutation generates findings the
+  previous round could not have raised
+- The **floor is unconditional in the second pass** — it reviews the round-1 fixes even when it
+  returned a non-blocking verdict in round 1, because otherwise those fixes merge without security
+  or correctness ever having read them, which "Security always wins" does not permit. Mechanics
+  and full rationale: `commands/parliament-review.md` Process step 5
 
 ## Agent Hierarchy
 

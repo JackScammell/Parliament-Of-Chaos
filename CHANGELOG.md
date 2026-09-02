@@ -5,6 +5,92 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.0] - 2026-09-02
+
+**"The Fourth Token"** — review convergence. Parliament's reviewers could not say *"I found
+something and you should still merge."* `NO-FINDINGS` is defined as **nothing to report**, so a
+reviewer holding one Low-severity nit had exactly one verdict available: `REJECT`. On a 9-member
+panel, even a 20% per-reviewer chance of finding one nit gives an 87% chance of at least one
+`REJECT` per round — and each round mutates the code, generating nits that did not exist in the
+round before. There was no fixed point; observed reviews ran to ~round 11. That is arithmetic, not
+judgement. This release adds `APPROVE-WITH-NOTES`, binds blocking to severity, and bounds
+re-review. Gated through the 9-member council (two `REJECT`s, both fixed; four members
+re-dispatched under B2.5 after turn-limit truncation).
+
+### Changed — four-token verdict vocabulary (breaking for verdict parsers)
+
+- **`REJECT`, `APPROVE-WITH-NOTES`, `APPROVE`, `NO-FINDINGS`** replaces the three-token
+  vocabulary across `.claude/rules/output-standards.md` (owner), `fan-out-policy.md` B6, and
+  `agent-standards.md`. `REJECT` is now reserved for Critical/High — "if you would not hold a
+  release for it, it is not a `REJECT`". `APPROVE-WITH-NOTES` is the expected verdict for most
+  reviews. Policy widened first, pattern followed — the order `output-standards.md` mandates.
+- **The `## Fan-Out Contract` block** in all **29** fan-out-capable agents carries the new
+  contract, in both its variants (17 specialists, 12 grumpy reviewers). The four non-fan-out
+  agents (2 orchestrators, 2 planning) are untouched by design; `senior-council` separately
+  learned to demand the four tokens and lost its unbounded "iterate until all approve".
+- **A 5-finding budget and a round-trip cost test** — "this is a two-person team; if fixing it
+  costs more than living with it, record it as Medium or Low". The cost test is single-sourced in
+  `output-standards.md`; the budget sentence is deliberately mirrored into the contract blocks,
+  because a dispatched member's context is not guaranteed to include the rules file. That
+  asymmetry is now documented, with the maintainer consequence spelled out.
+
+### Changed — blocking bound to severity, re-review bounded (`commands/parliament-review.md`)
+
+- **Only Critical and High block.** Run verdict is `REJECT` if any reviewer rejects, else
+  `APPROVE-WITH-NOTES` and the change is merge-ready with Medium/Low recorded. The four severity
+  definitions are stated at the point of use; previously all four buckets blocked because nothing
+  said otherwise.
+- **Re-review is bounded**: one delta-scoped second pass, reviewing only the changes made in
+  response to round 1, then Deferred. No third pass. Mirrored in `governance.md`, which loses
+  "iterate until all reviewers approve" — an instruction with no fixed point.
+- **`### Deferred` now states its destination**: it feeds the debt register (`/track-debt`) and
+  becomes tracker issues only when someone picks one up, never automatically. The section existed
+  with no stated destination, so by default it landed in the tracker — the backlog leak.
+
+### Fixed — the floor could be bypassed by the bounded second pass (found in council review)
+
+- Dispatching only the reviewers that returned `REJECT` meant that in the common case — floor
+  returns `APPROVE-WITH-NOTES`, another reviewer rejects, fix code is written — the round-2 delta
+  **merged without security or correctness ever reading it**. A regression introduced by the
+  widening itself: under the old blocking-only vocabulary the floor was re-dispatched by
+  construction, because any finding at all forced a `REJECT`. The floor
+  (`grumpy-security-nag`, `grumpy-code-reviewer`, `+ grumpy-privacy-paranoid` on PII) is now
+  dispatched **unconditionally** in the second pass, and a floor non-report there forces
+  `INCOMPLETE` exactly as in round 1.
+- `grumpy-security-nag`'s Output verdict item no longer reads "APPROVE only when resolved" — the
+  exact phrasing `output-standards.md` names as its most dangerous non-conformant class.
+
+### Added — The Gate learns the new vocabulary (`scripts/ci/conformance.py`)
+
+- **Check 7 (`reviewer-verdicts`) widened to four tokens.** Presence is now boundary-aware
+  (`TOKEN_PRESENCE_RE`): `APPROVE-WITH-NOTES` **contains** the substring `APPROVE`, so the
+  previous containment test reported bare `APPROVE` present in a region that only ever named the
+  hyphenated token.
+- **`scripts/ci/fixtures/verdict_region_probes.txt`** (new) — a region-level probe corpus
+  replayed by check 8. Check 7's positive assertion (a) previously had **no fixtures at all**:
+  reverting the boundary-aware presence test to substring containment left the entire gate green,
+  making the load-bearing fix a regression anecdote by the corpus's own definition. Both call
+  sites now share `missing_verdict_tokens()`, so the corpus exercises the shipped predicate rather
+  than a parallel copy.
+- **Check 2 tightened to close a silent-vacuity path.** It tested only that the Fan-Out Contract
+  marker appeared *somewhere* in the file, so demoting the heading to `###` kept check 2 green,
+  made `instruction_region()` miss, and let assertion (a) read the boilerplate — which names all
+  four tokens verbatim. Check 2 and `instruction_region()` are now tied to the same regex.
+- Mutation-verified: reverting the presence test, demoting a contract heading, and narrowing
+  `VERDICT_TOKENS` back to three each fail the gate.
+
+### Deferred (tracked follow-ups from council review)
+
+- `NON_TOKEN_VERDICT_RE` and `GATING_SHAPE_RE` are blind to **backticked** tokens, which is the
+  style `output-standards.md` itself models — `` Never `APPROVE` until … `` evades the class-3
+  gating detector where the unbackticked form does not.
+- `_NOT_TOKEN_APPROVE` exempts `APPROVE-<anything>`, so near-miss spellings
+  (`APPROVE-WITH-CAVEATS`, `APPROVE-PENDING`) are invisible to every negative pattern.
+- Check 7's negative assertions are scoped to `agents/grumpy-*.md`; the 17 specialist contract
+  blocks are never scanned for vocabulary drift.
+- No mechanical check ties `commands/fast-track.md` and `parliament-review.md`'s accepted-verdict
+  sets to the vocabulary, nor guards the 5-finding budget's mirroring across 30 files.
+
 ## [1.26.0] - 2026-08-19
 
 **"The Gate"** — the first release of the three-release consolidation arc voted by the six-member
@@ -760,6 +846,7 @@ Subsequent tiers from the toolset-gaps plan land in v1.11.0 (Learning Loop), v1.
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.27.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.26.0...v1.27.0
 [1.26.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.25.1...v1.26.0
 [1.25.1]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.25.0...v1.25.1
 [1.25.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.24.0...v1.25.0

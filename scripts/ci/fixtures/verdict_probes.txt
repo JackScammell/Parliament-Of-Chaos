@@ -16,6 +16,11 @@
 # to catch. Every real historical defect below is committed here so a future
 # narrowing of the patterns fails CI instead of passing quietly.
 #
+# VOCABULARY: four tokens, most-severe first — REJECT, APPROVE-WITH-NOTES,
+# APPROVE, NO-FINDINGS (.claude/rules/output-standards.md, Review Output Format
+# item 4). The two NON-BLOCKING tokens are APPROVE-WITH-NOTES and NO-FINDINGS;
+# a gating instruction must offer BOTH on its own line.
+#
 # NOT REPRESENTABLE HERE: grumpy-testing-tyrant's frontmatter `description`
 # ("...rejects inadequate test suites") is a DEFECT-shaped line that check 7
 # excuses via FRONTMATTER_VERDICT_EXEMPT — a file+key+word allowlist, not a
@@ -34,8 +39,8 @@ DEFECT	Approve or deny
 DEFECT	Approval or rejection with reasons
 DEFECT	Approved or rejected with path to compliance
 
-# class 3 — negative gating that never offers NO-FINDINGS (the dangerous one:
-# it hid the defect in both floor reviewers)
+# class 3 — negative gating that never offers the non-blocking tokens (the
+# dangerous one: it hid the defect in both floor reviewers)
 DEFECT	No approval until all issues addressed
 DEFECT	Approve only when resolved
 DEFECT	No approval until all cost concerns are addressed
@@ -48,7 +53,8 @@ DEFECT	4. Verdict: approve; reject
 
 # ---------------------------------------------------------------------------
 # DEFECTS — correctly-spelled tokens, still non-conformant (the bypass the
-# panel constructed: passes every casing and pair pattern, offers no NO-FINDINGS)
+# panel constructed: passes every casing and pair pattern, offers no
+# NO-FINDINGS)
 # ---------------------------------------------------------------------------
 
 DEFECT	4. Never APPROVE until all issues addressed; REJECT otherwise.
@@ -57,10 +63,49 @@ DEFECT	4. Never APPROVE until all issues addressed; REJECT otherwise.
 # probe: "Verdict: APPROVE until every issue is resolved; REJECT while any
 # remain." omits NO-FINDINGS with no negation word and no "only", so no
 # line-level pattern can distinguish it from conformant prose. It is caught
-# instead by check 7 assertion (a), which requires all three tokens somewhere
+# instead by check 7 assertion (a), which requires all four tokens somewhere
 # in the reviewer's own instruction region. Line-level detection and the
 # region-level assertion cover different halves of this defect class; neither
 # alone is sufficient, which is why check 7 keeps both.
+#
+# The same limitation applies to a plain comma-separated list that simply omits
+# a token — "4. Verdict: APPROVE, REJECT, or NO-FINDINGS" has no gating shape
+# and no casing error, so it is line-level CLEAN and is caught only by
+# assertion (a). That is why the three-token list no longer appears among the
+# CONTROLs below as a shipped fleet shape: it is not a line-level defect, but
+# it is no longer conformant policy either, and leaving it labelled CONTROL
+# would read as an endorsement.
+
+# ---------------------------------------------------------------------------
+# DEFECTS — the three-token GATING forms. These were CONTROLs while the
+# vocabulary was three tokens; the fourth token makes them non-conformant,
+# because a reviewer holding one Low-severity nit is left with REJECT as its
+# only available verdict. They are kept here so a future narrowing that
+# re-admits them fails CI.
+# ---------------------------------------------------------------------------
+
+DEFECT	4. Never APPROVE until all issues addressed; REJECT while any remain; NO-FINDINGS only when the review surfaced none
+DEFECT	6. Never APPROVE until all privacy concerns are addressed; REJECT while any remain; NO-FINDINGS only when the review surfaced none
+DEFECT	4. **Verdict** – APPROVE only when resolved, REJECT while anything is outstanding, NO-FINDINGS when the review surfaced nothing
+DEFECT	4. APPROVE only when all rules satisfied; REJECT otherwise; NO-FINDINGS when no violation was found at all
+
+# ---------------------------------------------------------------------------
+# DEFECTS — the failure mode the fourth token introduces: a gating instruction
+# that offers APPROVE-WITH-NOTES but drops NO-FINDINGS (or the reverse), so one
+# of the two non-blocking outcomes has no conformant spelling.
+# ---------------------------------------------------------------------------
+
+DEFECT	4. Never APPROVE until all issues addressed; APPROVE-WITH-NOTES while Medium or Low remain; REJECT otherwise
+DEFECT	4. APPROVE only when nothing is worth recording; APPROVE-WITH-NOTES for Medium or Low; REJECT for Critical or High
+DEFECT	4. Never APPROVE until the review surfaced nothing; REJECT while any Critical remains; NO-FINDINGS when the domain did not apply
+
+# ---------------------------------------------------------------------------
+# DEFECTS — APPROVE-WITH-NOTES in any casing other than the exact token.
+# ---------------------------------------------------------------------------
+
+DEFECT	4. Verdict: REJECT, approve-with-notes, APPROVE, or NO-FINDINGS
+DEFECT	4. Verdict: REJECT, Approve-With-Notes, APPROVE, or NO-FINDINGS
+DEFECT	4. Verdict: REJECT, approve with notes, APPROVE, or NO-FINDINGS
 
 # ---------------------------------------------------------------------------
 # DEFECTS — the fourth evasion class: synonyms outside the approve/reject
@@ -90,34 +135,42 @@ DEFECT	4. Verdict: APPROVE, REJECT, or No Findings
 # defects above.
 # ---------------------------------------------------------------------------
 
-# the plain three-token list, in every shape the fleet uses
-CONTROL	4. Verdict: exactly one of APPROVE, REJECT, or NO-FINDINGS
-CONTROL	4. **Verdict** – APPROVE, REJECT, or NO-FINDINGS with reasoning
-CONTROL	4. **Verdict** - APPROVE, REJECT, or NO-FINDINGS with clear reasoning
-CONTROL	4. Verdict on performance criteria: exactly one of APPROVE, REJECT, or NO-FINDINGS
-CONTROL	4. **Verdict** – APPROVE, REJECT (with steps to improve), or NO-FINDINGS
-CONTROL	4. **Verdict** – APPROVE, REJECT (with path to compliance), or NO-FINDINGS
-CONTROL	4. **Verdict** – APPROVE if maintainable, REJECT with guidance, or NO-FINDINGS if nothing to report
+# the plain four-token list, in every shape the fleet uses
+CONTROL	4. Verdict: exactly one of REJECT, APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS
+CONTROL	4. **Verdict** – REJECT, APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS with reasoning
+CONTROL	4. **Verdict** - REJECT, APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS with clear reasoning
+CONTROL	4. Verdict on performance criteria: exactly one of REJECT, APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS
+CONTROL	4. **Verdict** – REJECT (with steps to improve), APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS
+CONTROL	4. **Verdict** – REJECT (with path to compliance), APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS
+CONTROL	4. **Verdict** – REJECT if maintainability is at Critical or High risk, APPROVE-WITH-NOTES with the debt recorded, APPROVE if maintainable, or NO-FINDINGS if nothing to report
 
 # the UPPERCASE GATING FORM — the sanctioned fleet-wide fix. Gating grammar is
 # permitted (output-standards.md, Review Output Format); what is forbidden is a
-# construction that never offers NO-FINDINGS.
-CONTROL	4. Never APPROVE until all issues addressed; REJECT while any remain; NO-FINDINGS only when the review surfaced none
-CONTROL	6. Never APPROVE until all privacy concerns are addressed; REJECT while any remain; NO-FINDINGS only when the review surfaced none
-CONTROL	4. **Verdict** – APPROVE only when resolved, REJECT while anything is outstanding, NO-FINDINGS when the review surfaced nothing
-CONTROL	4. APPROVE only when all rules satisfied; REJECT otherwise; NO-FINDINGS when no violation was found at all
+# construction that never offers the non-blocking tokens, so each of the four
+# needs its own condition on the same line.
+CONTROL	4. REJECT only for Critical or High; APPROVE-WITH-NOTES while any Medium or Low finding stands; never APPROVE until there is nothing worth recording; NO-FINDINGS only when nothing in the domain applied
+CONTROL	6. REJECT only for a Critical or High privacy risk; APPROVE-WITH-NOTES while any Medium or Low concern stands; never APPROVE until there is nothing worth recording; NO-FINDINGS only when no personal data was in scope
+CONTROL	4. **Verdict** – REJECT while anything Critical or High is outstanding, APPROVE-WITH-NOTES when only Medium or Low remain, APPROVE only when resolved, NO-FINDINGS when the review surfaced nothing
 
 # Fan-Out Contract prose ABOUT the tokens — must never read as an instruction
-CONTROL	**End every fan-out run with an explicit verdict line** — `APPROVE`, `REJECT`, or `NO-FINDINGS` (reviewed, nothing to report). A completed run without an explicit verdict is classified Non-reporting and re-dispatched; silence is never a pass.
-CONTROL	`NO-FINDINGS` is never a fallback for being unsure, under-informed, or unable to review, and it is not a synonym for `APPROVE`: collapsing the two destroys the distinction between "reviewed and found nothing" and "never reviewed".
+CONTROL	**End every fan-out run with an explicit verdict line** — `REJECT`, `APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS`.
+CONTROL	- `REJECT` — Critical or High findings only. Reserve it for: it is broken, it is a security or data-loss risk, or it will break something in production. If you would not hold a release for it, it is not a `REJECT`.
+CONTROL	- `APPROVE-WITH-NOTES` — you found Medium/Low issues. Record them; they do not block the merge. This is the expected verdict for most reviews.
+CONTROL	- `APPROVE` — reviewed, nothing worth recording.
+CONTROL	- `NO-FINDINGS` — reviewed, nothing in your domain applied.
+CONTROL	Report at most 5 findings, ranked by severity. Anything beyond that goes to Deferred. A long list is not a thorough review; it is an unranked one.
+CONTROL	A completed run without an explicit verdict is classified Non-reporting and re-dispatched; silence is never a pass.
+CONTROL	`NO-FINDINGS` is never a fallback for being unsure, under-informed, or unable to review, and it is not a synonym for `APPROVE` or `APPROVE-WITH-NOTES`: collapsing them destroys the distinction between "reviewed and found nothing" and "never reviewed".
 CONTROL	Do not send availability pings or status chatter — they are not verdicts and pollute reconciliation.
 CONTROL	Never use `REJECT` to signal that you could not review — `REJECT` is a finding, and spending it on a coverage gap launders "never reviewed" into "reviewed and found a problem".
+CONTROL	`APPROVE-WITH-NOTES` is a distinct token, not an instance of `APPROVE`; naming one does not name the other.
 
 # prose that would break if `block` or `condemn` were added to the BLANKET
-# backstop rather than kept pair-position-only. These four lines are the reason
+# backstop rather than kept pair-position-only. These five lines are the reason
 # that distinction exists.
 CONTROL	A member blocked waiting on input is indistinguishable from a hung member and cannot be recovered by the orchestrator.
-CONTROL	`APPROVE` — you reviewed and judge the work fit to proceed, any issues you raised being non-blocking.
+CONTROL	`APPROVE` — you reviewed and judge the work fit to proceed, with nothing worth recording.
+CONTROL	`APPROVE-WITH-NOTES` — you reviewed and found Medium or Low issues; record them, they are non-blocking.
 CONTROL	B6 condemns a member that reviewed and then gave no verdict, whereas here there is no review to report.
 CONTROL	If you could not perform a proper review at all, do not emit a verdict token — say plainly what blocked you.
 

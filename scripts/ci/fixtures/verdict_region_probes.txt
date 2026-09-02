@@ -1,0 +1,81 @@
+# REGION-level probe corpus for scripts/ci/conformance.py check 7 (reviewer-verdicts).
+#
+# Replayed by check 8 (probe-corpus) on every gate run, and standalone via
+#   python3 scripts/ci/conformance.py --self-test
+# through the SAME two functions the real check uses — instruction_region()
+# and the TOKEN_PRESENCE_RE `missing` computation — so these probes exercise
+# the shipped predicate rather than a parallel copy of it.
+#
+# WHY A SECOND CORPUS: verdict_probes.txt feeds single lines to
+# scan_verdict_line, which covers check 7's NEGATIVE half (assertions b-d).
+# Check 7's POSITIVE half — assertion (a), "the reviewer's own instruction
+# names all four tokens" — is region-scoped and was previously covered by
+# nothing at all. Two real defects hid in that gap:
+#
+#   1. Boundary-aware presence. `APPROVE-WITH-NOTES` CONTAINS the substring
+#      `APPROVE`, so a naive `t not in region` test reports APPROVE present in
+#      a region that only ever names APPROVE-WITH-NOTES. _token_presence_re
+#      exists solely to stop that. Reverting assertion (a) to substring
+#      containment left the whole gate green, because every shipped reviewer
+#      happens to name all four tokens — the fix was load-bearing and untested.
+#      Row R1 below is the row that fails on such a revert.
+#
+#   2. Region truncation. instruction_region() cuts the body at the `##
+#      Fan-Out Contract` heading because the boilerplate below it names all
+#      four tokens verbatim; without the cut, assertion (a) can never fail and
+#      is vacuous. Demoting that heading to `###` in any reviewer used to slip
+#      past check 2 (which only looked for the marker substring anywhere in the
+#      file) and silently made assertion (a) vacuous for that file. Check 2 now
+#      requires the marker ON an `##` heading, using the same regex this
+#      function does; row R6 asserts the truncation itself still happens.
+#
+# Format:  <EXPECTATION><whitespace><region text, \n for newline>
+#   EXPECTATION  comma-separated list of tokens that MUST be reported missing,
+#                in the canonical VERDICT_TOKENS order, or NONE if the region
+#                is expected to name all four.
+# Blank lines and lines starting with `#` are ignored.
+
+# --- R1: the substring-containment defect -------------------------------
+# Names APPROVE-WITH-NOTES but never bare APPROVE. A naive `t not in region`
+# containment test finds "APPROVE" inside "APPROVE-WITH-NOTES" and wrongly
+# reports nothing missing. THIS ROW IS THE REGRESSION TEST FOR _token_presence_re.
+APPROVE	4. Verdict: REJECT, APPROVE-WITH-NOTES, or NO-FINDINGS
+
+# --- R2-R4: one non-blocking token dropped from a plain list -------------
+# Plain enumerations carry no negation or "only", so GATING_SHAPE_RE and
+# BINARY_VERDICT_RE are line-level CLEAN on all three. Assertion (a) is the
+# ONLY thing standing between these and a green gate.
+APPROVE-WITH-NOTES	4. Verdict: REJECT, APPROVE, or NO-FINDINGS
+NO-FINDINGS	4. Verdict: REJECT, APPROVE-WITH-NOTES, or APPROVE
+REJECT	4. Verdict: APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS
+
+# --- R5: the pre-widening three-token vocabulary -------------------------
+# The exact instruction every reviewer shipped before this change. It must now
+# report the fourth token missing — this is the row that fails if VERDICT_TOKENS
+# is ever narrowed back to three.
+APPROVE-WITH-NOTES	4. Verdict: exactly one of APPROVE, REJECT, or NO-FINDINGS
+
+# --- R6: region truncation actually happens ------------------------------
+# A three-token instruction ABOVE the heading, with the four-token boilerplate
+# BELOW it. If instruction_region() failed to cut at the heading, the
+# boilerplate's own mention of APPROVE-WITH-NOTES would satisfy assertion (a)
+# and this row would report NONE — the vacuity described at the top of this file.
+APPROVE-WITH-NOTES	4. Verdict: APPROVE, REJECT, or NO-FINDINGS\n\n## Fan-Out Contract (fan-out-policy B5 + B6)\n\nEnd every fan-out run with an explicit verdict line — REJECT, APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS.
+
+# --- R7: partial-uppercase hyphenated variant ----------------------------
+# `APPROVE-WITH-notes` is line-level clean (the exemption skips the uppercase
+# APPROVE segment; `with`/`notes` belong to no synonym family), so assertion (a)
+# is again the only net. Boundary-aware presence must NOT accept it as the token.
+APPROVE-WITH-NOTES	4. Verdict: REJECT, APPROVE-WITH-notes, APPROVE, or NO-FINDINGS
+
+# --- R8-R9: conformant regions, must report nothing missing --------------
+# R8 is the plain-list shape shipped by most reviewers; R9 is the gated shape
+# shipped by grumpy-security-nag. Both name all four tokens as exact uppercase
+# literals and must stay clean, or the check is a false-positive generator.
+NONE	4. Verdict: REJECT, APPROVE-WITH-NOTES, APPROVE, or NO-FINDINGS with reasoning
+NONE	4. Verdict: REJECT while anything Critical or High is outstanding, APPROVE-WITH-NOTES when only Medium or Low remain, APPROVE when there is nothing worth recording, NO-FINDINGS when the review surfaced nothing
+
+# --- R10: backticked tokens, the house style -----------------------------
+# output-standards.md presents the vocabulary with every token backticked.
+# Presence must be insensitive to the surrounding punctuation.
+NONE	4. **Verdict** – `REJECT`, `APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS`

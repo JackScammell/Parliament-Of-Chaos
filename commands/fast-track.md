@@ -49,14 +49,14 @@ Per governance: security > correctness > maintainability > performance > conveni
 | `grumpy-i18n-nitpicker` | I18n | Skipped |
 | `grumpy-budget-hawk` | Cost | Skipped |
 
-Both required reviewers must APPROVE. If either REJECTs, fast-track is aborted and the change routes to the normal `/parliament-review` path.
+Both required reviewers must return a **non-blocking** verdict — `APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS`. If either returns `REJECT`, fast-track is aborted and the change routes to the normal `/parliament-review` path. Only `REJECT` blocks: a Medium or Low finding is recorded under `APPROVE-WITH-NOTES` and carried into the deferred follow-up review, it does not abort the fast track.
 
 ## Process
 
 1. **Record intent** — log a `FastTrackStart` event with description, scope, reason, link.
 2. **Detect sensitive patterns** — scan the change for personal-data indicators (emails, names, phone numbers, SSNs, medical data). If present, add `grumpy-privacy-paranoid` to the required reviewer set.
 3. **Run the floor** — invoke required reviewers in parallel via `Task()`.
-4. **Consolidate verdict** — both APPROVE → proceed. Any REJECT → abort and suggest `/parliament-review`.
+4. **Consolidate verdict** — both non-blocking (`APPROVE-WITH-NOTES` / `APPROVE` / `NO-FINDINGS`) → proceed, carrying any Medium/Low findings into the deferred queue. Any `REJECT` → abort and suggest `/parliament-review`. A required reviewer that did not report even after its one re-dispatch is `INCOMPLETE`, not an approval — abort.
 5. **Mandatory deferred queue** — record the skipped reviewers and the change in `${CLAUDE_PLUGIN_DATA}/fast-track-debt.json`. A follow-up `/parliament-review` of the same change must be scheduled within 7 days.
 6. **Emit PR body** — produce a templated description including the reason, the reviewers consulted, the skipped reviewers, and the deferred-review date.
 
@@ -71,7 +71,7 @@ Both required reviewers must APPROVE. If either REJECTs, fast-track is aborted a
 
 ## Reviewer floor (required)
 - grumpy-security-nag — APPROVE (no new secrets or auth weaknesses introduced)
-- grumpy-code-reviewer — APPROVE (null check is correct; no logic regression)
+- grumpy-code-reviewer — APPROVE-WITH-NOTES (null check is correct; Low: the guard duplicates one in `requireUser`, worth folding together later)
 
 ## Skipped reviewers (deferred to follow-up review)
 - grumpy-standards-enforcer
@@ -88,7 +88,7 @@ Both required reviewers must APPROVE. If either REJECTs, fast-track is aborted a
 `/parliament-review` of this change by 2026-04-24. Tracked in ${CLAUDE_PLUGIN_DATA}/fast-track-debt.json.
 
 ## Verdict
-APPROVED on security + correctness floor. Proceed.
+APPROVE-WITH-NOTES on security + correctness floor. Proceed; 1 Low finding recorded.
 ```
 
 ## Hard limits

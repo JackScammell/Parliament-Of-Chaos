@@ -38,8 +38,9 @@ Checks (see --list-checks):
                              stated in fan-out-policy.md (or cited from it).
                              A TWO-LITERAL spot-check, not prose-duplication
                              detection — see LINT_PATTERNS
-  7. reviewer-verdicts     — every grumpy reviewer names the three-token verdict
-                             vocabulary in its own verdict instruction, and
+  7. reviewer-verdicts     — every grumpy reviewer names the four-token verdict
+                             vocabulary (REJECT / APPROVE-WITH-NOTES / APPROVE /
+                             NO-FINDINGS) in its own verdict instruction, and
                              instructs no binary approve/reject
   8. probe-corpus          — the detectors behind checks 0 and 7 are replayed
                              against the committed probe corpus in
@@ -214,8 +215,30 @@ BOM_SCAN_GLOBS = (
 # commands/debate-analytics.md ("approve/reject/abstain" vote-tally counts,
 # which are a report field, not a reviewer's verdict instruction). The invariant
 # belongs to reviewer agent definitions, so the check lives there too.
-VERDICT_TOKENS = ("APPROVE", "REJECT", "NO-FINDINGS")
-NO_FINDINGS_TOKEN = "NO-FINDINGS"
+# Ordered most-severe first, matching output-standards.md.
+VERDICT_TOKENS = ("REJECT", "APPROVE-WITH-NOTES", "APPROVE", "NO-FINDINGS")
+# The two NON-BLOCKING outcomes. A gating instruction is only compensated when it
+# offers BOTH on the same line: a reviewer holding one Low nit needs
+# APPROVE-WITH-NOTES, and one that found nothing needs NO-FINDINGS. Offering only
+# one of them reproduces the non-convergence the fourth token exists to fix.
+NON_BLOCKING_TOKENS = ("APPROVE-WITH-NOTES", "NO-FINDINGS")
+
+
+def _token_presence_re(token: str) -> re.Pattern[str]:
+    """Boundary-aware presence test for one verdict token.
+
+    The hyphen is part of the boundary class ON PURPOSE. Plain substring
+    containment — what this check used while the vocabulary was three tokens —
+    silently reports `APPROVE` as present inside `APPROVE-WITH-NOTES`, so a
+    reviewer that offered only the notes variant would pass assertion (a) with
+    no bare-APPROVE verdict available at all. `NO-FINDINGS` and
+    `APPROVE-WITH-NOTES` contain internal hyphens, which the escape preserves;
+    only the boundaries are constrained.
+    """
+    return re.compile(r"(?<![A-Za-z-])" + re.escape(token) + r"(?![A-Za-z-])")
+
+
+TOKEN_PRESENCE_RE = {t: _token_presence_re(t) for t in VERDICT_TOKENS}
 
 # The exact heading that opens the shared Fan-Out Contract boilerplate. Check 7
 # assertion (a) scans the region BEFORE it — see check_reviewer_verdicts.
@@ -246,8 +269,9 @@ _ADVERSE = (
     r"|block(?:s|ed|ing)?|nack(?:s|ed)?|bounce(?:s|d)?|send(?:s)? it back)"
 )
 # Connector joining the two halves of a binary pair. Commas are DELIBERATELY
-# excluded: the conformant three-token list "APPROVE, REJECT, or NO-FINDINGS"
-# would otherwise read as a pair and fail every reviewer in the fleet.
+# excluded: the conformant four-token list "REJECT, APPROVE-WITH-NOTES, APPROVE,
+# or NO-FINDINGS" would otherwise read as a pair and fail every reviewer in the
+# fleet.
 #
 # Semicolons/dashes/"vs" are NOT added either, and the reason is adjacency, not
 # oversight: `_OR` only matches between two ADJACENT halves, and the historical
@@ -257,6 +281,14 @@ _ADVERSE = (
 # frontmatter carve-out below had to be narrowed rather than papered over with
 # more connectors.
 _OR = r"[\s`'*_]*(?:or|/)[\s`'*_]*"
+# Exempts the exact uppercase APPROVE token from the class-3 gating shape. The
+# inner boundary is `(?![A-Za-z])`, NOT `(?![A-Za-z-])`, and that is deliberate:
+# in `APPROVE-WITH-NOTES` the next character is `-`, so the inner lookahead
+# succeeds and the whole negative lookahead fails — i.e. the notes token is
+# exempted here exactly as the bare token is. That is the behaviour we want for
+# the NEGATIVE patterns (a four-token gating line must not be flagged binary).
+# It is the WRONG behaviour for the positive presence test, which is why
+# assertion (a) uses TOKEN_PRESENCE_RE and not substring containment.
 _NOT_TOKEN_APPROVE = r"(?!APPROVE(?![A-Za-z]))"
 # Negation openers for the negative-gating shape (evasion class 3).
 _NEG = r"(?i:\b(?:no|not|never|without|withhold(?:s|ing)?)\b)"
@@ -273,9 +305,10 @@ _NEG = r"(?i:\b(?:no|not|never|without|withhold(?:s|ing)?)\b)"
 # grumpy-budget-hawk, and the narrow pattern declared all four clean.
 #
 # Class 3 carries the uppercase-token exemption because the CONFORMANT fix
-# keeps the gating shape and fixes the vocabulary: "Never APPROVE until all
-# issues addressed; REJECT while any remain; NO-FINDINGS only when the review
-# surfaced none" offers all three tokens and is correct.
+# keeps the gating shape and fixes the vocabulary: "REJECT only for Critical or
+# High; APPROVE-WITH-NOTES while any Medium or Low finding stands; never APPROVE
+# until there is nothing worth recording; NO-FINDINGS only when nothing in the
+# domain applied" offers all four tokens and is correct.
 BINARY_VERDICT_RE = re.compile(
     # class 1 + 2 — synonym and nominalised pairs, in either order
     r"(?<![A-Za-z])" + _AFFIRM_ANY + _OR + _ADVERSE + r"(?![A-Za-z])"
@@ -287,11 +320,13 @@ BINARY_VERDICT_RE = re.compile(
 )
 
 # The SAME gating shape as class 3 but WITHOUT the uppercase-token exemption.
-# Used by the same-line NO-FINDINGS rule in check 7: a gating instruction is
-# allowed to keep its grammar (output-standards.md now says so explicitly), but
-# only if it offers NO-FINDINGS on that same line. This is what makes
-# "Never APPROVE until all issues addressed; REJECT otherwise" — which slips
-# past every other pattern because both tokens are correctly spelled — fail.
+# Used by the same-line non-blocking-token rule in check 7: a gating instruction
+# is allowed to keep its grammar (output-standards.md now says so explicitly),
+# but only if it offers BOTH non-blocking tokens on that same line. This is what
+# makes "Never APPROVE until all issues addressed; REJECT otherwise" — which
+# slips past every other pattern because both tokens are correctly spelled —
+# fail, and it is also what fails the three-token gating form that was
+# conformant before the fourth token existed.
 GATING_SHAPE_RE = re.compile(
     _NEG + r"\s+(?:[\w-]+\s+){0,2}" + _AFFIRM_ANY + r"(?![A-Za-z])"
     + r"|(?<![A-Za-z])" + _AFFIRM_ANY + r"\s+(?i:only)\b"
@@ -352,6 +387,12 @@ FM_KEY_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_-]*)\s*:")
 # already burned once by an unprobed detector at a 42% miss rate.
 FIXTURES_DIR = Path("scripts/ci/fixtures")
 VERDICT_PROBES = FIXTURES_DIR / "verdict_probes.txt"
+# Region-level corpus for check 7's POSITIVE assertion (a). verdict_probes.txt
+# feeds single lines to scan_verdict_line and so covers only the NEGATIVE
+# assertions (b)-(d); assertion (a) is region-scoped and had no fixtures at all
+# until the substring-containment fix in _token_presence_re was found to be
+# revertible with the gate staying green. See the header of the file itself.
+VERDICT_REGION_PROBES = FIXTURES_DIR / "verdict_region_probes.txt"
 BOM_PROBES = FIXTURES_DIR / "bom_probes.txt"
 
 
@@ -637,9 +678,31 @@ def check_agents(root: Path, rep: Report) -> None:
             rep.error(p, f"{role} must not set background: true (reviewers only)")
 
         # Check 2 — Fan-Out Contract section on fan-out-capable agents.
+        #
+        # The marker must appear ON an `## Fan-Out Contract` heading, matched by
+        # the SAME regex instruction_region() cuts at. Testing only that the
+        # marker string occurs somewhere in the file let the two disagree:
+        # demoting the heading to `###` kept check 2 happy, made
+        # FANOUT_HEADING_RE miss, and so made instruction_region() return the
+        # whole body — including the boilerplate that names all four tokens
+        # verbatim. Check 7's positive assertion then passed vacuously for that
+        # reviewer, silently, with CI green. Tying both to one regex closes it.
         if role in ("specialist", "reviewer", "task-executor"):
-            if FANOUT_CONTRACT_MARKER not in path.read_text(encoding="utf-8"):
-                rep.error(p, f'fan-out-capable agent missing section "{FANOUT_CONTRACT_MARKER}"')
+            agent_text = path.read_text(encoding="utf-8")
+            heading = FANOUT_HEADING_RE.search(agent_text)
+            if heading is None:
+                rep.error(
+                    p,
+                    'fan-out-capable agent missing an "## Fan-Out Contract" heading '
+                    "(a heading at any other level does not count: it would make "
+                    "check 7's verdict-vocabulary assertion vacuous)",
+                )
+            elif FANOUT_CONTRACT_MARKER not in agent_text[heading.start():].split("\n", 1)[0]:
+                rep.error(
+                    p,
+                    f'"## Fan-Out Contract" heading must carry the full marker '
+                    f'"{FANOUT_CONTRACT_MARKER}"',
+                )
 
     # Fleet shape: 2 orchestrators + 16 specialists + 12 reviewers
     # + 2 planning + 1 task-executor = 33.
@@ -918,7 +981,7 @@ def instruction_region(text: str) -> str:
     Fan-Out Contract boilerplate.
 
     This scoping is what makes check 7's positive assertion non-vacuous. The
-    boilerplate names all three tokens verbatim in every reviewer (check 2
+    boilerplate names all four tokens verbatim in every reviewer (check 2
     independently enforces that the section exists), so a whole-file token
     search can NEVER fail: it tests the boilerplate, not the instruction. The
     defect this check exists to catch lives in the Process/Output verdict items
@@ -931,6 +994,24 @@ def instruction_region(text: str) -> str:
             body = parts[2]
     m = FANOUT_HEADING_RE.search(body)
     return body[: m.start()] if m else body
+
+
+def missing_verdict_tokens(region: str) -> list[str]:
+    """Tokens the reviewer's own verdict instruction fails to name, in
+    canonical VERDICT_TOKENS order. Empty list == conformant.
+
+    Check 7's positive assertion (a) and the region probe corpus (check 8) both
+    call THIS function, for the same reason scan_verdict_line is shared: a
+    corpus that recomputed the predicate would test a parallel copy and prove
+    nothing about the code CI actually runs.
+
+    Presence is BOUNDARY-AWARE (TOKEN_PRESENCE_RE), never substring
+    containment. `APPROVE-WITH-NOTES` contains `APPROVE`, so a containment test
+    reports bare APPROVE present in a region that only ever names the
+    hyphenated token — the exact defect that lets a reviewer ship with no
+    non-blocking verdict available for a Low nit.
+    """
+    return [t for t in VERDICT_TOKENS if not TOKEN_PRESENCE_RE[t].search(region)]
 
 
 def scan_verdict_line(line: str) -> list[tuple[str, str]]:
@@ -947,9 +1028,11 @@ def scan_verdict_line(line: str) -> list[tuple[str, str]]:
         return [("binary", t) for t in binary]
 
     findings: list[tuple[str, str]] = []
-    # Gating grammar is permitted (output-standards.md) — but only when the
-    # same line offers NO-FINDINGS its own condition.
-    if NO_FINDINGS_TOKEN not in line:
+    # Gating grammar is permitted (output-standards.md) — but only when the same
+    # line gives EACH non-blocking token its own condition. Offering
+    # NO-FINDINGS alone still strands a reviewer holding one Low nit on REJECT,
+    # which is the non-convergence the fourth token exists to fix.
+    if not all(TOKEN_PRESENCE_RE[tok].search(line) for tok in NON_BLOCKING_TOKENS):
         m = GATING_SHAPE_RE.search(line)
         if m:
             findings.append(("gating", m.group(0)))
@@ -959,7 +1042,7 @@ def scan_verdict_line(line: str) -> list[tuple[str, str]]:
 
 
 def check_reviewer_verdicts(root: Path, rep: Report) -> None:
-    """Every grumpy reviewer must name all three verdict tokens IN ITS OWN
+    """Every grumpy reviewer must name all four verdict tokens IN ITS OWN
     verdict instruction, and instruct no binary verdict. Scope is
     agents/grumpy-*.md — see the constants above for why a repo-wide scan is
     wrong, and for the evasion classes.
@@ -970,8 +1053,9 @@ def check_reviewer_verdicts(root: Path, rep: Report) -> None:
     down") still passes. `block`, `condemn` and `bounce` are detected only in
     pair position because they occur in legitimate prose. What is structurally
     closed rather than enumerated is the SHAPE: assertion (a) requires all
-    three tokens in the instruction region, so any instruction that omits
-    NO-FINDINGS entirely fails regardless of how the other two are spelled.
+    four tokens in the instruction region, so any instruction that omits
+    APPROVE-WITH-NOTES or NO-FINDINGS entirely fails regardless of how the
+    others are spelled.
     """
     files = sorted((root / "agents").glob("grumpy-*.md"))
     if len(files) != EXPECTED_COUNTS["reviewer"]:
@@ -989,14 +1073,15 @@ def check_reviewer_verdicts(root: Path, rep: Report) -> None:
             rep.error(p, f"unreadable: {exc}")
             continue
 
-        # (a) Positive — all three tokens present as exact uppercase literals
+        # (a) Positive — all four tokens present as exact uppercase literals
         # in the reviewer's OWN instruction, i.e. OUTSIDE the shared Fan-Out
         # Contract boilerplate. Scanning the whole file here is vacuous: the
-        # boilerplate names all three tokens and check 2 already guarantees it
+        # boilerplate names all four tokens and check 2 already guarantees it
         # is present, so `missing` could never be non-empty and the assertion
-        # tested nothing.
+        # tested nothing. Presence is BOUNDARY-AWARE (TOKEN_PRESENCE_RE), not
+        # substring containment — see _token_presence_re for why.
         region = instruction_region(text)
-        missing = [t for t in VERDICT_TOKENS if t not in region]
+        missing = missing_verdict_tokens(region)
         if missing:
             rep.error(
                 p,
@@ -1006,8 +1091,11 @@ def check_reviewer_verdicts(root: Path, rep: Report) -> None:
                 f"{', '.join(missing)}. Naming the tokens only in the shared "
                 "boilerplate does not count — a reviewer whose Process/Output "
                 "items never offer NO-FINDINGS has no conformant way to say "
-                "'reviewed, found nothing', so it falls silent, and silence is "
-                "classified Non-reporting",
+                "'reviewed, found nothing', and one that never offers "
+                "APPROVE-WITH-NOTES has no way to record a Medium/Low finding "
+                "without blocking the merge; either way it falls silent or "
+                "over-rejects. Note APPROVE-WITH-NOTES does not satisfy "
+                "APPROVE: they are separate tokens",
             )
 
         # (b)-(d) Negative — binary pairs, uncompensated gating, and the casing
@@ -1023,7 +1111,7 @@ def check_reviewer_verdicts(root: Path, rep: Report) -> None:
                     rep.error(
                         p,
                         f"line {lineno}: binary verdict instruction {matched!r} — "
-                        "a verdict instruction must offer all three of "
+                        "a verdict instruction must offer all four of "
                         f"{'/'.join(VERDICT_TOKENS)}; binary formulations are "
                         "non-conformant however they are spelled (synonym pairs, "
                         "nominalised pairs, negative gating). See "
@@ -1034,11 +1122,13 @@ def check_reviewer_verdicts(root: Path, rep: Report) -> None:
                     rep.error(
                         p,
                         f"line {lineno}: gating verdict instruction {matched!r} "
-                        "with no NO-FINDINGS on the same line. Gating grammar is "
-                        "allowed, but each of the three tokens needs its own "
-                        "condition: 'Never APPROVE until all issues addressed; "
-                        "REJECT while any remain; NO-FINDINGS only when the "
-                        "review surfaced none'. Stopping at 'REJECT otherwise' "
+                        "without both APPROVE-WITH-NOTES and NO-FINDINGS on the "
+                        "same line. Gating grammar is allowed, but each of the "
+                        "four tokens needs its own condition: 'REJECT only for "
+                        "Critical or High; APPROVE-WITH-NOTES while any Medium "
+                        "or Low finding stands; never APPROVE until there is "
+                        "nothing worth recording; NO-FINDINGS only when nothing "
+                        "in the domain applied'. Stopping at 'REJECT otherwise' "
                         "spells both tokens correctly and still leaves a "
                         "reviewer that found nothing with nothing to say",
                     )
@@ -1114,6 +1204,48 @@ def check_probe_corpus(root: Path, rep: Report) -> None:
         if seen == 0:
             rep.error(p, "probe corpus contains no probes")
 
+    # --- verdict REGION probes ------------------------------------------
+    # Replays instruction_region() + the assertion-(a) `missing` computation,
+    # the two pieces scan_verdict_line never touches. Without this loop the
+    # boundary-aware presence test is enforced by nothing: reverting it to
+    # substring containment leaves every other check green.
+    rp = root / VERDICT_REGION_PROBES
+    r = str(VERDICT_REGION_PROBES)
+    if not rp.is_file():
+        rep.error(r, "region probe corpus is missing — check 7's positive assertion (a) is unproven")
+    else:
+        seen_regions = 0
+        for lineno, expectation, probe in _read_probe_rows(rp):
+            if not expectation:
+                rep.error(r, f"line {lineno}: malformed row — expected '<EXPECTATION> <region text>'")
+                continue
+            expected = [] if expectation == "NONE" else expectation.split(",")
+            unknown = [t for t in expected if t not in VERDICT_TOKENS]
+            if unknown:
+                rep.error(
+                    r,
+                    f"line {lineno}: expectation names unknown token(s) "
+                    f"{', '.join(unknown)} — must be NONE or a comma-separated "
+                    f"subset of {'/'.join(VERDICT_TOKENS)}",
+                )
+                continue
+            seen_regions += 1
+            region = instruction_region(probe.replace("\\n", "\n"))
+            missing = missing_verdict_tokens(region)
+            # Compare in canonical VERDICT_TOKENS order so the fixture cannot
+            # depend on the order the author happened to type.
+            expected_ordered = [t for t in VERDICT_TOKENS if t in expected]
+            if missing != expected_ordered:
+                rep.error(
+                    r,
+                    f"line {lineno}: assertion (a) reported missing "
+                    f"[{', '.join(missing) or 'nothing'}] but the fixture expects "
+                    f"[{', '.join(expected_ordered) or 'nothing'}] — "
+                    f"region {probe!r}",
+                )
+        if seen_regions == 0:
+            rep.error(r, "region probe corpus contains no probes")
+
     # --- BOM probes -----------------------------------------------------
     bp = root / BOM_PROBES
     b = str(BOM_PROBES)
@@ -1175,7 +1307,7 @@ CHECKS = [
     # general prose-duplication detection. A green result here has been
     # over-read as "nothing in the repo is duplicated" — it never meant that.
     ("single-source-literals", "two owned literals from fan-out-policy.md are not restated uncited", check_single_source),
-    ("reviewer-verdicts", "grumpy reviewers name all three verdict tokens in their own instruction", check_reviewer_verdicts),
+    ("reviewer-verdicts", "grumpy reviewers name all four verdict tokens in their own instruction", check_reviewer_verdicts),
     ("probe-corpus", "checks 0 and 7 detectors replayed against scripts/ci/fixtures/", check_probe_corpus),
 ]
 SELF_TEST_CHECKS = {"probe-corpus"}

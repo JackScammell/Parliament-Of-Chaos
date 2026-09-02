@@ -214,7 +214,7 @@ Rolling comparisons against the previous equal-length window.
 | Total agent invocations   | 612     | 541    | +13.1%  |
 | Total tokens              | 4.82M   | 4.11M  | +17.3%  |
 | Debate avg convergence    | 0.84    | 0.79   | +0.05   |
-| Reviewer APPROVE rate     | 62%     | 58%    | +4.0pp  |
+| Reviewer non-blocking rate| 62%     | 58%    | +4.0pp  |
 | Monitor failure count     | 2       | 5      | -60%    |
 ```
 

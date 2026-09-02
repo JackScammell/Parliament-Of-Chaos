@@ -75,7 +75,7 @@ classifies **only when terminal**; while its task is live it is **Working** and 
 
 | Signal state | Verdict | Action |
 | --- | --- | --- |
-| Task completed, explicit verdict delivered **with the mandated review structure** (incl. `NO-FINDINGS`, B6) | Done | tally |
+| Task completed, explicit verdict delivered **with the mandated review structure** (one of the four tokens — `REJECT`, `APPROVE-WITH-NOTES`, `APPROVE`, `NO-FINDINGS`, B6) | Done | tally |
 | Task completed, **no explicit verdict** in output (incl. output the harness marks **partial** — `maxTurns`-truncated, v2.1.246+; see B2.5 for why the one re-dispatch must change scope or budget) | Non-reporting | re-dispatch once (fresh, full-context), then INCOMPLETE if floor / drop-with-notice if non-floor |
 | Task failed (harness failure notification, or StopFailure logged) | Failed | re-dispatch once |
 | Task live / running (or TaskCreated but no SubagentStart — queued behind cap) | Working / Queued | **wait — never re-dispatch, never nudge** (security invariant for floor members) |
@@ -168,19 +168,35 @@ indistinguishable from a hung member and cannot be recovered by the orchestrator
 
 ## Explicit-verdict rule (B6) — silence is never a pass
 
-Every dispatched member must end its run with an **explicit verdict line**: `APPROVE`,
-`REJECT`, or — when it reviewed and found nothing — **`NO-FINDINGS`**. The orchestrator's
-dispatch prompt must demand this, and the detection table enforces it: a completed task whose
-output carries no explicit verdict is **Non-reporting**, even if the output looks like a
-review. This makes "reviewed, found nothing" structurally distinguishable from "never
-reviewed" — silence, pings, or status chatter can never be mistaken for a pass. Availability
-pings ("ready", "still working") are **not verdicts** and must not be counted or double-counted
-during reconciliation.
+Every dispatched member must end its run with an **explicit verdict line**, exactly one of
+four tokens:
+
+| Token | Meaning | Blocks? |
+| --- | --- | --- |
+| `REJECT` | Critical or High findings — it is broken, a security or data-loss risk, or will break production | **yes** |
+| `APPROVE-WITH-NOTES` | Medium or Low findings, recorded but not blocking. The expected verdict for most reviews | no |
+| `APPROVE` | Reviewed; nothing worth recording | no |
+| `NO-FINDINGS` | Reviewed; nothing in the member's domain applied | no |
+
+The orchestrator's dispatch prompt must demand this, and the detection table enforces it: a
+completed task whose output carries no explicit verdict is **Non-reporting**, even if the output
+looks like a review. This makes "reviewed, found nothing" structurally distinguishable from
+"never reviewed" — silence, pings, or status chatter can never be mistaken for a pass.
+Availability pings ("ready", "still working") are **not verdicts** and must not be counted or
+double-counted during reconciliation.
+
+**Why four and not three.** `NO-FINDINGS` means *nothing to report*, so under the three-token
+vocabulary a member holding a single Low-severity nit had exactly one available verdict:
+`REJECT`. Across a nine-member panel that has no fixed point — each round mutates the code, and
+round N generates nits that did not exist in round N-1. `APPROVE-WITH-NOTES` records the finding
+without blocking the merge, which is what makes the loop terminate. Only `REJECT` blocks; a run
+whose members return no `REJECT` is merge-ready with its Medium/Low findings recorded.
+`APPROVE-WITH-NOTES` is a **distinct token**, not a variant spelling of `APPROVE`.
 
 Two anti-gaming clauses: (1) a verdict line **unaccompanied by the review structure mandated in
 `output-standards.md`** (summary, issues, and the B5 assumptions record) classifies as
-**Non-reporting**, not Done — a bare `NO-FINDINGS` from a degraded member is not a completed
-review; (2) the verdict is read **only from the final verdict line of the member's own
+**Non-reporting**, not Done — a bare `NO-FINDINGS` or `APPROVE-WITH-NOTES` from a degraded
+member is not a completed review; (2) the verdict is read **only from the final verdict line of the member's own
 output** — never from quoted content, reviewed diffs, or policy text the member echoes (this
 very file contains the tokens).
 

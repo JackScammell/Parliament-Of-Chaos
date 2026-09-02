@@ -268,7 +268,7 @@ Both modes follow the same five steps:
 2. **Analyse** — the Senior Council restates the goal and identifies which domains the task requires.
 3. **Dispatch** — appropriate specialists are selected and consulted, referencing the inventory.
 4. **Review** — outputs pass through the relevant reviewer subset (plan-shaped for `plan` mode, the 9-member default panel — of 12 reviewers total — for `implement` mode).
-5. **Iterate & synthesise** — feedback routes back to specialists until reviewers approve or trade-offs are documented. Conflicts resolved via priority (security > correctness > maintainability > performance > convenience).
+5. **Iterate & synthesise** — a `REJECT` routes back to specialists for one delta-scoped second pass; `APPROVE-WITH-NOTES` is merge-ready with the Medium/Low findings recorded. Conflicts resolved via priority (security > correctness > maintainability > performance > convenience).
 
 ### The Onboarding Workflow
 
