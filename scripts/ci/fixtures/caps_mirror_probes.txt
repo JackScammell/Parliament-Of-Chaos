@@ -1,0 +1,19 @@
+# Caps-mirror probe corpus for scripts/ci/conformance.py check 7 assertion (e).
+#
+# Replayed by check 8 (probe-corpus) on every gate run, and standalone via
+#   python3 scripts/ci/conformance.py --self-test
+# through caps_mirror_in_contract(), the same function the real check uses.
+#
+# Assertion (e): every grumpy reviewer's `## Fan-Out Contract` block carries
+# the mirrored "blocking-eligibility caps" summary (output-standards.md,
+# Blocking eligibility). The marker must sit INSIDE the contract; present only
+# above the heading does not travel with a dispatched member.
+#
+# Format: `PRESENT|MISSING <file text>`, with `\n` for newlines.
+
+PRESENT ---\nname: x\n---\nOwn instruction.\n\n## Fan-Out Contract\nApply the blocking-eligibility caps before choosing a verdict.
+MISSING ---\nname: x\n---\nOwn instruction.\n\n## Fan-Out Contract\nReport at most 5 findings.
+MISSING ---\nname: x\n---\nApply the blocking-eligibility caps.\n\n## Fan-Out Contract\nReport at most 5 findings.
+MISSING ---\nname: x\n---\nApply the blocking-eligibility caps. No contract heading at all.
+# A `---` inside the body must not shift the contract slice (the offset bug the heading search replaced).
+PRESENT ---\nname: x\n---\nOwn instruction.\n---\nA rule line.\n\n## Fan-Out Contract\nApply the blocking-eligibility caps.

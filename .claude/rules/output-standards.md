@@ -5,7 +5,7 @@
 All grumpy reviewers must use this structure:
 
 1. **Summary** - High-level assessment (2-3 sentences)
-2. **Issues** - Problems with severity (Critical/High/Medium/Low) and rationale
+2. **Issues** - Problems with severity (Critical/High/Medium/Low) and rationale, severity capped per **Blocking eligibility** below
 3. **Recommendations** - Suggested fixes with specific references
 4. **Verdict** - An explicit final verdict line — `REJECT`, `APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS` — with clear reasoning. The four-token vocabulary is mandated by fan-out-policy.md B6: a review without an explicit verdict line is classified Non-reporting
 
@@ -75,6 +75,83 @@ version floor), so this paragraph is the guard — do not delete it.
 
 This rule is mirrored by `scripts/ci/conformance.py` check 7 (`reviewer-verdicts`). Policy is
 widened here first; the pattern there follows. Never the other way round.
+
+### Blocking eligibility
+
+A finding's severity follows from its **consequence** (see Severity Definitions below). Some
+categories of finding can never carry the consequence a `REJECT` requires, so their severity is
+**capped before the verdict is chosen**. These caps are the single source; nothing else restates
+them in full.
+
+| Finding category | Severity cap | Can it block? |
+| --- | --- | --- |
+| Wording in a PR description, commit message, code comment, author reply, or issue/tracker text; test counts quoted in any of them | **Low** | Never |
+| Test-quality gap with **no demonstrated live defect** — a surviving mutant, a missing edge-case test, a weak assertion | **Medium** | Never |
+| Pre-existing issue that the change does not make worse | none; goes to **Deferred** | Never on this change |
+| A reviewer's own earlier-round error (a misread, a fix it asked for that was wrong) | none; it is corrected in a **note** | Never a new blocker |
+
+The caps lift only where the finding is not what its category suggests:
+
+- **Executable text is code, not wording.** Text someone will run — SQL to run on live, a deploy or
+  rollback step, a migration command in a PR body — is reviewed at the consequence of running it.
+  Wrong SQL for a live database is a data-loss finding wherever it is written.
+- **A test gap with a demonstrated live defect is a defect finding.** "Demonstrated" means a concrete
+  input and the wrong output or state it produces in the shipped code. The severity then follows
+  the defect; the missing test is its remediation, not the finding.
+- **"Made worse" includes newly exposed.** A pre-existing weakness that the change makes reachable,
+  or widens the blast radius of, is a finding against this change.
+- **A pre-existing Critical is escalated, not deferred quietly.** It still does not block an
+  unrelated change, since blocking the change does not fix it. The reviewer flags it for an immediate
+  separate fix and the run report surfaces it above the Deferred list.
+
+**"It must land" is not a severity.** "This must land before merge", "the author will not come back
+to it", and "a merge ends the work on this repository" are statements about follow-up discipline.
+They are not about consequence and never justify a `REJECT`. Such an item is a **follow-up**: record
+it in Deferred (the debt register), or as a note on a non-blocking verdict. A reviewer that says a
+finding would be Medium or Low "on severity alone" has already chosen its verdict, and that verdict
+is `APPROVE-WITH-NOTES`. Overriding severity with a reason of its own is the failure this section
+exists to stop.
+
+The caps apply to every round. `governance.md` (PR review rounds) further narrows which Critical
+and High findings can block in follow-up rounds, and which changes get a single floor-only round.
+
+**The 12 grumpy reviewers mirror a one-sentence summary of these caps** in their `## Fan-Out
+Contract` block, beside the 5-finding budget sentence, for the same reason as the budget. A
+dispatched reviewer's context is not guaranteed to include this file, and the reviewer is the party
+that assigns the severity. `scripts/ci/conformance.py` check 7 asserts that the summary is present in
+each reviewer's contract block. The check looks for the marker phrase `blocking-eligibility caps`,
+not for the full wording, so if a cap changes here, update the 12 summaries in the same commit.
+Specialists are not included in the mirror because they are never dispatched against a review target.
+
+### Posting a verdict to GitHub
+
+When a run's result is posted to a pull request, **one GitHub review is posted for each
+invocation**. It carries the **run** verdict and lists every reviewer's verdict in its body. The
+mapping is fixed:
+
+| Run verdict | GitHub review event | `gh` form |
+| --- | --- | --- |
+| `REJECT` | **Request changes** | `gh pr review <n> --request-changes --body-file <f>` |
+| `APPROVE-WITH-NOTES` | **Approve**, with the Medium/Low findings in the body | `gh pr review <n> --approve --body-file <f>` |
+| `APPROVE` | **Approve** | `gh pr review <n> --approve --body-file <f>` |
+| `NO-FINDINGS` | **Approve** | `gh pr review <n> --approve --body-file <f>` |
+| `INCOMPLETE` | **Comment**. Never Approve and never Request changes | `gh pr review <n> --comment --body-file <f>` |
+
+- **Only `REJECT` maps to Request changes.** Posting Request changes for a run whose worst verdict
+  is `APPROVE-WITH-NOTES` makes GitHub block on findings the vocabulary has already classified as
+  non-blocking. That is the severity override above, applied at the posting step instead.
+- **An approval does not end the follow-ups.** The Medium/Low notes and the Deferred list go in the
+  body of the Approve review, and they reach the debt register from there. Withholding approval to
+  keep an item "open" is the "it must land" override, and it is not permitted.
+- **GitHub refuses both Approve and Request changes on your own PR.** If the reviewing account
+  authored the PR, post **every** verdict, `REJECT` included, as `--comment`, with the run verdict
+  in the marker and stated in words on the body's second line. A `REJECT` must never be dropped
+  because the review event was refused.
+- **Only a floor-covered run may Approve.** A review that did not run the floor
+  (`/summon-grumpy-reviewer`, any single-reviewer run) posts as `--comment`, whatever its verdict,
+  so that it cannot satisfy required-review branch protection on its own.
+- **Every posted body starts with the round marker** that `commands/parliament-review.md` defines,
+  so that later invocations can count rounds and find the last reviewed commit.
 
 ## Council Output Format
 
