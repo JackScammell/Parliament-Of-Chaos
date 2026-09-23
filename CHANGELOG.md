@@ -5,6 +5,103 @@ All notable changes to Parliament of Chaos will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.28.0] - 2026-09-23
+
+**"Proportionate Review"**: severity decides what blocks, and repeated rounds narrow what can block.
+v1.27.0 gave reviewers a way to record a finding without blocking. The evidence says they used
+it too rarely. Across 27 ACT-Training/Vision PRs reviewed with `/parliament-review` (23 Aug to
+23 Sep 2026) there were 140 blocking findings in change-requested rounds. Only 30 of them (21%)
+were production defects, security issues, or data-loss risks. The other 110 were:
+
+- 54 findings about PR-body, comment, reply, or test-count wording
+- 34 test-quality gaps with no live defect
+- 17 out-of-scope or pre-existing issues
+- 5 nits
+
+One PR ran to 11 rounds. A +15/-1 docs PR took 3. Some reviewers stated the override outright:
+"on severity alone this would be APPROVE-WITH-NOTES… I'm blocking because…". Follow-up rounds
+swung between delta-only reviews that missed context (one produced a wrong fix, one never reviewed
+a merge) and whole-branch re-trawls that found new things. The 30 real defects the council caught
+are the reason it exists. This release keeps every path by which a Critical or High finding can
+block round 1, and every path by which a Critical security or data-loss finding can block in any
+round.
+
+### Added: blocking eligibility (`.claude/rules/output-standards.md`, single source)
+
+- **Severity caps by category, applied before the verdict.** PR-description, commit-message,
+  code-comment, author-reply, and tracker wording, and test counts, are capped at **Low**. A
+  test-quality gap with no demonstrated live defect (for example a surviving mutant) is capped at
+  **Medium**. A pre-existing issue the change does not make worse goes to **Deferred**. A
+  reviewer's own earlier-round error is corrected in a note and never becomes a new blocker.
+- **The caps lift where the category misleads.** Executable text in a PR body, such as SQL to run
+  on live, is reviewed as code. A test gap with a demonstrated live defect is a defect finding. A
+  pre-existing weakness that the change newly exposes counts against the change. A pre-existing
+  Critical is escalated for a separate fix and is not deferred quietly.
+- **"It must land" is not a severity.** Follow-up discipline ("must land before merge", "the
+  author won't come back to it") becomes a Deferred entry or a note. It is never a `REJECT`.
+- **GitHub verdict mapping.** Only a run `REJECT` posts as **Request changes**.
+  `APPROVE-WITH-NOTES` posts as **Approve** with the notes in the body. `APPROVE` and
+  `NO-FINDINGS` post as **Approve**, and `INCOMPLETE` posts as **Comment**. GitHub refuses both
+  Approve and Request changes on your own PR, so on a self-authored PR every verdict, `REJECT`
+  included, posts as **Comment** with the verdict stated, and a `REJECT` is never dropped. A review
+  that did not run the floor (`/summon-grumpy-reviewer`) posts as Comment and never Approves.
+
+### Changed: PR review rounds (`.claude/rules/governance.md`, single source; mechanics in `commands/parliament-review.md`)
+
+- **The review target is the full PR diff (merge-base..head) in every round.** In follow-up
+  rounds, the delta since the last reviewed SHA is the *focus*, with the full diff as required
+  context. This replaces "the second pass reviews only the delta". Reviews are never delta-only
+  and are never a license to re-trawl.
+- **Rounds are counted across invocations.** Each `/parliament-review` on a PR counts prior
+  Parliament reviews through a round marker in the posted body
+  (`<!-- parliament-review round=<n> head=<sha> verdict=<TOKEN> -->`). PRs reviewed before the
+  marker existed fall back to counting the current account's reviews. Only markers posted by the
+  reviewing account count, so the author of the PR cannot advance the round. An ambiguous count
+  resolves to the **lower**, stricter round, and a run that ended `INCOMPLETE` is not counted.
+  A whole invocation is one round. `--round <n>` may lower the round freely; raising it needs the
+  user's confirmation.
+- **What can block in each round.** Round 1: Critical or High, after the caps. Round 2 onward:
+  Critical security or data-loss from anywhere, any **still-unresolved blocker** from an earlier
+  round, and Critical or High findings **introduced since the last review**. Everything else is
+  Deferred and keeps its severity. Re-running a review without fixing anything cannot turn a
+  `REJECT` into an Approve, and new code is always reviewable; what the rounds stop is the
+  re-trawl of code an earlier round already saw.
+- **Proportionate tier.** Changes under 50 changed lines, and docs-only changes, get a single
+  round. Only the floor reviews them (plus `grumpy-documentation-pedant` for docs), and reviewers
+  make no mutation-testing demands. A `REJECT` there is followed by a confirmation (the floor plus
+  the reviewer that raised it), not a new round. The tier is re-measured on every invocation, so a
+  PR that grows out of it gets a normal round. Markdown that is loaded as agent, command, or rule
+  prompts is code, not docs. `--all` overrides the tier but not the round table.
+- **The orchestrator enforces eligibility at tally time.** A reviewer `REJECT` that rests only on
+  capped or round-ineligible findings is re-classified as `APPROVE-WITH-NOTES`, citing the rule
+  applied and recording the original severity. Critical security or data-loss findings, findings in
+  executable text, and unresolved earlier blockers are never re-classified. A missing floor verdict
+  still forces `INCOMPLETE`.
+- The "delta-scoped" wording is replaced by "delta-focused (full diff as context)" in
+  `governance.md`, `senior-council`, `/implement-task-list`, `/summon-council` (which also loses
+  an unbounded "until grumps accept"), README, and `docs/usage.md`.
+
+### Changed: `/summon-grumpy-reviewer`
+
+- The "Ruthless" wording is gone, along with the "Definition of Done: checklist of fixes required
+  before approval" gate. That gate was the negative-gating form that `output-standards.md` names
+  as its most dangerous non-conformant class. The command now ends in the four-token verdict. It
+  also applies the 5-finding budget and the severity caps, and it has a Deferred section. Because
+  it runs no floor, a posted result is always a Comment.
+
+### Added: The Gate guards the new mirror (`scripts/ci/conformance.py`)
+
+- **Check 7, assertion (e).** All 12 grumpy reviewers carry a one-sentence
+  blocking-eligibility summary in their `## Fan-Out Contract` block. The mirror is deliberate, for
+  the same reason as the 5-finding budget: the reviewer assigns severity, and its dispatched
+  context may not include the rules file. The check requires the marker phrase *inside* the
+  contract region, located from the contract heading itself. It is a **presence** check, not a
+  wording check: keeping the 12 summaries in step with `output-standards.md` is still done by hand
+  in the same commit. A committed probe corpus (`scripts/ci/fixtures/caps_mirror_probes.txt`,
+  replayed by check 8) proves the assertion fails when the phrase is missing, sits only above the
+  heading, or the heading is absent. The 17 specialist contract blocks are not mirrored, because
+  specialists are never dispatched against a review target.
+
 ## [1.27.0] - 2026-09-02
 
 **"The Fourth Token"** — review convergence. Parliament's reviewers could not say *"I found
@@ -846,6 +943,7 @@ Subsequent tiers from the toolset-gaps plan land in v1.11.0 (Learning Loop), v1.
 - MIT License
 - Example project files demonstrating the planning workflow
 
+[1.28.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.27.0...v1.28.0
 [1.27.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.26.0...v1.27.0
 [1.26.0]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.25.1...v1.26.0
 [1.25.1]: https://github.com/JackScammell/Parliament-Of-Chaos/compare/v1.25.0...v1.25.1

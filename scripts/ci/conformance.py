@@ -41,7 +41,9 @@ Checks (see --list-checks):
   7. reviewer-verdicts     — every grumpy reviewer names the four-token verdict
                              vocabulary (REJECT / APPROVE-WITH-NOTES / APPROVE /
                              NO-FINDINGS) in its own verdict instruction, and
-                             instructs no binary approve/reject
+                             instructs no binary approve/reject; and (v1.28.0)
+                             its Fan-Out Contract carries the mirrored
+                             blocking-eligibility caps summary
   8. probe-corpus          — the detectors behind checks 0 and 7 are replayed
                              against the committed probe corpus in
                              scripts/ci/fixtures/ (also available standalone as
@@ -382,6 +384,28 @@ FRONTMATTER_VERDICT_EXEMPT = {
 }
 FM_KEY_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_-]*)\s*:")
 
+# Check 7 assertion (e), v1.28.0: output-standards.md "Blocking eligibility"
+# is single-sourced there, but a one-sentence summary is DELIBERATELY MIRRORED
+# into the Fan-Out Contract of all 12 grumpy reviewers — the contract travels
+# with a dispatched member whose context may not include the rules file, and
+# the reviewer is the party that assigns severity. This marker is what the
+# check looks for, INSIDE the contract region (after FANOUT_HEADING_RE). It is a
+# presence check, not a wording check: when a cap changes, the 12 summaries are
+# updated by hand in the same commit (output-standards.md says so).
+CAPS_MIRROR_MARKER = "blocking-eligibility caps"
+
+
+def caps_mirror_in_contract(text: str) -> bool:
+    """Check 7 assertion (e): the caps summary sits inside the Fan-Out Contract.
+
+    The contract is located from its heading, not by offset arithmetic against
+    instruction_region(), so a change in how that helper trims frontmatter
+    cannot silently shift the slice. Present only above the heading does not
+    count: that part does not travel with a dispatched member.
+    """
+    heading = FANOUT_HEADING_RE.search(text)
+    return bool(heading) and CAPS_MIRROR_MARKER in text[heading.start():]
+
 # Check 8: the committed probe corpus. A detector with no committed negative
 # fixtures is a regression ANECDOTE, not a regression test — this repo was
 # already burned once by an unprobed detector at a 42% miss rate.
@@ -393,6 +417,7 @@ VERDICT_PROBES = FIXTURES_DIR / "verdict_probes.txt"
 # until the substring-containment fix in _token_presence_re was found to be
 # revertible with the gate staying green. See the header of the file itself.
 VERDICT_REGION_PROBES = FIXTURES_DIR / "verdict_region_probes.txt"
+CAPS_MIRROR_PROBES = FIXTURES_DIR / "caps_mirror_probes.txt"
 BOM_PROBES = FIXTURES_DIR / "bom_probes.txt"
 
 
@@ -1098,6 +1123,19 @@ def check_reviewer_verdicts(root: Path, rep: Report) -> None:
                 "APPROVE: they are separate tokens",
             )
 
+        # (e) The mirrored blocking-eligibility caps summary must sit INSIDE
+        # the Fan-Out Contract block — the part that travels with a dispatched
+        # member. Present only above the heading does not count.
+        if not caps_mirror_in_contract(text):
+            rep.error(
+                p,
+                f"Fan-Out Contract is missing the mirrored {CAPS_MIRROR_MARKER!r} "
+                "summary (.claude/rules/output-standards.md, Blocking eligibility). "
+                "A dispatched reviewer that has not seen the caps assigns severity "
+                "to PR-body wording and test-quality gaps uncapped, which is how "
+                "wording nits become merge blocks",
+            )
+
         # (b)-(d) Negative — binary pairs, uncompensated gating, and the casing
         # backstops, over EVERY line including frontmatter. Only individually
         # allowlisted frontmatter matches are excused.
@@ -1245,6 +1283,31 @@ def check_probe_corpus(root: Path, rep: Report) -> None:
                 )
         if seen_regions == 0:
             rep.error(r, "region probe corpus contains no probes")
+
+    # --- caps-mirror probes (check 7 assertion e) -----------------------
+    # Replays caps_mirror_in_contract() so a refactor of the contract slice
+    # cannot let assertion (e) go quiet with every other check still green.
+    cp = root / CAPS_MIRROR_PROBES
+    c = str(CAPS_MIRROR_PROBES)
+    if not cp.is_file():
+        rep.error(c, "caps-mirror probe corpus is missing — check 7 assertion (e) is unproven")
+    else:
+        seen_caps = 0
+        for lineno, expectation, probe in _read_probe_rows(cp):
+            if expectation not in ("PRESENT", "MISSING"):
+                rep.error(c, f"line {lineno}: expectation must be PRESENT or MISSING, found {expectation!r}")
+                continue
+            seen_caps += 1
+            found = caps_mirror_in_contract(probe.replace("\\n", "\n"))
+            if found != (expectation == "PRESENT"):
+                rep.error(
+                    c,
+                    f"line {lineno}: assertion (e) reported "
+                    f"{'PRESENT' if found else 'MISSING'} but the fixture expects "
+                    f"{expectation} — file {probe!r}",
+                )
+        if seen_caps == 0:
+            rep.error(c, "caps-mirror probe corpus contains no probes")
 
     # --- BOM probes -----------------------------------------------------
     bp = root / BOM_PROBES

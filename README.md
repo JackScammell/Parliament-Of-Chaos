@@ -63,8 +63,8 @@ All 66 commands are declared in [`commands/manifest.yaml`](commands/manifest.yam
 | `/ask-council <question>` | Ask the council a question. Auto-selects 2–5 specialists, consults them in parallel, and returns a single synthesised answer with consensus and disagreements surfaced. No fix loop, no artifact, no code edits |
 | `/summon-council [plan\|implement] [task]` | Two-mode orchestrator — `plan` writes a spec to `.project-files/plans/`, `implement` runs full specialist + default review panel (9 of 12 grumps) cycle. Always opens with an `Explore` inventory pass so the council extends existing capabilities rather than creating duplicates |
 | `/summon-specialist <agent>` | Directly invoke a specialist agent on your current task |
-| `/summon-grumpy-reviewer` | Quick, ruthless code review from a senior developer perspective |
-| `/parliament-review` | Grumpy-reviewer review — relevance-tiered by default (only reviewers whose domain the diff touches); `--all` forces the full default panel (9 of 12 reviewers; privacy/i18n/budget tier in on relevance) for maximum scrutiny. The security + correctness floor (+ privacy on PII) is always present |
+| `/summon-grumpy-reviewer` | Quick, blunt single-reviewer code review from a senior developer perspective, ending in a four-token verdict |
+| `/parliament-review` | Grumpy-reviewer review — relevance-tiered by default (only reviewers whose domain the diff touches); `--all` forces the full default panel (9 of 12 reviewers; privacy/i18n/budget tier in on relevance) for maximum scrutiny. Small (<50 lines) and docs-only changes get one floor-only round. On a PR, rounds are counted across invocations and later rounds narrow what can block. Only `REJECT` posts as GitHub Request changes. The security + correctness floor (+ privacy on PII) is always present |
 
 ### Deliberation
 
@@ -268,7 +268,7 @@ Both modes follow the same five steps:
 2. **Analyse** — the Senior Council restates the goal and identifies which domains the task requires.
 3. **Dispatch** — appropriate specialists are selected and consulted, referencing the inventory.
 4. **Review** — outputs pass through the relevant reviewer subset (plan-shaped for `plan` mode, the 9-member default panel — of 12 reviewers total — for `implement` mode).
-5. **Iterate & synthesise** — a `REJECT` routes back to specialists for one delta-scoped second pass; `APPROVE-WITH-NOTES` is merge-ready with the Medium/Low findings recorded. Conflicts resolved via priority (security > correctness > maintainability > performance > convenience).
+5. **Iterate & synthesise** — a `REJECT` routes back to specialists for one delta-focused second pass (full diff as context); `APPROVE-WITH-NOTES` is merge-ready with the Medium/Low findings recorded. Conflicts resolved via priority (security > correctness > maintainability > performance > convenience).
 
 ### The Onboarding Workflow
 

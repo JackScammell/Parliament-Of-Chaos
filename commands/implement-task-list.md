@@ -16,7 +16,7 @@ Implement a roadmap item's tasks with full Parliament oversight. The senior-coun
 Systematically implement all tasks for a roadmap item with full Parliament oversight:
 - Specialists handle implementation
 - Grumpy reviewers validate quality
-- Iterate on `REJECT` only, bounded to one delta-scoped second pass (`.claude/rules/governance.md`)
+- Iterate on `REJECT` only, bounded to one delta-focused second pass with the full diff as context (`.claude/rules/governance.md`)
 
 ## Arguments
 
@@ -72,7 +72,7 @@ For each task:
    - grumpy-security-nag
    - grumpy-performance-troll
 
-4. **Iterate**: Address `REJECT` findings, re-route to specialists, and take **one** delta-scoped second pass with the reviewers that rejected. No third pass — remaining Medium/Low findings are Deferred, not merge blocks.
+4. **Iterate**: Address `REJECT` findings, re-route to specialists, and take **one** delta-focused second pass (full diff as context) with the reviewers that rejected, plus the floor. No third pass — remaining Medium/Low findings are Deferred, not merge blocks.
 
 5. **Mark Complete**: Update tasks.md once no reviewer holds a `REJECT` (`APPROVE-WITH-NOTES` is merge-ready)
 

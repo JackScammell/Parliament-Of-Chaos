@@ -116,7 +116,7 @@ Return the plan path to the user. Do **not** edit code in `plan` mode.
    - grumpy-maintainability-curmudgeon, grumpy-security-nag, grumpy-performance-troll
    - grumpy-accessibility-auditor, grumpy-documentation-pedant, grumpy-testing-tyrant
    - The security + correctness floor (`grumpy-security-nag`, `grumpy-code-reviewer`, plus `grumpy-privacy-paranoid` on PII) is never dropped; a non-reporting floor member forces an `INCOMPLETE` result rather than a survivor-synthesised approval.
-6. **Iterate** — route complaints back to specialists until grumps accept. Conflict priority: security > correctness > maintainability > performance > convenience. Defer out-of-scope items.
+6. **Iterate** — route `REJECT` findings back to specialists for **one** delta-focused second pass (full diff as context) with the reviewers that rejected plus the floor. The bound and the blocking-eligibility caps are in `.claude/rules/governance.md` and `.claude/rules/output-standards.md`. Conflict priority: security > correctness > maintainability > performance > convenience. Defer out-of-scope items.
 7. **Synthesise** — final solution + Deferred section.
 
 ## Output

@@ -15,8 +15,8 @@ This guide explains how to use Parliament of Chaos commands effectively. Parliam
 | `/implement-task-list` | Execute tasks systematically | Safe, tracked implementation |
 | `/ask-council <question>` | Q&A — auto-selects 2–5 specialists, consults in parallel, synthesises a single answer with consensus and disagreements surfaced | Open-ended questions, "what should we do about X", expert second opinion |
 | `/summon-council [plan\|implement]` | Two-mode orchestration — plan (writes spec to `.project-files/plans/`) or implement (9-member default review panel, of 12 reviewers total) | Complex tasks, architectural decisions, ad-hoc planning |
-| `/summon-grumpy-reviewer` | Quick critical code review | Code review, PR feedback, refactoring |
-| `/parliament-review` | Full review with all 12 grumpy reviewers | Maximum scrutiny on critical code |
+| `/summon-grumpy-reviewer` | Single-seat code review, ending in a four-token verdict | Code review, PR feedback, refactoring |
+| `/parliament-review` | Grumpy-reviewer panel, relevance- and size-tiered (`--all` for the full panel); PR rounds counted across invocations | Maximum scrutiny on critical code |
 | `/summon-specialist <agent>` | Invoke a specific specialist | Focused domain analysis |
 | `/debate-topic [topic]` | Structured multi-agent deliberation | Technical decisions, architecture debates |
 | `/debate-replay <session>` | Deterministic replay of a past debate | Regression-testing the deliberation engine |
@@ -631,7 +631,7 @@ Both modes follow the same five steps. Step 1 (inventory) is mandatory in both m
 4. **Review** — outputs go through the relevant reviewer subset:
    - **`plan` mode**: `grumpy-architecture-skeptic`, `grumpy-maintainability-curmudgeon`, `grumpy-security-nag`, `grumpy-performance-troll`. Add `grumpy-budget-hawk` for infra-heavy plans, `grumpy-privacy-paranoid` for PII-touching plans, `grumpy-testing-tyrant` when a test strategy is part of the plan.
    - **`implement` mode**: all 9 default-panel grumps (of 12 reviewers total) — (code-reviewer, standards-enforcer, architecture-skeptic, maintainability-curmudgeon, security-nag, performance-troll, accessibility-auditor, documentation-pedant, testing-tyrant).
-5. **Iteration & Synthesis** — a `REJECT` routes back to specialists for one delta-scoped second pass; `APPROVE-WITH-NOTES` means merge-ready with Medium/Low findings recorded. Conflicts resolved via priority: **security > correctness > maintainability > performance > convenience**. Out-of-scope recommendations are logged to a "Deferred" section rather than blocking approval.
+5. **Iteration & Synthesis** — a `REJECT` routes back to specialists for one delta-focused second pass (full diff as context); `APPROVE-WITH-NOTES` means merge-ready with Medium/Low findings recorded. Conflicts resolved via priority: **security > correctness > maintainability > performance > convenience**. Out-of-scope recommendations are logged to a "Deferred" section rather than blocking approval.
 
 #### Plan Artifact (plan mode only)
 
@@ -781,7 +781,7 @@ class OrderService
 #### Response Structure
 
 1. **Quality Summary** - Overall assessment (usually grumpy)
-2. **Issues by Category** - Problems organised by type with severity ratings
+2. **Issues** - At most 5, ranked by severity, drawn from these angles:
    - Correctness and Bugs
    - Clarity and Readability
    - Structure and Architecture
@@ -789,14 +789,17 @@ class OrderService
    - Standards and Conventions
    - Maintainability
    - Testability
-3. **Refactor Suggestions** - Concrete improvements with code examples
-4. **Definition of Done** - Checklist of required fixes before approval
+3. **Recommendations** - Concrete fixes with code examples
+4. **Deferred** - Findings beyond the 5-finding budget, pre-existing issues, follow-ups
+5. **Verdict** - Exactly one of `REJECT`, `APPROVE-WITH-NOTES`, `APPROVE`, or `NO-FINDINGS`
 
 #### Severity Levels
 
-- **HIGH** - Must fix before merging
-- **MEDIUM** - Should fix, technical debt if ignored
-- **LOW** - Nice to have, minor improvements
+Severity definitions and blocking-eligibility caps are single-sourced in `.claude/rules/output-standards.md`.
+
+- **Critical / High** - Blocks: the only findings that earn `REJECT`
+- **Medium / Low** - Recorded under `APPROVE-WITH-NOTES`; never blocks
+- Categories are capped before a verdict is chosen: PR-description, commit, comment, and reply wording at Low; test-quality gaps with no demonstrated live defect at Medium; pre-existing issues go to Deferred. "It must land" is never a reason to block. See the full table, and its exceptions, in `output-standards.md` **Blocking eligibility**.
 
 ---
 
