@@ -43,8 +43,10 @@ All three values must match.
 
 - [ ] Stage all changed files
 - [ ] Commit with message: `vX.Y.Z: <summary of changes>`
-- [ ] Push to `main`
-- [ ] Verify push landed:
+- [ ] Push the release branch and open a PR. `main` is protected by a ruleset: direct pushes
+      and force-pushes are rejected, and the Gate's three blocking checks (install-smoke,
+      conformance, hook-fixture) must pass before the PR can be merged
+- [ ] Merge the PR, then verify the merge landed:
   ```bash
   git log origin/main --oneline -1
   ```
@@ -77,7 +79,8 @@ If it still shows the old version:
 ## Post-Push: Create GitHub Release
 
 1. Go to: https://github.com/JackScammell/Parliament-Of-Chaos/releases/new
-2. **Tag**: `vX.Y.Z` (lowercase `v`)
+2. **Tag**: `vX.Y.Z` (lowercase `v`). Tags matching `v*` are protected: once pushed they
+   cannot be moved or deleted, so double-check the target commit before publishing
 3. **Target**: `main`
 4. **Title**: `vX.Y.Z - <brief description>`
 5. **Body**: Copy the relevant `CHANGELOG.md` section
