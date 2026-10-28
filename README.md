@@ -6,6 +6,14 @@
 
 ---
 
+## See It Run
+
+![A real /ask-council run: three specialists consulted in parallel, then one synthesised answer with a verdict, reasoning, recommended shape and caveats](https://github.com/JackScammell/Parliament-Of-Chaos/releases/download/v1.28.0/parliament-demo.gif)
+
+*Genuine output from `claude -p "/chaos:ask-council ..."` on a fresh Laravel repo, replayed at reading speed. Nothing in the transcript was edited.*
+
+---
+
 ## What Is This?
 
 Parliament of Chaos transforms Claude Code into a multi-agent development team. Instead of a single AI assistant, you get:
