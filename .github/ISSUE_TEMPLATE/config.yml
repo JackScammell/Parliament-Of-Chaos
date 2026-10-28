@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/JackScammell/Parliament-Of-Chaos/security/advisories/new
+    about: Report anything exploitable privately. Do not open a public issue for it.
+  - name: Question or idea
+    url: https://github.com/JackScammell/Parliament-Of-Chaos/issues/new
+    about: For anything that is not a bug or a concrete feature request, a plain issue is fine.

@@ -1,0 +1,53 @@
+name: Bug report
+description: Something in the plugin does not behave as documented.
+labels: ["bug"]
+body:
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: From `claude plugin list`.
+      placeholder: "1.28.0"
+    validations:
+      required: true
+  - type: input
+    id: claude-version
+    attributes:
+      label: Claude Code version
+      description: From `claude --version`.
+      placeholder: "2.1.312"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Command (slash command)
+        - Agent
+        - Hook
+        - Plugin install or load
+        - CI gate
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, and what you got. Paste exact output in a code block.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The smallest sequence that shows the problem. Say whether the repo you ran it in has commits, since some agents need one.
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant configuration
+      description: Permission mode, any CLAUDE.md rules that touch the plugin, other plugins enabled. Remove anything private.
