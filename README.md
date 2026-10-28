@@ -28,24 +28,28 @@ claude plugin marketplace add https://github.com/JackScammell/Parliament-Of-Chao
 claude plugin install chaos@chaos
 ```
 
-### Your First Command
+### Start With These Five
 
-**For code review and development tasks:**
+There are 66 commands. You do not need most of them on day one. These five cover the common cases and are safe to try on any repository.
+
+| Command | Use it when | What you get |
+|---------|-------------|--------------|
+| `/ask-council <question>` | You want a second opinion before writing code | A single synthesised answer from 2–5 specialists, with disagreements surfaced. No fix loop, no code edits |
+| `/summon-grumpy-reviewer` | You have uncommitted changes and want a blunt senior review | One reviewer, one pass, a four-token verdict |
+| `/parliament-review` | A pull request is ready and you want the full panel | Only the reviewers whose domain the diff touches, with security and correctness always present. `REJECT` is the only verdict that blocks |
+| `/onboard-codebase` | You have inherited a repository with no documentation | Generated getting-started docs built from the code, not from guesses |
+| `/summon-council plan <task>` | You are about to build something non-trivial | A written spec in `.project-files/plans/` that has already survived the specialists and the grumpy reviewers |
+
+Try them in that order. Once they feel familiar, `/list-commands` shows the rest grouped by category.
+
+**Examples:**
 
 ```
-/summon-council Design an authentication system with JWT and RBAC
-```
-
-**For onboarding to an undocumented codebase:**
-
-```
+/ask-council Should this service use JWT or session cookies?
+/summon-grumpy-reviewer
+/parliament-review
 /onboard-codebase
-```
-
-**For planning a new project:**
-
-```
-/plan-project A CLI tool for managing Docker containers
+/summon-council plan Add role-based access control to the admin area
 ```
 
 ---
