@@ -393,6 +393,8 @@ When cutting a release that includes new commands or agents:
 
 ### Code of Conduct
 
+This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). In short:
+
 - Be respectful and inclusive
 - Provide constructive feedback
 - Help others learn and grow

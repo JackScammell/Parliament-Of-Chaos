@@ -1,0 +1,38 @@
+name: Feature request
+description: A new command, agent, or change to how an existing one behaves.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: The task or situation, not the solution. What do you run today and where does it fall short?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What you would like the plugin to do. If it is a new command or agent, say which existing one it is closest to and why that one is not enough.
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of change
+      options:
+        - New command
+        - New agent
+        - Change to an existing command or agent
+        - Hook or CI
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I have checked `commands/manifest.yaml` and the README and this does not already exist
+          required: true
